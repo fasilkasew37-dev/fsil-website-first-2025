@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>የአገልግሎት ዳሽቦርድ / Service Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #007bff;
+        }
+        .options button {
+            display: block;
+            width: 80%;
+            margin: 15px auto;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .options button:hover {
+            opacity: 0.8;
+        }
+        #post-text { background-color: #28a745; }
+        #post-image { background-color: #ffc107; }
+        #post-audio { background-color: #17a2b8; }
+        #view-content { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>እንኳን ደህና መጡ!</h1>
+        <p>የፈለጉትን የአገልግሎት አማራጭ ይምረጡ። (እነዚህ ገጾች እስካሁን አልተገነቡም)</p>
+        
+        <div class="options">
+            <button id="post-text" onclick="alert('አዲስ ጽሁፍ መለጠፊያ ገጽ ይከፈታል!');">አዲስ ጽሁፍ ይለጥፉ</button>
+            
+            <button id="post-image" onclick="alert('ምስል መለጠፊያ ገጽ ይከፈታል!');">ምስል ይለጥፉ</button>
+            
+            <button id="post-audio" onclick="alert('ኦዲዮ መለጠፊያ ገጽ ይከፈታል!');">ኦዲዮ ይለጥፉ</button>
+            
+            <button id="view-content" onclick="alert('ይዘት መመልከቻ ገጽ ይከፈታል!');">ሁሉንም ይዘቶች ይመልከቱ</button>
+        </div>
+        
+        <p style="margin-top: 20px;"><a href="index.html">ወደ መነሻ ገጽ ይመለሱ</a></p>
+    </div>
+</body>
+</html>
