@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fasil Website - እንኳን ደህና መጡ</title>
+    <style>
+        /* CSS ለዌብሳይቱ መልክ እና ዲዛይን */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 25px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        #premiumBtn {
+            background-color: #ffc107; /* Premium: ቢጫ/ወርቅ */
+            color: #333;
+        }
+        #freeBtn {
+            background-color: #28a745; /* Free: አረንጓዴ */
+            color: white;
+        }
+        #loginBtn {
+            background-color: #007bff; /* Login: ሰማያዊ */
+            color: white;
+        }
+        #successMsg {
+            color: #28a745;
+            font-size: 1.2em;
+            margin-top: 20px;
+            display: none;
+        }
+        #privacyPolicy {
+            margin-top: 25px;
+            font-size: 0.9em;
+            text-align: left;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            display: none;
+        }
+        .policy-agreement button {
+            background-color: #007bff;
+            color: white;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcomeText">እንኳን ደህና መጡ ወደ ፋሲል ዌብ (Welcome to Fasil Website)</h1>
+    
+    <div class="buttons">
+        <h2>አገልግሎት ይምረጡ / Choose Service Tier</h2>
+        <button id="premiumBtn" onclick="selectService('premium')">ክፍያ ከፍለው ለመጠቀም (Premium)</button>
+        <button id="freeBtn" onclick="selectService('free')">በነጻ ለመጠቀም (Free)</button>
+        <hr style="margin: 20px 0;">
+        <button id="loginBtn" onclick="handleLogin()"> ለመግባት (Log In) </button>
+    </div>
+
+    <p id="successMsg">ተሳክቷል! ኮንግራጄሽን (Success! Congratulations!)</p>
+    
+    <div id="privacyPolicy">
+        <h2>የግላዊነት እና የይዘት መመሪያ (Privacy & Content Policy)</h2>
+        <p>በዚህ መድረክ ላይ የሚጋሩት ማንኛውም ይዘት (ጽሑፍ፣ ኦዲዮ፣ ምስል) **የሀሰት መረጃ፣ የፖለቲካ ጥላቻ፣ ፕሮፓጋንዳ ወይም ማጭበርበር** መያዝ የለበትም። ጤናማ የፖለቲካ ውይይት ይፈቀዳል። እነዚህን ህጎች የሚጥስ ይዘት ወዲያውኑ ይወገዳል።</p>
+        
+        <div class="policy-agreement">
+            <button onclick="agreeToPolicy()">እስማማለሁ (Agree & Continue)</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ጃቫስክሪፕት ለተግባራት
+    let selectedTier = ''; 
+
+    // አገልግሎትን የመምረጥ ተግባር (Sign Up)
+    function selectService(tier) {
+        selectedTier = tier;
+        
+        if (tier === 'premium') {
+             alert("ወደ ክፍያ ገጽ (Payment) ከመሄድዎ በፊት ይመዝገቡ።");
+             // እውነተኛ አፕሊኬሽን እዚህ ላይ ወደ ክፍያ አገልግሎት ይወስዳል
+        } 
+        
+        // ምዝገባውን እንጀምር
+        handleSignup();
+    }
+
+    // ለመመዝገብ/መግባት ሲጫኑ
+    function handleSignup() {
+        // የBackend Logic በሌለበት ምሳሌ ስለሆነ፣ ወዲያውኑ የተሳካ መልዕክት አሳይ
+        document.querySelector('.buttons').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+        
+        // የግላዊነት ፖሊሲውን ከጥቂት ጊዜ በኋላ አሳይ
+        setTimeout(() => {
+            document.getElementById('privacyPolicy').style.display = 'block';
+        }, 1500); 
+    }
+
+    function handleLogin() {
+        // ለ Log In የይለፍ ቃል ሲረጋገጥም ተመሳሳይ ነገር ያሳያል
+        handleSignup(); 
+    }
+
+    // እስማማለሁ ሲጫኑ
+    function agreeToPolicy() {
+        if (selectedTier === 'premium') {
+             alert("ክፍያዎ ከተሳካ በኋላ ወደ ፕሪሚየም አገልግሎት ይገባሉ!");
+        } else {
+             alert("ወደ ነጻው አገልግሎት እየሄዱ ነው! (ማስታወቂያዎች ሊኖሩ ይችላሉ)");
+        }
+        
+        // ወደ ዋናው የአገልግሎት ገጽ መውሰድን ያሳያል
+        document.getElementById('successMsg').style.display = 'none';
+        document.getElementById('privacyPolicy').style.display = 'none';
+        document.getElementById('welcomeText').textContent = "በአገልግሎቱ ውስጥ ነዎት!";
+        
+        // የቋንቋ መቀየሪያ ቁልፉን ለማቆየት ሌላ ኮድ እናደርጋለን (ለማቀለል)
+        document.querySelector('.container').innerHTML = `<h1>${document.getElementById('welcomeText').textContent}</h1>`;
+    }
+
+    // ቋንቋ መቀያየሪያ ተግባር (አማራጭ)
+    window.onload = function() {
+        const langButton = document.createElement('button');
+        langButton.textContent = 'ቋንቋ ቀይር / Toggle Lang';
+        langButton.onclick = toggleLanguage;
+        langButton.style.marginTop = '20px';
+        langButton.style.backgroundColor = '#6c757d';
+        langButton.style.color = 'white';
+        document.querySelector('.container').appendChild(langButton);
+    }
+    
+    let isAmharic = true;
+    function toggleLanguage() {
+        isAmharic = !isAmharic;
+        const h1 = document.getElementById('welcomeText');
+        if (isAmharic) {
+            h1.textContent = 'እንኳን ደህና መጡ ወደ ፋሲል ዌብ (Welcome to Fasil Website)';
+        } else {
+            h1.textContent = 'Welcome to Fasil Website (እንኳን ደህና መጡ ወደ ፋሲል ዌብ)';
+        }
+        // ሌሎች ጽሑፎችን መለዋወጥ እዚህ ይገባል
+    }
+</script>
+
+</body>
+</html>
