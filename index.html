@@ -58,6 +58,11 @@
             background-color: #28a745; /* አረንጓዴ */
         }
         .success-btn:hover { background-color: #1e7e34; }
+        .premium-btn {
+            background-color: #ffc107; /* ቢጫ */
+            color: #333;
+        }
+        .premium-btn:hover { background-color: #e0a800; }
         /* የማስገቢያ ሳጥኖች */
         input[type="text"], input[type="email"], input[type="password"] {
             width: 95%;
@@ -98,13 +103,15 @@
 <body>
     <div class="section" id="home-view">
         <h1>እንኳን ወደ ፋሲል አፕ በደህና መጡ!</h1>
-        <p>በነፃ ለመጠቀምና ለመጀመር ከታች ያሉትን አማራጮች ይጠቀሙ።</p>
+        <p>የሚፈልጉትን የአገልግሎት አይነት በመምረጥ ይጀምሩ።</p>
 
-        <h2>አዲስ ከሆኑ:</h2>
-        <a href="#signup-form" class="button-link main-btn" onclick="updateView()">መመዝገብ (Sign Up)</a>
+        <h2>በነፃ ለመጠቀም:</h2>
+        <a href="#signup-form" class="button-link success-btn" onclick="setMode('free'); updateView()">መመዝገብ/መግባት (ነፃ)</a>
         
-        <h2>ከአሁን በፊት የተመዘገቡ ከሆነ:</h2>
-        <a href="#login-form" class="button-link success-btn" onclick="updateView()">መግባት (Log In)</a>
+        <h2>በክፍያ ለመጠቀም:</h2>
+        <button class="premium-btn" onclick="alert('ክፍያ: ይህ አገልግሎት በቅርቡ ይጀምራል!');">
+            በክፍያ አማራጭ (Premium)
+        </button>
     </div>
 
     <div class="section" id="signup-form">
@@ -114,6 +121,8 @@
         <input type="password" id="signup-password" placeholder="የይለፍ ቃል (6 አሀዝ Password)" required maxlength="6">
         
         <button class="main-btn" onclick="handleSignUp()">ተመዝገብ (Sign Up)</button>
+        
+        <p style="margin-top: 20px;"><a href="#login-form" onclick="updateView()">ከዚህ በፊት ተመዝግበዋል? ይግቡ (Log In)</a></p>
     </div>
 
     <div class="section" id="login-form">
@@ -122,6 +131,8 @@
         <input type="password" id="login-password" placeholder="የይለፍ ቃል (Password)" required>
         
         <button class="success-btn" onclick="handleLogin()">ግባ (Log In)</button>
+        
+        <p style="margin-top: 20px;"><a href="#signup-form" onclick="updateView()">አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)</a></p>
     </div>
     
     <div class="section" id="privacy-policy">
@@ -159,6 +170,9 @@
     </div>
 
     <script>
+        // ምናባዊ ተጠቃሚ ለመፍጠር (በእውነተኛ አፕሊኬሽን ዳታቤዝ ያስፈልጋል)
+        let registeredUser = null; 
+        
         // የገጽታ ቁጥጥር (View Controller)
         function updateView() {
             const sections = ['home-view', 'signup-form', 'login-form', 'privacy-policy', 'dashboard'];
@@ -178,14 +192,23 @@
                  window.location.hash = '#dashboard';
             }
         }
-
-        // 1. ሳይን አፕ (Sign Up) - የምዝገባ ስኬት ወደ ፖሊሲው ይወስዳል
+        
+        // 1. ሳይን አፕ (Sign Up) - የምዝገባ አመክንዮ
         function handleSignUp() {
+            if (registeredUser) {
+                alert("🔴 ከዚህ በፊት ተመዝግበዋል! እባክዎ ሎግ ኢን በመንካት ይግቡ።");
+                window.location.hash = '#login-form';
+                return;
+            }
+
             const phone = document.getElementById('signup-phone').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
 
             if (phone && email && password.length === 6) {
+                // ምናባዊ ተጠቃሚ መፍጠር
+                registeredUser = { phone, password };
+
                 // ምዝገባ ተሳክቷል
                 alert("ምዝገባ ተሳክቷል! ኮንግራጄሽን!");
                 // ወደ ግላዊነት ፖሊሲው ይወስዳል
@@ -195,18 +218,25 @@
             }
         }
 
-        // 2. ሎግ ኢን (Log In) - የመግባት ስኬት ወደ ፖሊሲው ይወስዳል
+        // 2. ሎግ ኢን (Log In) - የመግቢያ አመክንዮ
         function handleLogin() {
             const phone = document.getElementById('login-phone').value;
             const password = document.getElementById('login-password').value;
 
-            if (phone && password) {
+            if (!registeredUser) {
+                alert("🔴 መጀመሪያ መመዝገብ አለብዎት። እባክዎ ሳይን አፕ (Sign Up) ያድርጉ።");
+                window.location.hash = '#signup-form';
+                return;
+            }
+
+            // ትክክለኛ የተመዘገበውን ፓስወርድ ማረጋገጥ
+            if (phone === registeredUser.phone && password === registeredUser.password) {
                 // መግባት ተሳክቷል
                 alert("መግባት ተሳክቷል! ኮንግራጄሽን!");
                 // ወደ ግላዊነት ፖሊሲው ይወስዳል
                 window.location.hash = '#privacy-policy'; 
             } else {
-                alert("እባክዎ ስልክ እና ፓስወርድ ያስገቡ።");
+                alert("🔴 ስልክ ቁጥር ወይም የይለፍ ቃልዎ ትክክል አይደለም። እባክዎ ይፈትሹ።");
             }
         }
         
