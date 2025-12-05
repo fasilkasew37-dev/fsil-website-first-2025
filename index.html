@@ -105,6 +105,11 @@
         .section {
             display: none;
         }
+        .premium-notice {
+            color: #ffc107;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -113,23 +118,21 @@
         <p>የሚፈልጉትን የአገልግሎት አይነት በመምረጥ ይጀምሩ።</p>
 
         <h2>በነፃ ለመጠቀም:</h2>
-        <a href="#signup-form" class="button-link success-btn" onclick="updateView()">መመዝገብ/መግባት (ነፃ)</a>
+        <a href="#signup-form" class="button-link success-btn" onclick="updateView('free')">መመዝገብ/መግባት (ነፃ)</a>
         
         <h2>በክፍያ ለመጠቀም:</h2>
-        <button class="premium-btn" onclick="alert('ክፍያ: ይህ አገልግሎት በቅርቡ ይጀምራል!');">
-            በክፍያ አማራጭ (Premium)
-        </button>
+        <a href="#signup-form" class="button-link premium-btn" onclick="updateView('premium')">በክፍያ አማራጭ (Premium)</a>
     </div>
 
     <div class="section" id="signup-form">
-        <h2>መመዝገቢያ (Sign Up)</h2>
+        <h2 id="signup-title">መመዝገቢያ (Sign Up - ነፃ)</h2>
         <input type="text" id="signup-phone" placeholder="ስልክ ቁጥር (Required)" required>
         <input type="email" id="signup-email" placeholder="ኢሜል (Required)" required>
         <input type="password" id="signup-password" placeholder="የይለፍ ቃል (6 አሀዝ Password)" required maxlength="6">
         
         <button class="main-btn" onclick="handleSignUp()">ተመዝገብ (Sign Up)</button>
         
-        <p style="margin-top: 20px;"><a href="#login-form" onclick="updateView()">ከዚህ በፊት ተመዝግበዋል? ይግቡ (Log In)</a></p>
+        <p style="margin-top: 20px;"><a href="#login-form" onclick="updateView('check')">ከዚህ በፊት ተመዝግበዋል? ይግቡ (Log In)</a></p>
     </div>
 
     <div class="section" id="login-form">
@@ -139,7 +142,7 @@
         
         <button class="success-btn" onclick="handleLogin()">ግባ (Log In)</button>
         
-        <p style="margin-top: 20px;"><a href="#signup-form" onclick="updateView()">አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)</a></p>
+        <p style="margin-top: 20px;"><a href="#signup-form" onclick="updateView('free')">አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)</a></p>
     </div>
     
     <div class="section" id="privacy-policy">
@@ -179,10 +182,10 @@
     <div class="section" id="post-text">
         <h2>ጽሑፍ ወይም መልዕክት ለመለጠፍ</h2>
         <p>አዲስ ጽሑፍዎን እዚህ ያስገቡ።</p>
-        <input type="text" placeholder="ርዕስ (Title)" required>
-        <textarea placeholder="መልዕክትዎን እዚህ ይጻፉ..." rows="8" required></textarea>
+        <input type="text" id="post-text-title" placeholder="ርዕስ (Title)" required>
+        <textarea id="post-text-content" placeholder="መልዕክትዎን እዚህ ይጻፉ..." rows="8" required></textarea>
         
-        <button class="success-btn" onclick="alert('ይህ መልዕክት አሁን በምስል መልክ ተቀምጧል! (ይህ ለጊዜው ነው)');">
+        <button class="success-btn" onclick="handlePostText()">
             መልዕክቱን ለጥፍ (Post)
         </button>
         <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
@@ -191,10 +194,12 @@
     <div class="section" id="post-image">
         <h2>ምስል/ፎቶ ለመለጠፍ</h2>
         <p>እባክዎ የሚለጥፉትን ምስል ይምረጡ።</p>
-        <input type="file" accept="image/*" style="width: 100%; margin-bottom: 20px;">
+        <p class="premium-notice" id="image-quality-notice"></p>
+        
+        <input type="file" id="image-file" accept="image/*" style="width: 100%; margin-bottom: 20px;">
         <input type="text" placeholder="የምስሉ ርዕስ (Title)" required>
         
-        <button class="success-btn" onclick="alert('ምስሉ ተልኳል! (ይህ ለጊዜው ነው)');">
+        <button class="success-btn" onclick="handlePostImage()">
             ምስሉን ለጥፍ (Post)
         </button>
         <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
@@ -255,23 +260,27 @@
         <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
     </div>
 
-
     <script>
-        // Local Storageን በመጠቀም የምዝገባ መረጃን ማቆየት
+        let currentSubscription = 'free'; // የአሁኑን የምዝገባ አይነት ይይዛል (ለመመዝገብ ሲሄዱ)
         
+        // Local Storageን በመጠቀም የምዝገባ መረጃን ማቆየት
         function getRegisteredUser() {
             const user = localStorage.getItem('fasil_app_user');
             return user ? JSON.parse(user) : null;
         }
 
-        function setRegisteredUser(phone, password) {
-            const user = { phone, password };
+        function setRegisteredUser(phone, password, tier) {
+            const user = { phone, password, tier: tier || 'free' }; // tier ጨምረናል
             localStorage.setItem('fasil_app_user', JSON.stringify(user));
         }
 
+        function getCurrentUserTier() {
+            const user = getRegisteredUser();
+            return user ? user.tier : 'free';
+        }
+
         // የገጽታ ቁጥጥር (View Controller)
-        function updateView() {
-            // ሁሉንም ሊሆኑ የሚችሉ ክፍሎች ይዘረዝራል
+        function updateView(tier = null) {
             const sections = [
                 'home-view', 'signup-form', 'login-form', 'privacy-policy', 'dashboard',
                 'post-text', 'post-image', 'post-audio', 'view-text', 'view-image', 'view-audio'
@@ -286,14 +295,32 @@
                     element.style.display = (id === hash) ? 'block' : 'none';
                 }
             });
-            
-            // ገጹ ሲቀየር የመግቢያ ፎርሙን ዳግም ማስጀመር
-            if (hash === 'signup-form' || hash === 'login-form') {
-                document.getElementById('signup-phone').value = '';
-                document.getElementById('signup-email').value = '';
-                document.getElementById('signup-password').value = '';
-                document.getElementById('login-phone').value = '';
-                document.getElementById('login-password').value = '';
+
+            // የምዝገባ ገጽ ሲጫን የምዝገባ አይነቱን መያዝ እና ርዕሱን መቀየር
+            if (hash === 'signup-form') {
+                if (tier) {
+                    currentSubscription = tier;
+                }
+                const titleElement = document.getElementById('signup-title');
+                if (currentSubscription === 'premium') {
+                    titleElement.textContent = 'መመዝገቢያ (Sign Up - በክፍያ)';
+                } else {
+                    titleElement.textContent = 'መመዝገቢያ (Sign Up - ነፃ)';
+                }
+            }
+
+            // የምስል መለጠፊያ ገጽ ላይ የጥራት ማስታወቂያ ማሳየት
+            if (hash === 'post-image') {
+                const notice = document.getElementById('image-quality-notice');
+                const userTier = getCurrentUserTier();
+
+                if (userTier === 'free') {
+                    notice.innerHTML = '⚠️ **ነፃ ተጠቃሚ:** የምስል ጥራትና መጠን ለዳታ ቆጣቢነት ሲባል **ይቀነሳል**።';
+                } else if (userTier === 'premium') {
+                    notice.innerHTML = '✅ **በክፍያ ተጠቃሚ:** ምስሎችዎ በ**ሙሉ ጥራት** እና ፍጥነት ይለጠፋሉ።';
+                } else {
+                    notice.innerHTML = '';
+                }
             }
         }
         
@@ -310,15 +337,16 @@
             const password = document.getElementById('signup-password').value;
 
             if (phone && email && password.length === 6) {
-                setRegisteredUser(phone, password);
-                alert("ምዝገባ ተሳክቷል! ኮንግራጄሽን!");
+                // የተመረጠውን የምዝገባ አይነት ወደ Local Storage ማስቀመጥ
+                setRegisteredUser(phone, password, currentSubscription);
+                alert(`ምዝገባ ተሳክቷል! ኮንግራጄሽን! (አይነት: ${currentSubscription.toUpperCase()})`);
                 window.location.hash = '#privacy-policy'; 
             } else {
                 alert("እባክዎ ትክክለኛ መረጃ (ስልክ፣ ኢሜል እና ባለ 6 አሀዝ ፓስወርድ) ያስገቡ።");
             }
         }
 
-        // 2. ሎግ ኢን (Log In) - የመግቢያ አመክንዮ
+        // 2. ሎግ ኢን (Log In) - የመግቢያ አመክንጦ
         function handleLogin() {
             const phone = document.getElementById('login-phone').value;
             const password = document.getElementById('login-password').value;
@@ -331,15 +359,49 @@
             }
 
             if (phone === registeredUser.phone && password === registeredUser.password) {
-                alert("መግባት ተሳክቷል! ኮንግራጄሽን!");
+                alert(`መግባት ተሳክቷል! (አይነት: ${registeredUser.tier.toUpperCase()})`);
                 window.location.hash = '#privacy-policy'; 
             } else {
                 alert("🔴 ስልክ ቁጥር ወይም የይለፍ ቃልዎ ትክክል አይደለም። እባክዎ ይፈትሹ።");
             }
         }
+
+        // 3. የጽሁፍ መለጠፍ እና የፖሊሲ ፍተሻ አመክንዮ
+        function handlePostText() {
+            const title = document.getElementById('post-text-title').value;
+            const content = document.getElementById('post-text-content').value;
+            
+            // የፖሊሲ ጥሰት ቃላት (Keyword Moderation)
+            const policyViolations = ['ፖለቲካ', 'ጥላቻ', 'ግጭት', 'ማበረታታት']; // እነዚህን ቃላት ይፈትሻል
+            
+            const isViolating = policyViolations.some(word => content.includes(word) || title.includes(word));
+
+            if (isViolating) {
+                alert("❌ አልተለጠፈም! መልዕክትዎ ከጥብቅ ፖሊሲያችን ውጭ የሆኑ ቃላት ይዟል። እባክዎ ያስተካክሉ።");
+            } else if (title.trim() === "" || content.trim() === "") {
+                 alert("እባክዎ ርዕስ እና መልዕክት ይጻፉ።");
+            } else {
+                // (እውነተኛው የመለጠፍ ስራ እዚህ ይከናወናል)
+                alert("✅ መልዕክትዎ ተለጥፏል! (ይህ ለጊዜው ነው። በዳታቤዝ ስንጀምር እውነተኛ ይሆናል)");
+                document.getElementById('post-text-title').value = '';
+                document.getElementById('post-text-content').value = '';
+            }
+        }
         
-        window.addEventListener('hashchange', updateView);
-        window.addEventListener('load', updateView);
+        // 4. የምስል መለጠፍ አመክንዮ
+        function handlePostImage() {
+            const userTier = getCurrentUserTier();
+            
+            if (userTier === 'free') {
+                alert("ምስሉ ተልኳል! (ለነፃ ተጠቃሚዎች ጥራት ቀንሶ ተልኳል)");
+            } else {
+                 alert("ምስሉ ተልኳል! (ለክፍያ ተጠቃሚዎች በሙሉ ጥራት ተልኳል)");
+            }
+            // (እውነተኛው የምስል ሰቀላ እዚህ ይከናወናል)
+        }
+
+        window.addEventListener('hashchange', () => updateView(null));
+        window.addEventListener('load', () => updateView(null));
     </script>
 </body>
 </html>
