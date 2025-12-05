@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="am">
 <head>
@@ -179,4 +178,84 @@
         }
 
         function setRegisteredUser(phone, password) {
-            // መረጃውን በኮምፒውተርዎ ላይ ያስ
+            // መረጃውን በኮምፒውተርዎ ላይ ያስቀምጣል
+            const user = { phone, password };
+            localStorage.setItem('fasil_app_user', JSON.stringify(user));
+        }
+
+        // የገጽታ ቁጥጥር (View Controller)
+        function updateView() {
+            const sections = ['home-view', 'signup-form', 'login-form', 'privacy-policy', 'dashboard'];
+            const hash = window.location.hash.substring(1) || 'home-view';
+            
+            sections.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = (id === hash) ? 'block' : 'none';
+                }
+            });
+
+            // ዳሽቦርዱ ላይ ያሉትን ቁልፎች ሲጫኑ መልእክት ያሳያል
+            if (hash.startsWith('view-') || hash.startsWith('post-')) {
+                 alert("ይህ ገጽ ገና እየተገነባ ነው! (This page is under construction: " + hash + ")");
+                 // ወደ ዳሽቦርድ ይመልሳል
+                 window.location.hash = '#dashboard';
+            }
+        }
+        
+        // 1. ሳይን አፕ (Sign Up) - የምዝገባ አመክንዮ
+        function handleSignUp() {
+            if (getRegisteredUser()) {
+                // ከአሁን በፊት ተመዝግበዋል
+                alert("🔴 ከዚህ በፊት ተመዝግበዋል! እባክዎ ሎግ ኢን በመንካት ይግቡ።");
+                window.location.hash = '#login-form';
+                return;
+            }
+
+            const phone = document.getElementById('signup-phone').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            if (phone && email && password.length === 6) {
+                // መረጃውን በ Local Storage ውስጥ ማስቀመጥ
+                setRegisteredUser(phone, password);
+
+                // ምዝገባ ተሳክቷል
+                alert("ምዝገባ ተሳክቷል! ኮንግራጄሽን!");
+                // ወደ ግላዊነት ፖሊሲው ይወስዳል
+                window.location.hash = '#privacy-policy'; 
+            } else {
+                alert("እባክዎ ትክክለኛ መረጃ (ስልክ፣ ኢሜል እና ባለ 6 አሀዝ ፓስወርድ) ያስገቡ።");
+            }
+        }
+
+        // 2. ሎግ ኢን (Log In) - የመግቢያ አመክንዮ
+        function handleLogin() {
+            const phone = document.getElementById('login-phone').value;
+            const password = document.getElementById('login-password').value;
+            const registeredUser = getRegisteredUser();
+
+            if (!registeredUser) {
+                // ገና አልተመዘገቡም
+                alert("🔴 መጀመሪያ መመዝገብ አለብዎት። እባክዎ ሳይን አፕ (Sign Up) ያድርጉ።");
+                window.location.hash = '#signup-form';
+                return;
+            }
+
+            // ትክክለኛ የተመዘገበውን ፓስወርድ ማረጋገጥ
+            if (phone === registeredUser.phone && password === registeredUser.password) {
+                // መግባት ተሳክቷል
+                alert("መግባት ተሳክቷል! ኮንግራጄሽን!");
+                // ወደ ግላዊነት ፖሊሲው ይወስዳል
+                window.location.hash = '#privacy-policy'; 
+            } else {
+                alert("🔴 ስልክ ቁጥር ወይም የይለፍ ቃልዎ ትክክል አይደለም። እባክዎ ይፈትሹ።");
+            }
+        }
+        
+        // ገጹ ሲጫን ወይም አድራሻው ሲቀየር ገጹን ለማሳየት
+        window.addEventListener('hashchange', updateView);
+        window.addEventListener('load', updateView);
+    </script>
+</body>
+</html>
