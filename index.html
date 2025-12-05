@@ -1,10 +1,5 @@
+
 <!DOCTYPE html>
-<html lang="am">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ፋሲል አፕ - Fasil Ap
-        <!DOCTYPE html>
 <html lang="am">
 <head>
     <meta charset="UTF-8">
@@ -83,13 +78,13 @@
         }
         /* ፖሊሲ */
         .policy-text {
-            height: 200px; /* ቦታውን ጨምረነዋል */
+            height: 200px; 
             overflow-y: scroll;
-            border: 2px solid #dc3545; /* ለየት ያለ ቀለም ሰጥተነዋል */
+            border: 2px solid #dc3545; 
             padding: 15px;
             text-align: left;
             font-size: 14px;
-            background: #ffe3e6; /* ቀይ ዳራ */
+            background: #ffe3e6; 
             margin-bottom: 20px;
         }
         .policy-text h3 {
@@ -104,7 +99,7 @@
             margin-bottom: 10px;
         }
         /* ማሳያዎችን መደበቅ */
-        #login-form, #signup-form, #tier-selection, #privacy-policy, #dashboard {
+        #login-form, #signup-form, #privacy-policy, #dashboard {
             display: none;
         }
     </style>
@@ -120,32 +115,21 @@
 
     <div class="section" id="signup-form">
         <h2>መመዝገቢያ (Sign Up)</h2>
-        <input type="text" placeholder="ስልክ ቁጥር (Required)" required>
-        <input type="email" placeholder="ኢሜል (Required)" required>
-        <input type="password" placeholder="የይለፍ ቃል (Password)" required>
+        <input type="text" id="signup-phone" placeholder="ስልክ ቁጥር (Required)" required>
+        <input type="email" id="signup-email" placeholder="ኢሜል (Required)" required>
+        <input type="password" id="signup-password" placeholder="የይለፍ ቃል (6 አሀዝ Password)" required maxlength="6">
         
-        <a href="#tier-selection" class="button-link main-btn">ተመዝገብ (Sign Up)</a>
+        <button class="main-btn" onclick="handleSignUp()">ተመዝገብ (Sign Up)</button>
     </div>
 
     <div class="section" id="login-form">
         <h2>መግቢያ (Log In)</h2>
-        <input type="text" placeholder="ስልክ ቁጥር (Required)" required>
-        <input type="password" placeholder="የይለፍ ቃል (Password)" required>
+        <input type="text" id="login-phone" placeholder="ስልክ ቁጥር (Required)" required>
+        <input type="password" id="login-password" placeholder="የይለፍ ቃል (Password)" required>
         
-        <a href="#tier-selection" class="button-link success-btn">ግባ (Log In)</a>
+        <button class="success-btn" onclick="handleLogin()">ግባ (Log In)</button>
     </div>
-
-    <div class="section" id="tier-selection">
-        <h1>ኮንግራጄሽን! ተሳክቷል!</h1>
-        <h2>አገልግሎትዎን ይምረጡ</h2>
-        
-        <a href="#privacy-policy" class="button-link success-btn">በነፃ ለመጠቀም (Free)</a>
-        
-        <button class="premium-btn" onclick="alert('ክፍያ: ይህ አገልግሎት በቅርቡ ይጀምራል!');">
-            በክፍያ አማራጭ (Premium)
-        </button>
-    </div>
-
+    
     <div class="section" id="privacy-policy">
         <h2>የግላዊነት ፖሊሲ እና ጥብቅ የአጠቃቀም መመሪያ</h2>
         <div class="policy-text">
@@ -161,47 +145,3 @@
         </div>
         
         <a href="#dashboard" class="button-link main-btn">እስማማለሁ (Agree & Continue)</a>
-    </div>
-
-    <div class="section" id="dashboard">
-        <h1>ዋናው አገልግሎት (Dashboard)</h1>
-        <p>የሚፈልጉትን ይምረጡና ወደ ትክክለኛው ገጽ ይሂዱ።</p>
-        
-        <h2 style="margin-top: 30px;">የተለጠፉ መረጃዎችን ለመመልከት:</h2>
-        
-        <a href="#view-text" class="button-link success-btn">ፅሁፍ/መረጃ ተመልከት</a>
-        <a href="#view-image" class="button-link success-btn">ምስል/ፎቶ ተመልከት</a>
-        <a href="#view-audio" class="button-link success-btn">ኦዲዮ/ድምፅ ተመልከት</a>
-
-        <h2 style="margin-top: 30px;">አዲስ መረጃ ለመለጠፍ/ለማጋራት:</h2>
-
-        <a href="#post-text" class="button-link main-btn">ፅሁፍ ለመለጠፍ</a>
-        <a href="#post-image" class="button-link main-btn">ምስል ለመለጠፍ</a>
-        <a href="#post-audio" class="button-link main-btn">ኦዲዮ ለመለጠፍ</a>
-    </div>
-
-    <script>
-        // ገጹ ሲጫን (Load ሲያደርግ) የሚፈለገው ክፍል ብቻ እንዲታይ ያደርጋል
-        function updateView() {
-            const sections = ['home-view', 'signup-form', 'login-form', 'tier-selection', 'privacy-policy', 'dashboard'];
-            const hash = window.location.hash.substring(1) || 'home-view';
-            
-            sections.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.style.display = (id === hash) ? 'block' : 'none';
-                }
-            });
-
-            // ዳሽቦርዱ ላይ ያሉትን የይዘት መመልከቻ/መለጠፊያ ቁልፎች ሲጫኑ መልእክት ያሳያል
-            if (hash.startsWith('view-') || hash.startsWith('post-')) {
-                 alert("ይህ ገጽ ገና እየተገነባ ነው! (This page is under construction: " + hash + ")");
-                 // ወደ ዳሽቦርድ ይመልሳል
-                 window.location.hash = '#dashboard';
-            }
-        }
-        window.addEventListener('hashchange', updateView);
-        window.addEventListener('load', updateView);
-    </script>
-</body>
-</html>
