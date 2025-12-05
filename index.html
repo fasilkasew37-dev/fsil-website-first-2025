@@ -62,14 +62,22 @@
             color: #333;
         }
         .premium-btn:hover { background-color: #e0a800; }
+
+        .back-btn {
+            background-color: #6c757d; /* ግራጫ */
+            margin-top: 20px;
+        }
+        .back-btn:hover { background-color: #5a6268; }
+
         /* የማስገቢያ ሳጥኖች */
-        input[type="text"], input[type="email"], input[type="password"] {
+        input[type="text"], input[type="email"], input[type="password"], textarea {
             width: 95%;
             padding: 12px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 6px;
             box-sizing: border-box;
+            resize: vertical;
         }
         /* ፖሊሲ */
         .policy-text {
@@ -94,7 +102,7 @@
             margin-bottom: 10px;
         }
         /* ማሳያዎችን መደበቅ */
-        #signup-form, #login-form, #privacy-policy, #dashboard {
+        .section {
             display: none;
         }
     </style>
@@ -168,45 +176,130 @@
         <a href="#post-audio" class="button-link main-btn">ኦዲዮ ለመለጠፍ</a>
     </div>
 
+    <div class="section" id="post-text">
+        <h2>ጽሑፍ ወይም መልዕክት ለመለጠፍ</h2>
+        <p>አዲስ ጽሑፍዎን እዚህ ያስገቡ።</p>
+        <input type="text" placeholder="ርዕስ (Title)" required>
+        <textarea placeholder="መልዕክትዎን እዚህ ይጻፉ..." rows="8" required></textarea>
+        
+        <button class="success-btn" onclick="alert('ይህ መልዕክት አሁን በምስል መልክ ተቀምጧል! (ይህ ለጊዜው ነው)');">
+            መልዕክቱን ለጥፍ (Post)
+        </button>
+        <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="post-image">
+        <h2>ምስል/ፎቶ ለመለጠፍ</h2>
+        <p>እባክዎ የሚለጥፉትን ምስል ይምረጡ።</p>
+        <input type="file" accept="image/*" style="width: 100%; margin-bottom: 20px;">
+        <input type="text" placeholder="የምስሉ ርዕስ (Title)" required>
+        
+        <button class="success-btn" onclick="alert('ምስሉ ተልኳል! (ይህ ለጊዜው ነው)');">
+            ምስሉን ለጥፍ (Post)
+        </button>
+        <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="post-audio">
+        <h2>ኦዲዮ/ድምፅ ለመለጠፍ</h2>
+        <p>አጭር የድምጽ መልዕክት ወይም ፋይል ይምረጡ።</p>
+        <input type="file" accept="audio/*" style="width: 100%; margin-bottom: 20px;">
+        <input type="text" placeholder="የኦዲዮ ርዕስ (Title)" required>
+        
+        <button class="success-btn" onclick="alert('ኦዲዮው ተልኳል! (ይህ ለጊዜው ነው)');">
+            ኦዲዮውን ለጥፍ (Post)
+        </button>
+        <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-text">
+        <h2>የተለጠፉ ጽሑፎችን መመልከቻ</h2>
+        <p style="border: 1px solid #ccc; padding: 15px; text-align: left; background: #f9f9f9;">
+            **ምሳሌ መልዕክት 1:**
+            'የዛሬው የአየር ሁኔታ...' የሚል ርዕስ ያለው መልዕክት እዚህ ይመጣል። (ይህ ገና የዲዛይን ምሳሌ ነው)
+        </p>
+         <p style="border: 1px solid #ccc; padding: 15px; text-align: left; background: #f9f9f9;">
+            **ምሳሌ መልዕክት 2:**
+            'አዲስ የምግብ አዘገጃጀት...' የሚል ርዕስ ያለው መልዕክት እዚህ ይመጣል። 
+        </p>
+        <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="view-image">
+        <h2>የተለጠፉ ምስሎችን መመልከቻ</h2>
+        <p>የተለጠፉ ምስሎች/ፎቶዎች እዚህ ይታያሉ (ምሳሌ):</p>
+        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
+             
+
+[Image of Placeholder for Image Content]
+
+             <p>የምስል ርዕስ (Placeholder Image Title)</p>
+        </div>
+        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
+             
+             <p>ሌላ የምስል ርዕስ (Placeholder Image Title)</p>
+        </div>
+        <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-audio">
+        <h2>የተለጠፉ ኦዲዮዎችን መመልከቻ</h2>
+        <p>የተለጠፉ ኦዲዮዎች/ድምፆች እዚህ ይታያሉ (ምሳሌ):</p>
+        <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px;">
+            <p>ኦዲዮ ፋይል ስም 1 (Audio Title)</p>
+            <audio controls style="width: 100%;">
+                <source src="placeholder.mp3" type="audio/mp3">
+                የድምፅ ፋይል የለም።
+            </audio>
+        </div>
+        <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+
     <script>
         // Local Storageን በመጠቀም የምዝገባ መረጃን ማቆየት
         
         function getRegisteredUser() {
-            // መረጃውን ከኮምፒውተርዎ ላይ ያመጣል
             const user = localStorage.getItem('fasil_app_user');
             return user ? JSON.parse(user) : null;
         }
 
         function setRegisteredUser(phone, password) {
-            // መረጃውን በኮምፒውተርዎ ላይ ያስቀምጣል
             const user = { phone, password };
             localStorage.setItem('fasil_app_user', JSON.stringify(user));
         }
 
         // የገጽታ ቁጥጥር (View Controller)
         function updateView() {
-            const sections = ['home-view', 'signup-form', 'login-form', 'privacy-policy', 'dashboard'];
+            // ሁሉንም ሊሆኑ የሚችሉ ክፍሎች ይዘረዝራል
+            const sections = [
+                'home-view', 'signup-form', 'login-form', 'privacy-policy', 'dashboard',
+                'post-text', 'post-image', 'post-audio', 'view-text', 'view-image', 'view-audio'
+            ];
+            
             const hash = window.location.hash.substring(1) || 'home-view';
             
+            // የተመረጠውን ገጽ ብቻ ያሳያል
             sections.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.style.display = (id === hash) ? 'block' : 'none';
                 }
             });
-
-            // ዳሽቦርዱ ላይ ያሉትን ቁልፎች ሲጫኑ መልእክት ያሳያል
-            if (hash.startsWith('view-') || hash.startsWith('post-')) {
-                 alert("ይህ ገጽ ገና እየተገነባ ነው! (This page is under construction: " + hash + ")");
-                 // ወደ ዳሽቦርድ ይመልሳል
-                 window.location.hash = '#dashboard';
+            
+            // ገጹ ሲቀየር የመግቢያ ፎርሙን ዳግም ማስጀመር
+            if (hash === 'signup-form' || hash === 'login-form') {
+                document.getElementById('signup-phone').value = '';
+                document.getElementById('signup-email').value = '';
+                document.getElementById('signup-password').value = '';
+                document.getElementById('login-phone').value = '';
+                document.getElementById('login-password').value = '';
             }
         }
         
         // 1. ሳይን አፕ (Sign Up) - የምዝገባ አመክንዮ
         function handleSignUp() {
             if (getRegisteredUser()) {
-                // ከአሁን በፊት ተመዝግበዋል
                 alert("🔴 ከዚህ በፊት ተመዝግበዋል! እባክዎ ሎግ ኢን በመንካት ይግቡ።");
                 window.location.hash = '#login-form';
                 return;
@@ -217,12 +310,8 @@
             const password = document.getElementById('signup-password').value;
 
             if (phone && email && password.length === 6) {
-                // መረጃውን በ Local Storage ውስጥ ማስቀመጥ
                 setRegisteredUser(phone, password);
-
-                // ምዝገባ ተሳክቷል
                 alert("ምዝገባ ተሳክቷል! ኮንግራጄሽን!");
-                // ወደ ግላዊነት ፖሊሲው ይወስዳል
                 window.location.hash = '#privacy-policy'; 
             } else {
                 alert("እባክዎ ትክክለኛ መረጃ (ስልክ፣ ኢሜል እና ባለ 6 አሀዝ ፓስወርድ) ያስገቡ።");
@@ -236,24 +325,19 @@
             const registeredUser = getRegisteredUser();
 
             if (!registeredUser) {
-                // ገና አልተመዘገቡም
                 alert("🔴 መጀመሪያ መመዝገብ አለብዎት። እባክዎ ሳይን አፕ (Sign Up) ያድርጉ።");
                 window.location.hash = '#signup-form';
                 return;
             }
 
-            // ትክክለኛ የተመዘገበውን ፓስወርድ ማረጋገጥ
             if (phone === registeredUser.phone && password === registeredUser.password) {
-                // መግባት ተሳክቷል
                 alert("መግባት ተሳክቷል! ኮንግራጄሽን!");
-                // ወደ ግላዊነት ፖሊሲው ይወስዳል
                 window.location.hash = '#privacy-policy'; 
             } else {
                 alert("🔴 ስልክ ቁጥር ወይም የይለፍ ቃልዎ ትክክል አይደለም። እባክዎ ይፈትሹ።");
             }
         }
         
-        // ገጹ ሲጫን ወይም አድራሻው ሲቀየር ገጹን ለማሳየት
         window.addEventListener('hashchange', updateView);
         window.addEventListener('load', updateView);
     </script>
