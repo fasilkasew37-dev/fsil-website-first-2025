@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ፋሲል አፕ - Fasil App</title>
+    <style>
+        /* መሰረታዊ ዲዛይን */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .section {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #007bff;
+        }
+        h1 {
+            color: #007bff;
+            font-size: 26px;
+            margin-bottom: 25px;
+        }
+        h2 {
+            color: #555;
+            font-size: 20px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        /* ቁልፎች */
+        button, .button-link {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.3s;
+            margin-bottom: 15px;
+            text-align: center;
+            text-decoration: none;
+            line-height: 1;
+        }
+        .main-btn {
+            background-color: #007bff; /* ሰማያዊ */
+        }
+        .main-btn:hover { background-color: #0056b3; }
+        .success-btn {
+            background-color: #28a745; /* አረንጓዴ */
+        }
+        .success-btn:hover { background-color: #1e7e34; }
+        .danger-btn {
+            background-color: #dc3545; /* ቀይ */
+        }
+        .danger-btn:hover { background-color: #c82333; }
+        .premium-btn {
+            background-color: #ffc107; /* ቢጫ */
+            color: #333;
+        }
+        .premium-btn:hover { background-color: #e0a800; }
+        /* የማስገቢያ ሳጥኖች */
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 95%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        /* ፖሊሲ */
+        .policy-text {
+            height: 150px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        /* ማሳያዎችን መደበቅ */
+        #login-form, #signup-form, #tier-selection, #privacy-policy, #dashboard {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="section" id="home-view">
+        <h1>እንኳን ደህና መጣችሁ ወደ ፋሲል አፕ!</h1>
+        
+        <a href="#signup-form" class="button-link main-btn">መመዝገብ (Sign Up)</a>
+        
+        <a href="#login-form" class="button-link success-btn">መግባት (Log In)</a>
+    </div>
+
+    <div class="section" id="signup-form">
+        <h2>መመዝገቢያ (Sign Up)</h2>
+        <input type="text" placeholder="ስልክ ቁጥር (Required)" required>
+        <input type="email" placeholder="ኢሜል (Required)" required>
+        <input type="password" placeholder="የይለፍ ቃል (Password)" required>
+        
+        <a href="#tier-selection" class="button-link main-btn">ተመዝገብ (Sign Up)</a>
+    </div>
+
+    <div class="section" id="login-form">
+        <h2>መግቢያ (Log In)</h2>
+        <input type="text" placeholder="ስልክ ቁጥር (Required)" required>
+        <input type="password" placeholder="የይለፍ ቃል (Password)" required>
+        
+        <a href="#tier-selection" class="button-link success-btn">ግባ (Log In)</a>
+    </div>
+
+    <div class="section" id="tier-selection">
+        <h1>ኮንግራጄሽን! ተሳክቷል!</h1>
+        <h2>አገልግሎትዎን ይምረጡ</h2>
+        
+        <a href="#privacy-policy" class="button-link success-btn">በነፃ ለመጠቀም (Free)</a>
+        
+        <button class="premium-btn" onclick="alert('ክፍያ: ይህ አገልግሎት በቅርቡ ይጀምራል!');">
+            በክፍያ አማራጭ (Premium)
+        </button>
+    </div>
+
+    <div class="section" id="privacy-policy">
+        <h2>የግላዊነት ፖሊሲ</h2>
+        <div class="policy-text">
+            * እዚህ የእርስዎ የግላዊነት ፖሊሲ ጽሑፎች ይገባሉ:: *<br>
+            * የፖሊሲውን ውል በመስማማት ፋይሎችን ማጋራት ይጀምራሉ:: *<br>
+            * ይህ ፖሊሲ በቅርቡ ሙሉ በሙሉ ተዘጋጅቶ ይቀርባል:: *<br><br>
+            (ብዙ መስመሮች ኮድ በፈለጉት መጠን ሊጨመር ይችላል)
+        </div>
+        
+        <a href="#dashboard" class="button-link main-btn">እስማማለሁ (Agree & Continue)</a>
+    </div>
+
+    <div class="section" id="dashboard">
+        <h1>ዋናው አገልግሎት (Dashboard)</h1>
+        <h2>የተለጠፉ መረጃዎችን ለመመልከት:</h2>
+        
+        <button class="success-btn">ፅሁፍ/መረጃ ተመልከት</button>
+        <button class="success-btn">ምስል/ፎቶ ተመልከት</button>
+        <button class="success-btn">ኦዲዮ/ድምፅ ተመልከት</button>
+
+        <h2 style="margin-top: 30px;">አዲስ መረጃ ለመለጠፍ/ለማጋራት:</h2>
+
+        <button class="main-btn" onclick="alert('ፅሁፍ/መረጃ ለመለጠፍ ገጽ...');">ፅሁፍ ለመለጠፍ</button>
+        <button class="main-btn" onclick="alert('ምስል ለመለጠፍ ገጽ...');">ምስል ለመለጠፍ</button>
+        <button class="main-btn" onclick="alert('ኦዲዮ ለመለጠፍ ገጽ...');">ኦዲዮ ለመለጠፍ</button>
+    </div>
+
+    <script>
+        // ገጹ ሲጫን (Load ሲያደርግ) የሚፈለገው ክፍል ብቻ እንዲታይ ያደርጋል
+        function updateView() {
+            const sections = ['home-view', 'signup-form', 'login-form', 'tier-selection', 'privacy-policy', 'dashboard'];
+            const hash = window.location.hash.substring(1) || 'home-view';
+            
+            sections.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = (id === hash) ? 'block' : 'none';
+                }
+            });
+            // ከላይ ያለውን ጃቫስክሪፕት የምንጠቀመው ገጹ ወደ ትክክለኛው ክፍል እንዲዘል ለማድረግ ብቻ ነው (ለመግባትና ለመመዝገብ አይደለም)
+        }
+        window.addEventListener('hashchange', updateView);
+        window.addEventListener('load', updateView);
+    </script>
+</body>
+</html>
