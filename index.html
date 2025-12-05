@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="am">
 <head>
@@ -260,6 +261,7 @@
         <a href="#dashboard" class="button-link back-btn" onclick="updateView()">ወደ ዳሽቦርድ ተመለስ</a>
     </div>
 
+
     <script>
         let currentSubscription = 'free'; // የአሁኑን የምዝገባ አይነት ይይዛል (ለመመዝገብ ሲሄዱ)
         
@@ -281,6 +283,7 @@
 
         // የገጽታ ቁጥጥር (View Controller)
         function updateView(tier = null) {
+            // ሁሉንም ሊሆኑ የሚችሉ ክፍሎች ይዘረዝራል
             const sections = [
                 'home-view', 'signup-form', 'login-form', 'privacy-policy', 'dashboard',
                 'post-text', 'post-image', 'post-audio', 'view-text', 'view-image', 'view-audio'
@@ -372,9 +375,11 @@
             const content = document.getElementById('post-text-content').value;
             
             // የፖሊሲ ጥሰት ቃላት (Keyword Moderation)
-            const policyViolations = ['ፖለቲካ', 'ጥላቻ', 'ግጭት', 'ማበረታታት']; // እነዚህን ቃላት ይፈትሻል
+            // ፖለቲካዊ ቅስቀሳ፣ የሃይማኖት ግጭት፣ የጥላቻ ንግግር
+            const policyViolations = ['ፖለቲካ', 'ቅስቀሳ', 'ጥላቻ', 'ግጭት', 'ማጥቃት', 'ዘር']; 
             
-            const isViolating = policyViolations.some(word => content.includes(word) || title.includes(word));
+            const textToCheck = (title + " " + content).toLowerCase();
+            const isViolating = policyViolations.some(word => textToCheck.includes(word));
 
             if (isViolating) {
                 alert("❌ አልተለጠፈም! መልዕክትዎ ከጥብቅ ፖሊሲያችን ውጭ የሆኑ ቃላት ይዟል። እባክዎ ያስተካክሉ።");
@@ -382,7 +387,7 @@
                  alert("እባክዎ ርዕስ እና መልዕክት ይጻፉ።");
             } else {
                 // (እውነተኛው የመለጠፍ ስራ እዚህ ይከናወናል)
-                alert("✅ መልዕክትዎ ተለጥፏል! (ይህ ለጊዜው ነው። በዳታቤዝ ስንጀምር እውነተኛ ይሆናል)");
+                alert("✅ መልዕክትዎ ተለጥፏል! (ይህ ለጊዜው ነው።)");
                 document.getElementById('post-text-title').value = '';
                 document.getElementById('post-text-content').value = '';
             }
