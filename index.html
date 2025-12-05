@@ -58,15 +58,6 @@
             background-color: #28a745; /* አረንጓዴ */
         }
         .success-btn:hover { background-color: #1e7e34; }
-        .danger-btn {
-            background-color: #dc3545; /* ቀይ */
-        }
-        .danger-btn:hover { background-color: #c82333; }
-        .premium-btn {
-            background-color: #ffc107; /* ቢጫ */
-            color: #333;
-        }
-        .premium-btn:hover { background-color: #e0a800; }
         /* የማስገቢያ ሳጥኖች */
         input[type="text"], input[type="email"], input[type="password"] {
             width: 95%;
@@ -99,18 +90,21 @@
             margin-bottom: 10px;
         }
         /* ማሳያዎችን መደበቅ */
-        #login-form, #signup-form, #privacy-policy, #dashboard {
+        #signup-form, #login-form, #privacy-policy, #dashboard {
             display: none;
         }
     </style>
 </head>
 <body>
     <div class="section" id="home-view">
-        <h1>እንኳን ደህና መጣችሁ ወደ ፋሲል አፕ!</h1>
+        <h1>እንኳን ወደ ፋሲል አፕ በደህና መጡ!</h1>
+        <p>በነፃ ለመጠቀምና ለመጀመር ከታች ያሉትን አማራጮች ይጠቀሙ።</p>
+
+        <h2>አዲስ ከሆኑ:</h2>
+        <a href="#signup-form" class="button-link main-btn" onclick="updateView()">መመዝገብ (Sign Up)</a>
         
-        <a href="#signup-form" class="button-link main-btn">መመዝገብ (Sign Up)</a>
-        
-        <a href="#login-form" class="button-link success-btn">መግባት (Log In)</a>
+        <h2>ከአሁን በፊት የተመዘገቡ ከሆነ:</h2>
+        <a href="#login-form" class="button-link success-btn" onclick="updateView()">መግባት (Log In)</a>
     </div>
 
     <div class="section" id="signup-form">
@@ -145,3 +139,79 @@
         </div>
         
         <a href="#dashboard" class="button-link main-btn">እስማማለሁ (Agree & Continue)</a>
+    </div>
+
+    <div class="section" id="dashboard">
+        <h1>ዋናው አገልግሎት (Dashboard)</h1>
+        <p>የሚፈልጉትን ይምረጡና ወደ ትክክለኛው ገጽ ይሂዱ።</p>
+        
+        <h2 style="margin-top: 30px;">የተለጠፉ መረጃዎችን ለመመልከት:</h2>
+        
+        <a href="#view-text" class="button-link success-btn">ፅሁፍ/መረጃ ተመልከት</a>
+        <a href="#view-image" class="button-link success-btn">ምስል/ፎቶ ተመልከት</a>
+        <a href="#view-audio" class="button-link success-btn">ኦዲዮ/ድምፅ ተመልከት</a>
+
+        <h2 style="margin-top: 30px;">አዲስ መረጃ ለመለጠፍ/ለማጋራት:</h2>
+
+        <a href="#post-text" class="button-link main-btn">ፅሁፍ ለመለጠፍ</a>
+        <a href="#post-image" class="button-link main-btn">ምስል ለመለጠፍ</a>
+        <a href="#post-audio" class="button-link main-btn">ኦዲዮ ለመለጠፍ</a>
+    </div>
+
+    <script>
+        // የገጽታ ቁጥጥር (View Controller)
+        function updateView() {
+            const sections = ['home-view', 'signup-form', 'login-form', 'privacy-policy', 'dashboard'];
+            const hash = window.location.hash.substring(1) || 'home-view';
+            
+            sections.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = (id === hash) ? 'block' : 'none';
+                }
+            });
+
+            // ዳሽቦርዱ ላይ ያሉትን ቁልፎች ሲጫኑ መልእክት ያሳያል
+            if (hash.startsWith('view-') || hash.startsWith('post-')) {
+                 alert("ይህ ገጽ ገና እየተገነባ ነው! (This page is under construction: " + hash + ")");
+                 // ወደ ዳሽቦርድ ይመልሳል
+                 window.location.hash = '#dashboard';
+            }
+        }
+
+        // 1. ሳይን አፕ (Sign Up) - የምዝገባ ስኬት ወደ ፖሊሲው ይወስዳል
+        function handleSignUp() {
+            const phone = document.getElementById('signup-phone').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            if (phone && email && password.length === 6) {
+                // ምዝገባ ተሳክቷል
+                alert("ምዝገባ ተሳክቷል! ኮንግራጄሽን!");
+                // ወደ ግላዊነት ፖሊሲው ይወስዳል
+                window.location.hash = '#privacy-policy'; 
+            } else {
+                alert("እባክዎ ትክክለኛ መረጃ (ስልክ፣ ኢሜል እና ባለ 6 አሀዝ ፓስወርድ) ያስገቡ።");
+            }
+        }
+
+        // 2. ሎግ ኢን (Log In) - የመግባት ስኬት ወደ ፖሊሲው ይወስዳል
+        function handleLogin() {
+            const phone = document.getElementById('login-phone').value;
+            const password = document.getElementById('login-password').value;
+
+            if (phone && password) {
+                // መግባት ተሳክቷል
+                alert("መግባት ተሳክቷል! ኮንግራጄሽን!");
+                // ወደ ግላዊነት ፖሊሲው ይወስዳል
+                window.location.hash = '#privacy-policy'; 
+            } else {
+                alert("እባክዎ ስልክ እና ፓስወርድ ያስገቡ።");
+            }
+        }
+        
+        window.addEventListener('hashchange', updateView);
+        window.addEventListener('load', updateView);
+    </script>
+</body>
+</html>
