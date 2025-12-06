@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App</title>
+    <style>
+        /* መሰረታዊ ዲዛይን */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .section {
+            max-width: 550px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #007bff;
+            text-align: left;
+        }
+        h1 { color: #007bff; font-size: 28px; margin-bottom: 10px; text-align: center; }
+        h2 { color: #555; font-size: 20px; margin-top: 15px; margin-bottom: 20px; text-align: center; }
+        
+        .intro-text-box { background-color: #e6f7ff; border: 1px solid #007bff; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: left; }
+        .intro-text-box strong { color: #007bff; }
+        .intro-text-box h3 { color: #007bff; font-size: 22px; margin-top: 0; text-align: center; }
+        
+        /* ቁልፎች */
+        button, .button-link, .plan-btn, .payment-btn { display: block; width: 100%; padding: 15px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; color: white; transition: background-color 0.3s; margin-bottom: 15px; text-align: center; text-decoration: none; line-height: 1; }
+        .main-btn { background-color: #007bff; }
+        .main-btn:hover { background-color: #0056b3; }
+        
+        /* success-btn አሁን እንደ main-btn ሰማያዊ እንዲሆን ተደርጓል (ዋጋዎችን ለማመልከት) */
+        .success-btn { background-color: #007bff; }
+        .success-btn:hover { background-color: #0056b3; }
+        
+        .premium-btn { background-color: #ffc107; color: #333; }
+        .premium-btn:hover { background-color: #e0a800; }
+        .back-btn { background-color: #6c757d; margin-top: 20px; }
+        .back-btn:hover { background-color: #5a6268; }
+
+        /* የክፍያ ዘዴ ቁልፎች - ቀይ እና ደማቅ */
+        .payment-btn { background-color: #dc3545; color: white; }
+        .payment-btn:hover { background-color: #c82333; }
+
+        /* የማስገቢያ ሳጥኖች */
+        input[type="text"], input[type="email"], input[type="password"], textarea { width: 95%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; resize: vertical; }
+        .policy-text { height: 200px; overflow-y: scroll; border: 2px solid #dc3545; padding: 15px; text-align: left; font-size: 14px; background: #ffe3e6; margin-bottom: 20px; }
+        .section { display: none; }
+        
+        /* ለፕሪሚየም ዝርዝር ገጽ */
+        .premium-list-container {
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f7fbff;
+        }
+        .premium-list-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-bottom: 1px dotted #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+        }
+        .premium-list-item:last-child {
+            border-bottom: none;
+        }
+        .premium-list-item .feature-name {
+            font-weight: bold;
+            color: #333;
+            flex: 1;
+            text-align: left;
+        }
+        .premium-list-item .feature-benefit {
+            color: #007bff;
+            font-size: 14px;
+            flex: 1;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="section" id="home-view">
+        <h1>እንኳን ደህና መጡ ወደ ፋሲል ዌብ አፕ!</h1>
+        <div class="intro-text-box">
+            <h3>🌐 ስለ ፋሲል ዌብ አፕ</h3>
+            <p><strong>ፋሲል ዌብ አፕ</strong> በፍጥነት፣ በጥራት እና በከፍተኛ ተዓማኒነት እንዲሰሩ የተቀየሰ የዲጂታል መረጃ መጋሪያ መድረክ ነው።</p>
+            <p><strong>የአገልግሎት ጥራት:</strong></p>
+            <ul>
+                <li>✅ **የነፃ አማራጭ (Free):** መሰረታዊ የጽሑፍ፣ የምስል እና ኦዲዮ ማጋራት አገልግሎቶችን በጥራት ቀንሶ ያቀርባል።</li>
+                <li>⭐ **የክፍያ አማራጭ (Premium):** ሁሉንም አገልግሎቶች በ**ከፍተኛ ጥራት**፣ **ፈጣን ፍጥነት** እና በ**AI-የታገዙ** ተጨማሪ አገልግሎቶች ያገኛሉ።</li>
+            </ul>
+            <p><strong>ህጋዊነት እና ደህንነት:</strong> አገልግሎታችን በኢትዮጵያ ህግጋት የተመዘገበ ሲሆን፣ የግል መረጃዎን ደህንነት በከፍተኛ ደረጃ ይጠብቃል። ቋንቋችን አማርኛ ነው።</p>
+        </div>
+        
+        <h2 style="text-align: center;">የሚፈልጉትን የአገልግሎት አይነት በመምረጥ ይጀምሩ:</h2>
+        
+        <a href="#signup-form" class="button-link main-btn" onclick="updateView('free')">መመዝገብ/መግባት (ነፃ)</a>
+        <a href="#pricing" class="button-link premium-btn">በክፍያ አማራጭ (Premium)</a>
+    </div>
+
+    <div class="section" id="signup-form">
+        <h2 id="signup-title">መመዝገቢያ (Sign Up - ነፃ)</h2>
+        <input type="text" id="signup-phone" placeholder="ስልክ ቁጥር (Required)" required>
+        <input type="email" id="signup-email" placeholder="ኢሜል (Required)" required>
+        <input type="password" id="signup-password" placeholder="የይለፍ ቃል (6 አሀዝ Password)" required maxlength="6">
+        
+        <button class="main-btn" onclick="handleSignUp()">ተመዝገብ (Sign Up)</button>
+        
+        <p style="text-align: center; margin-top: 20px;"><a href="#login-form" onclick="updateView()">ከዚህ በፊት ተመዝግበዋል? ይግቡ (Log In)</a></p>
+    </div>
+
+    <div class="section" id="login-form">
+        <h2>መግቢያ (Log In)</h2>
+        <input type="text" id="login-phone" placeholder="ስልክ ቁጥር (Required)" required>
+        <input type="password" id="login-password" placeholder="የይለፍ ቃል (Password)" required>
+        
+        <button class="success-btn" onclick="handleLogin()">ግባ (Log In)</button>
+        
+        <p style="text-align: center; margin-top: 20px;"><a href="#signup-form" onclick="updateView('free')">አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)</a></p>
+    </div>
+
+    <div class="section" id="pricing">
+        <h2>የክፍያ አማራጮች (Premium Plans)</h2>
+        <p style="text-align: center;">ከሚከተሉት አማራጮች አንዱን በመምረጥ ወደ ክፍያ ይቀጥሉ።</p>
+
+        <div class="plan-card" onclick="selectPlan('daily')"><h3>ዕለታዊ (Daily)</h3><p>5 ብር (ETB)</p><button class="plan-btn success-btn" style="padding: 10px;">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('weekly')"><h3>ሳምንታዊ (Weekly)</h3><p>25 ብር (ETB)</p><button class="plan-btn success-btn" style="padding: 10px;">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('monthly')"><h3>ወርሃዊ (Monthly)</h3><p>30 ብር (ETB)</p><button class="plan-btn success-btn" style="padding: 10px;">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('yearly')"><h3>ዓመታዊ (Yearly)</h3><p>100 ብር (ETB)</p><button class="plan-btn success-btn" style="padding: 10px;">ይህን ምረጥ</button></div>
+        
+        <a href="#premium-services" class="button-link premium-btn" style="margin-top: 20px;">⭐️ በክፍያ አገልግሎታችን ያሉትን ይመልከቱ / ይጎብኙን</a>
+        
+        <a href="#home-view" class="button-link back-btn">ወደ መነሻ ተመለስ</a>
+    </div>
+
+    <div class="section" id="payment-methods">
+        <h2>ክፍያ ይፈፅሙ (Payment)</h2>
+        <p id="selected-plan-info" style="font-weight: bold; color: #dc3545; text-align: center;"></p>
+        
+        <p style="color: #007bff; font-weight: bold; margin-bottom: 20px; text-align: center;">
+            ⚠️ ለጊዜው የመክፈያ መቀበያ ስርዓት አልተጨመረም።
+            አማራጮችን ብቻ በመምረጥ ቀጥሉ::
+        </p>
+
+        <button class="payment-btn" onclick="processPayment('telebirr')">ቴሌብር (Telebirr) ተጠቀም</button>
+        <button class="payment-btn" onclick="processPayment('paypal')">ፔይፓል (PayPal) ተጠቀም</button>
+        <button class="payment-btn" onclick="processPayment('cbe')">CBE የባንክ ዝውውር ተጠቀም</button>
+
+        <a href="#pricing" class="button-link back-btn">ወደ ፕላኖች ተመለስ</a>
+    </div>
+
+    <div class="section" id="premium-services">
+        <h2> እንኳን ወደ ክፍያ አገልግሎት መመልከቻ በደህና መጡ!</h2>
+        
+        <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 6px; margin-bottom: 20px; text-align: center; color: #856404;">
+            **⚠️ ማስጠንቀቂያ:** ይህ የክፍያ አገልግሎት ዝርዝር ነው። ለመጠቀም መጀመሪያ <a href="#pricing">ክፍያ ይክፈሉ።</a> መክፈል ካልቻሉ ወደ <a href="#dashboard">ነፃ አገልግሎት ይጎብኙ።</a>
+        </div>
+
+        <p style="text-align: center; font-weight: bold; color: #007bff;">በክፍያ (Premium) የሚያገኟቸው ዋና ዋና አገልግሎቶች ዝርዝር:</p>
+
+        <div class="premium-list-container">
+            <div class="premium-list-item">
+                <span class="feature-name">ዜና (በAI የታገዘ)</span>
+                <span class="feature-benefit">ከፍተኛ ጥራት/ቪዲዮ/ጽሑፍ</span>
+            </div>
