@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ትልቁ ፖርታል - የደንበኞች አስተዳደር ስርዓት (Big Portal - CMS)</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ------------------------------------- */
+        /* አጠቃላይ ስታይል (General Styling) */
+        /* ------------------------------------- */
+        body {
+            font-family: 'Noto Sans Ethiopic', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 25px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            text-align: left;
+            margin-bottom: 25px;
+            font-size: 26px;
+            border-bottom: 4px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+
+        /* ------------------------------------- */
+        /* ማሻሻያ 2: የምዝገባ ሳጥን ንድፍ (Registration Box Design) */
+        /* ------------------------------------- */
+        .registration-card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            
+            /* የጠባብ ሳጥን ስታይል */
+            width: 100%;
+            max-width: 450px; /* ጠባብ ለማድረግ */
+            margin: 0 auto;
+            padding: 25px;
+            
+            /* የሚያምር ቀይ ሳጥን ስታይል */
+            border: 5px solid #e74c3c; /* ቀይ ድንበር */
+            background-color: #fffafa; /* ትንሽ ቀይ ቀለም ያለው የጀርባ ቀለም */
+            border-radius: 18px;
+            box-shadow: 0 0 25px rgba(231, 76, 60, 0.6);
+            text-align: center;
+        }
+
+        .icon-list {
+            display: flex;
+            justify-content: space-around;
+            width: 90%;
+            margin: 20px 0;
+        }
+
+        .icon-list div {
+            font-size: 35px;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            background-color: #f9f9f9;
+        }
+
+        .phone-input {
+            width: calc(100% - 24px);
+            padding: 15px;
+            margin: 20px 0;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 18px;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: #27ae60;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* ------------------------------------- */
+        /* ማሻሻያ 3: የአገልግሎት ምርጫ አዝራሮች (Service Selection Buttons) */
+        /* ------------------------------------- */
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .service-button {
+            padding: 25px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 2. የአገር ውስጥ */
+        .domestic-btn {
+            background-color: #3498db; /* ሰማያዊ */
+        }
+
+        /* 3. የክፍያ ማረጋገጫ */
+        .verification-btn {
+            background-color: #f1c40f; /* ቢጫ */
+            color: #333;
+        }
+
+        /* 4. የክፍያ ስረዛ */
+        .cancellation-btn {
+            background-color: #e74c3c; /* ቀይ */
+        }
+
+        /* ------------------------------------- */
+        /* የድሮው ኮድ ሰፋ ያሉ ክፍሎች (10042 መስመሮችን ለመወከል) */
+        /* ------------------------------------- */
+        .data-table, .form-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fcfcfc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #eee;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* ተጨማሪ ስታይል ለብዙ ገጽታዎች */
+        .user-profile {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .sidebar {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .main-content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>አጠቃላይ የደንበኞች አስተዳደር ዳሽቦርድ</h1>
+    </header>
+
+    <div class="main-container">
+    
+        <section class="card">
+            <h2 class="section-title">⭐ የምዝገባ/መግቢያ እና የሂሳብ መቆጣጠሪያ</h2>
+            
+            <div class="registration-card-content">
+                <h3>ስልክ ቁጥር ያስገቡ</h3>
+                <p>ለመጀመርያ ጊዜ ከሆኑ ይመዝገቡ፤ ከተመዘገቡ ሎግ-ኢን ለማድረግ ብቻ ይሞክሩ።</p>
+
+                <div class="icon-list">
+                    <div>📝</div> 
+                    <div>🎙️</div> 
+                    <div>💼</div>
+                </div>
+                
+                <input type="text" id="phone_number" class="phone-input" placeholder="ስልክ ቁጥር (ለምሳሌ 09XXXXXXXX)">
+                
+                <div id="registration_message" class="message" style="display: none;"></div>
+                
+                <button class="action-button" onclick="checkRegistration()">ወደ ሚቀጥለው ደረጃ</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">💡 የአገልግሎት ምርጫዎች</h2>
+            
+            <p style="text-align: center; color: #555;">የሚፈልጉትን አገልግሎት አይነት ከታች ይምረጡ።</p>
+
+            <div class="service-grid">
+                <button class="service-button domestic-btn">
+                    👀 የሀገር ውስጥ አገልግሎት (በብር/ETB) ይግዙ
+                </button>
+                
+                <button class="service-button verification-btn">
+                    ✅ የክፍያ ማረጋገጫ ይጠይቁ
+                </button>
+                
+                <button class="service-button cancellation-btn">
+                    ⭐️ የክፍያ ስረዛ / ስህተት ያስተካክሉ
+                </button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">📊 የደንበኞች የዳታቤዝ ዝርዝር (10042 መስመሮችን ለመወከል)</h2>
+
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>መለያ ቁጥር</th>
+                            <th>ሙሉ ስም</th>
+                            <th>የስልክ ቁጥር</th>
+                            <th>የምዝገባ ቀን</th>
+                            <th>የአገልግሎት አይነት</th>
+                            <th>ሁኔታ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1001</td><td>አበበ በለጠ</td><td>0911XXXXXX</td><td>2024-01-15</td><td>ሆስቲንግ</td><td>ገባሪ</td></tr>
+                        <tr><td>1002</td><td>chala gudisa</td><td>0920XXXXXX</td><td>2024-01-18</td><td>ዶሜይን</td><td>ገባሪ</td></tr>
+                        <tr><td>1003</td><td>ፋሲካ ታደሰ</td><td>0933XXXXXX</td><td>2024-02-01</td><td>ቨርቹዋል ሰርቨር</td><td>ገባሪ</td></tr>
+                        <tr><td>1004</td><td>ቶማስ ከበደ</td><td>0944XXXXXX</td><td>2024-02-10</td><td>ኢሜይል አገልግሎት</td><td>ገባሪ</td></tr>
+                        <tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+                        <tr><td>5020</td><td>ሳራ ሀብቴ</td><td>0988XXXXXX</td><td>2025-05-20</td><td>ሆስቲንግ</td><td>ገባሪ</td></tr>
+                        <tr><td>5021</td><td>ገብረሚካኤል ሙሉ</td><td>0991XXXXXX</td><td>2025-06-01</td><td>ዶሜይን</td><td>ገባሪ</td></tr>
+                        <tr><td>9999</td><td>ያሬድ ነጋ</td><td>0901XXXXXX</td><td>2025-11-01</td><td>VPN</td><td>ገባሪ</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">📝 አዲስ የአገልግሎት ቅጽ</h2>
+            <div class="form-section">
+                <form>
+                    <div class="form-group">
+                        <label for="full_name">ሙሉ ስም:</label>
+                        <input type="text" id="full_name" name="full_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="service_type">የአገልግሎት አይነት:</label>
+                        <select id="service_type" name="service_type" required>
+                            <option value="">ይምረጡ</option>
+                            <option value="hosting">ሆስቲንግ</option>
+                            <option value="domain">ዶሜይን ምዝገባ</option>
+                            <option value="server">ቪፒኤስ ሰርቨር</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">የጥያቄ ዝርዝር:</label>
+                        <textarea id="description" name="description" rows="5"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">ጥያቄ አስገባ</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="section-title">👤 የተጠቃሚ መገለጫ ዝርዝሮች</h2>
+            <div class="user-profile">
+                <div class="sidebar">
+                    <h4>ዋና መረጃ</h4>
+                    <p><strong>ስም:</strong> የናሙና ተጠቃሚ</p>
+                    <p><strong>ኢሜይል:</strong> user@example.com</p>
+                    <p><strong>አባልነት:</strong> ፕሪሚየም</p>
+                </div>
+                <div class="main-content">
+                    <h4>የአገልግሎት ታሪክ</h4>
+                    <ul>
+                        <li>ሆስቲንግ (2024) - ንቁ</li>
+                        <li>ዶሜይን (.com) - ንቁ</li>
+                        <li>የክፍያ ታሪክ - 5 ግብይቶች</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </div> <footer style="width: 100%; text-align: center; padding: 30px; color: #777; font-size: 14px; margin-top: 50px; border-top: 1px solid #ccc; background-color: #fff;">
+        <p>&copy; 2025 ትልቅ የአገልግሎት ፖርታል. ሁሉም መብቶች የተጠበቁ ናቸው።</p>
+    </footer>
+    
+    <script>
+        // -------------------------------------
+        // ማሻሻያ 1: የስልክ ቁጥር መደጋገም መከልከል አመክንዮ
+        // -------------------------------------
+
+        // የተመዘገቡ ስልኮች የሙከራ ዝርዝር (በእውነተኛ አፕሊኬሽን ውስጥ ይህ በBackend ይጣራል)
+        const registered_phones_db = ["0911223344", "0920001122", "0988776655", "0940404040"];
+
+        function checkRegistration() {
+            const phoneNumber = document.getElementById('phone_number').value.trim();
+            const messageElement = document.getElementById('registration_message');
+            
+            // መልዕክቱን መጀመሪያ ያጥፉ
+            messageElement.style.display = 'none';
+            messageElement.textContent = '';
+            messageElement.className = 'message';
+
+            if (!phoneNumber || phoneNumber.length < 9) {
+                messageElement.textContent = "❌ እባክዎ ትክክለኛ ስልክ ቁጥር ያስገቡ።";
+                messageElement.classList.add('error');
+                messageElement.style.display = 'block';
+                return;
+            }
+
+            // 1. የተመዘገበ መሆኑን ማረጋገጥ (ማሻሻያ)
+            if (registered_phones_db.includes(phoneNumber)) {
+                // የተመዘገበ ከሆነ ድጋሚ ምዝገባ መከልከል
+                messageElement.textContent = "❌ **ይህ ስልክ ቁጥር ከአሁን በፊት ተመዝግቧል!** እባክዎ ወደ **ሎግ ኢን** ገፅ ይሂዱ።";
+                messageElement.classList.add('error');
+                messageElement.style.display = 'block';
+                // እውነተኛ ኮድ እዚህ ላይ ተጠቃሚውን ወደ ሎግ-ኢን ገፅ ይመራል
+                
+            } else {
+                // ለመጀመሪያ ጊዜ ምዝገባ መፍቀድ
+                messageElement.textContent = "✅ **አዲስ ተጠቃሚ!** የምዝገባ ሂደቱን ይቀጥሉ።";
+                messageElement.classList.add('success');
+                messageElement.style.display = 'block';
+                // እዚህ ላይ የምዝገባው ቀጣይ ሂደት ኮድ ይገባል
+            }
+        }
+    </script>
+</body>
+</html>
