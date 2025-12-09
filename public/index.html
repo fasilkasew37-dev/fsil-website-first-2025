@@ -1,0 +1,596 @@
+import Head from 'next/head';
+import React, { useState, useEffect } from 'react';
+
+// =========================================================================================
+// ይህ ኮድ ከእርስዎ index.html ተወስዶ ወደ Next.js JSX የተለወጠ ነው።
+// የፅሁፍ መለጠፍ (handlePostText) እና የማምጣት (fetchPosts) ተግባራት ተስተካክለዋል።
+// =========================================================================================
+
+export default function Home() {
+    // ፅሁፎችን እና Viewsን ለመቆጣጠር የሚያገለግሉ States
+    const [currentView, setCurrentView] = useState('home-view'); 
+    const [posts, setPosts] = useState([]);
+    const [newPostTitle, setNewPostTitle] = useState('');
+    const [newPostContent, setNewPostContent] = useState('');
+    const [statusMessage, setStatusMessage] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // ለመግቢያ ሁኔታ
+
+    // Dummy Data እና Utility Functions
+    const PLANS = {
+        'daily': { name: 'ዕለታዊ', price: '5 ብር' },
+        'weekly': { name: 'ሳምንታዊ', price: '25 ብር' },
+        'monthly': { name: 'ወርሃዊ', price: '30 ብር' },
+        'yearly': { name: 'ዓመታዊ', price: '100 ብር' }
+    };
+    let currentSubscription = 'free'; // ለሙከራ ነፃ ተብሎ ተቀምጧል
+    let selectedPlan = null;
+
+    // --- የረዳት ተግባራት (Utility Functions) ---
+    const showLoading = (message) => {
+        document.getElementById('loading-message').textContent = message;
+        document.getElementById('loading-overlay').style.display = 'flex';
+    };
+
+    const hideLoading = () => {
+        document.getElementById('loading-overlay').style.display = 'none';
+    };
+
+    const updateView = (viewId) => {
+        setCurrentView(viewId || 'home-view');
+        window.scrollTo(0, 0); // ወደ ላይ ለመመለስ
+    };
+
+    // --- የAPI እና ዳታቤዝ ተግባራት ---
+
+    const fetchPosts = async () => {
+        // setStatusMessage('ፅሁፎችን እያመጣ ነው...');
+        try {
+            const response = await fetch('/api/get-posts');
+            if (response.ok) {
+                const data = await response.json();
+                setPosts(data.posts);
+                // setStatusMessage('✅ ፅሁፎች በተሳካ ሁኔታ መጥተዋል።');
+            } else {
+                console.error("Failed to fetch posts");
+                // የዳታቤዝ ስህተት ከሆነ የሚመጣ የሙከራ መልዕክት
+                setPosts([{ id: 999, content: "❌ የBackend (API/DB) ችግር ስላለ የሙከራ ፅሁፍ ይታያል::", title: "API ስህተት", created_at: new Date().toLocaleTimeString() }]);
+            }
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+             // የNetwork ስህተት ከሆነ የሚመጣ የሙከራ መልዕክት
+            setPosts([{ id: 999, content: "❌ Network/CORS ስህተት ወይም API የለም::", title: "Network ስህተት", created_at: new Date().toLocaleTimeString() }]);
+        }
+    };
+
+    // 💡 የተስተካከለው የPOST ተግባር
+    const handlePostText = async () => {
+        if (!newPostContent.trim()) {
+            setStatusMessage("🔴 እባክዎ መልዕክትዎን ይጻፉ!");
+            return;
+        }
+
+        showLoading('መልዕክቱን እያስቀመጠ ነው...');
+        try {
+            // የእርስዎ API የሚጠብቀውን postContent እንልካለን
+            const response = await fetch('/api/post', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postContent: newPostContent.trim() }), 
+            });
+
+            if (response.ok) {
+                setStatusMessage('✅ ፅሁፉ በተሳካ ሁኔታ ተለጥፏል።');
+                setNewPostContent('');
+                setNewPostTitle('');
+                fetchPosts(); // አዲሱን ፅሁፍ ለማምጣት
+                updateView('view-text'); // ወደ መመልከቻ ገጽ ይሂድ
+            } else {
+                const errorData = await response.json();
+                setStatusMessage(`❌ ስህተት ተፈጠረ: ${errorData.error || 'ያልታወቀ ስህተት'}`);
+            }
+        } catch (error) {
+            setStatusMessage(`❌ አጠቃላይ Network ስህተት: ${error.message}`);
+        } finally {
+            hideLoading();
+        }
+    };
+
+
+    // --- ሌሎች የ HTML JavaScript ተግባራት (Dummy) ---
+
+    // ለምዝገባ እና መግቢያ Dummy ተግባራት
+    const handleSignUp = () => {
+        const phone = document.getElementById('signup-phone').value.trim();
+        const password = document.getElementById('signup-password').value.trim();
+        if (phone && password.length === 6) {
+            alert(`✅ ምዝገባዎ ተጠናቋል። እንኳን ደህና መጡ!`);
+            setIsLoggedIn(true);
+            updateView('privacy-policy');
+        } else {
+            alert("🔴 እባክዎ ሁሉንም መስኮች በትክክል ይሙሉ (የይለፍ ቃል 6 አሃዝ መሆን አለበት)።");
+        }
+    };
+
+    const handleLogin = () => {
+        const phone = document.getElementById('login-phone').value.trim();
+        const password = document.getElementById('login-password').value.trim();
+        if (phone && password) {
+             // 🛑 እውነተኛ መግቢያ እስኪሰራ ድረስ
+            alert(`✅ በስኬት ገብተዋል።`);
+            setIsLoggedIn(true);
+            updateView('dashboard');
+        } else {
+            alert("🔴 እባክዎ የስልክ ቁጥር እና የይለፍ ቃል ያስገቡ።");
+        }
+    };
+
+    // የፖሊሲ ስምምነት
+    const handleAgreePolicy = () => {
+        updateView('dashboard');
+    };
+
+    const checkPremiumAccess = (targetView) => {
+        if (currentSubscription === 'free') {
+            alert("🔒 ይቅርታ! ይህ የPremium አገልግሎት ነው። እባክዎ ክፍያ ይክፈሉ።");
+            updateView('pricing');
+        } else {
+            updateView(targetView);
+        }
+    };
+
+    // የPlan ምርጫ
+    const selectPlan = (plan) => {
+        selectedPlan = plan;
+        document.getElementById('selected-plan-info').textContent = `የመረጡት: ${PLANS[plan].name} - ${PLANS[plan].price}`;
+        updateView('payment-methods');
+    };
+
+    // ክፍያ
+    const processPayment = (method) => {
+        showLoading(`ክፍያ በ${method} እየተፈፀመ ነው...`);
+        setTimeout(() => {
+            hideLoading();
+            alert(`✅ ክፍያ በ${method} ተፈጽሟል። አሁን የPremium ተጠቃሚ ነዎት!`);
+            // setRegisteredUser(getCurrentUserPhone(), null, 'premium'); // ወደ እውነተኛ ተግባር ስንገባ
+            currentSubscription = 'premium'; // ለሙከራ
+            updateView('dashboard');
+        }, 2000);
+    };
+
+
+    // 🛑 ገጹ ለመጀመሪያ ጊዜ ሲጫን
+    useEffect(() => {
+        // የዳታቤዝ ግንኙነትን ለመሞከር
+        fetchPosts();
+
+        // በURL hash መሰረት ገጾችን ማሳየት
+        const handleHashChange = () => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                setCurrentView(hash);
+            } else {
+                setCurrentView('home-view');
+            }
+        };
+
+        handleHashChange(); // በሎድ ሲደረግ
+        window.addEventListener('hashchange', handleHashChange); // hash ሲቀየር
+
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
+    // ፅሁፎችን ለመመልከት የሚያገለግል Component
+    const TextPostsView = () => (
+        <div className="post-content-container">
+            {posts.length > 0 ? (
+                posts.map(post => (
+                    <div key={post.id} className="post-item">
+                        {/* የTitle መስክ ስላልነበረ እኛ ጨምረነዋል */}
+                        <h4 className="post-title">{post.title || "ርዕስ የለም"}</h4> 
+                        <p>{post.content}</p>
+                        <small className="post-date">{post.created_at || 'ዛሬ'}</small>
+                    </div>
+                ))
+            ) : (
+                <p className="no-content">ምንም የተለጠፈ ፅሁፍ የለም።</p>
+            )}
+             <a href="#" className="button-link back-btn delete-btn" onClick={() => updateView('dashboard')}>ወደ ዳሽቦርድ ተመለስ</a>
+        </div>
+    );
+    
+    // 4. 🖼️ የገጹ ገጽታ (UI/JSX)
+    return (
+        <>
+            <Head>
+                <title>ፋሲል ዌብ አፕ - Fasil Web App</title>
+            </Head>
+
+            {/* Loading Overlay */}
+            <div className="loading-overlay" id="loading-overlay">
+                <div className="spinner"></div>
+                <p id="loading-message">... እየተጫነ ነው (Loading) ...</p>
+            </div>
+
+            {/* 🛑 ሁሉም Views እዚህ ውስጥ ናቸው። የሚታየው በ currentView State ይወሰናል */}
+            <div id="views-container">
+                {/* 1. HOME VIEW */}
+                <div className="section" id="home-view" style={{ display: currentView === 'home-view' ? 'block' : 'none' }}>
+                    <h1>እንኳን ደህና መጡ ወደ ፋሲል ዌብ አፕ!</h1>
+                    {/* ... የተቀረው intro-text-box ይዘት ... */}
+                    <div className="intro-text-box">
+                        <h3>🌐 ስለ ፋሲል ዌብ አፕ</h3>
+                        <p><strong>ፋሲል ዌብ አፕ</strong> በከፍተኛ ጥራት እና ፍጥነት የሚሰራ የዲጂታል መጋሪያ መድረክ ነው።</p>
+                        <p><strong>ፋሲል አፕ</strong> ትክክለኛ መረጃዎችን፣ ፋይሎችን (ጽሑፍ፣ ኦዲዮ፣ ምስል፣ **PowerPoint**፣ PDF) በክፍያም በነጻም አማራጭ ያቀርባል። በተጨማሪም ገንዘብዎን ከዋጋ መናር ለመጠበቅ የ**ዲጂታል ምንዛሬ** ግብይት እና **ዓለም አቀፍ ግዥዎችን** ለመፈፀም ያስችላል።</p>
+
+                        <p><strong>የአገልግሎት ጥራት:</strong></p>
+                        <ul>
+                            <li>✅ **ነፃ:** መሰረታዊ የፋይል ማጋራት አገልግሎቶችን በጥራት ቀንሶ ያቀርባል።</li>
+                            <li>⭐ **ክፍያ (Premium):** ሁሉንም አገልግሎቶች በ**ከፍተኛ ጥራት**፣ **ፈጣን ፍጥነት** እና የ**ዓለም አቀፍ ግዥ** አገልግሎት ያገኛሉ።</li>
+                        </ul>
+                    </div>
+        
+                    <h2 style={{ textAlign: 'center' }}>የሚፈልጉትን የአገልግሎት አይነት በመምረጥ ይጀምሩ:</h2>
+        
+                    <button className="button-link main-btn" onClick={() => updateView('signup-form')}>መመዝገብ/መግባት (ነፃ)</button>
+                    <button className="button-link premium-btn" style={{ backgroundColor: '#ffc107', color: '#333' }} onClick={() => updateView('pricing')}>በክፍያ አማራጭ (Premium)</button>
+                </div>
+
+                {/* 2. SIGN UP FORM */}
+                <div className="section" id="signup-form" style={{ display: currentView === 'signup-form' ? 'block' : 'none' }}>
+                    <h2 id="signup-title">መመዝገቢያ (Sign Up - ነፃ)</h2>
+                    <input type="text" id="signup-phone" placeholder="ስልክ ቁጥር (Required)" required />
+                    <input type="email" id="signup-email" placeholder="ኢሜል (Required)" required />
+                    <input type="password" id="signup-password" placeholder="የይለፍ ቃል (6 አሀዝ Password)" required maxLength="6" />
+                    
+                    <button className="main-btn" onClick={handleSignUp}>ተመዝገብ (Sign Up)</button>
+                    
+                    <p style={{ textAlign: 'center', marginTop: '20px' }}><a href="#" onClick={() => updateView('login-form')}>ከዚህ በፊት ተመዝግበዋል? ይግቡ (Log In)</a></p>
+                </div>
+
+                {/* 3. LOGIN FORM */}
+                <div className="section" id="login-form" style={{ display: currentView === 'login-form' ? 'block' : 'none' }}>
+                    <h2>መግቢያ (Log In)</h2>
+                    <input type="text" id="login-phone" placeholder="ስልክ ቁጥር (Required)" required />
+                    <input type="password" id="login-password" placeholder="የይለፍ ቃል (Password)" required />
+                    
+                    <button className="success-btn" onClick={handleLogin}>ግባ (Log In)</button>
+                    
+                    <p style={{ textAlign: 'center', marginTop: '20px' }}><a href="#" onClick={() => updateView('signup-form')}>አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)</a></p>
+                </div>
+
+                {/* 4. PRIVACY POLICY */}
+                 <div className="section" id="privacy-policy" style={{ display: currentView === 'privacy-policy' ? 'block' : 'none' }}>
+                     <h2>የግላዊነት ፖሊሲ እና ጥብቅ የአጠቃቀም መመሪያ</h2>
+                     <div className="policy-text">
+                        {/* ... የእርስዎ የፖሊሲ ይዘት ... */}
+                        <h3>🔴 ጥብቅ የአጠቃቀም መመሪያ (Mandatory Use Policy)</h3>
+                        <p>የፋሲል አፕን በመጠቀምዎ የሚከተሉትን ህጎች ያለ ምንም ቅድመ ሁኔታ ተስማምተዋል፡</p>
+                        <ul>
+                            <li><strong>የፖለቲካ ትችት/ቅስቀሳ የተከለከለ ነው፡</strong> በመድረኩ ላይ ማንኛውንም አይነት የፖለቲካ ጥላቻ፣ ቅስቀሳ ወይም የሃይማኖት ግጭት ማሰራጨት በጥብቅ የተከለከለ ነው።</li>
+                            <li><strong>ሃሰተኛ መረጃ ማሰራጨት የተከለከለ ነው፡</strong> መረጃው ትክክለኛ መሆኑ ሳይረጋገጥ ማስለጥ የተከለከለ ነው።</li>
+                            <li><strong>የጥቃት ወይም የጥላቻ ንግግር የተከለከለ ነው፡</strong> ሰዎችን ወይም ቡድኖችን የሚያጠቁ ይዘቶችን መለጠፍ አይፈቀድም።</li>
+                            <li><strong>እድሜ ገደብ፡</strong> አገልግሎቱን ለመጠቀም ቢያንስ 18 ዓመት መሙላት ግዴታ ነው።</li>
+                        </ul>
+            
+                        <p style={{ marginTop: '15px', fontWeight: 'bold', color: '#007bff' }}>በማንኛውም ጊዜ ይህንን ፖሊሲ ጥሰው ከተገኙ፣ አካውንትዎ ያለ ማስጠንቀቂያ ሊዘጋ ይችላል።</p>
+                     </div>
+                     <button className="main-btn" onClick={handleAgreePolicy}>እስማማለሁ (Agree & Continue)</button>
+                     <button className="button-link delete-btn" onClick={() => updateView('policy-disagree')}>❌ አልስማማም/ይቅርብኝ (Disagree/Exit)</button>
+                 </div>
+
+                {/* 5. POLICY DISAGREE */}
+                <div className="section" id="policy-disagree" style={{ display: currentView === 'policy-disagree' ? 'block' : 'none' }}>
+                    <h2 style={{ color: '#dc3545' }}>⚠️ ማስጠንቀቂያ: የአገልግሎት ውል</h2>
+                    <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold', color: '#dc3545' }}>
+                        በፖሊሲያችን ካልተስማሙ ፋሲል ዌብ አፕን መጠቀም አይችሉም።
+                    </p>
+                    <div style={{ marginTop: '30px', textAlign: 'center' }}>
+                        <button className="button-link main-btn" style={{ width: '150px', display: 'inline-block' }} onClick={() => updateView('privacy-policy')}>✅ አሁንም እሰማማለሁ</button>
+                        <button className="button-link delete-btn" style={{ width: '150px', display: 'inline-block' }} onClick={() => updateView('home-view')}>🚪 ለመውጣት ይጫኑ</button>
+                    </div>
+                </div>
+
+                {/* 6. DASHBOARD */}
+                <div className="section" id="dashboard" style={{ display: currentView === 'dashboard' ? 'block' : 'none' }}>
+                    <h1>ዋናው አገልግሎት (Dashboard)</h1>
+                    {/* ... የተቀረው Dashboard ይዘት ... */}
+                    <button className="global-pay-btn" style={{ marginTop: '25px', border: '2px solid #2e7d32' }} onClick={() => checkPremiumAccess('global-purchase-page')}>
+                        🌍 ዓለም አቀፍ ግዥዎችን ለመፈፀም (Global Purchase)
+                    </button>
+                    <button className="premium-btn" style={{ marginTop: '5px', backgroundColor: '#ffc107', color: '#333' }} onClick={() => checkPremiumAccess('premium-services')}>⭐️ በክፍያ አገልግሎታችን ያሉትን ይመልከቱ / ይጎብኙን</button>
+                    <button className="button-link main-btn" style={{ marginTop: '5px' }} onClick={() => updateView('feedback-page')}>⭐ ለፋሲል ዌብ አፕ አስተያየት ለመስጠት</button>
+                    <button className="premium-btn" style={{ marginTop: '5px', backgroundColor: '#00bcd4' }} onClick={() => checkPremiumAccess('feedback-view-page')}>👀 የተሰጡ አስተያየቶችን ይመልከቱ</button>
+                    
+                    <h2 style={{ marginTop: '30px' }}>የተለጠፉ መረጃዎችን መመልከት:</h2>
+                    <button className="button-link main-btn" onClick={() => updateView('view-text')}>📄 ፅሁፍ/መረጃ ተመልከት</button>
+                    <button className="button-link main-btn" onClick={() => updateView('view-image')}>🖼️ ምስል/ፎቶ ተመልከት</button>
+
+                    <h2 style={{ marginTop: '30px' }}>አዲስ መረጃ ለመለጠፍ/ለማጋራት:</h2>
+                    <button className="button-link main-btn" onClick={() => updateView('post-text')}>✍️ ፅሁፍ ለመለጠፍ</button>
+                    <button className="button-link main-btn" onClick={() => updateView('post-image')}>📷 ምስል ለመለጠፍ</button>
+                    
+                    <button className="button-link delete-btn" style={{ marginTop: '15px' }}>🚪 ውጣ (Log Out)</button>
+                </div>
+                
+                {/* 7. POST TEXT */}
+                <div className="section" id="post-text" style={{ display: currentView === 'post-text' ? 'block' : 'none' }}>
+                    <h2>✍️ ጽሑፍ ወይም መልዕክት ለመለጠፍ</h2>
+                    <input 
+                        type="text" 
+                        id="post-text-title" 
+                        placeholder="ርዕስ (Title)" 
+                        required 
+                        value={newPostTitle}
+                        onChange={(e) => setNewPostTitle(e.target.value)}
+                    />
+                    <textarea 
+                        id="post-text-content" 
+                        placeholder="መልዕክትዎን እዚህ ይጻፉ..." 
+                        rows="8" 
+                        required
+                        value={newPostContent}
+                        onChange={(e) => setNewPostContent(e.target.value)}
+                    ></textarea>
+                    
+                    <button className="main-btn" onClick={handlePostText}>መልዕክቱን ለጥፍ (Post)</button>
+                    {statusMessage && <p style={{ color: statusMessage.startsWith('❌') ? 'red' : 'green', textAlign: 'center' }}>{statusMessage}</p>}
+                    <button className="button-link back-btn delete-btn" onClick={() => updateView('dashboard')}>ወደ ዳሽቦርድ ተመለስ</button>
+                </div>
+
+                {/* 8. VIEW TEXT */}
+                <div className="section" id="view-text" style={{ display: currentView === 'view-text' ? 'block' : 'none' }}>
+                    <h2>📄 የተለጠፉ ጽሑፎችን መመልከቻ</h2>
+                    <p style={{textAlign: 'center', fontWeight: 'bold', color: 'darkred'}}>{statusMessage}</p>
+                    <TextPostsView /> 
+                </div>
+
+                {/* 🛑 ሌሎች Views (Pricing, Payment, Global Purchase, ወዘተ) በተመሳሳይ መልኩ ይከተላሉ */}
+                <div className="section" id="pricing" style={{ display: currentView === 'pricing' ? 'block' : 'none' }}>
+                    <h2>የክፍያ አማራጮች (Premium Plans)</h2>
+                    {/* ... Pricing content ... */}
+                    <p style={{ textAlign: 'center' }}>ከሚከተሉት አማራጮች አንዱን በመምረጥ ወደ ክፍያ ይቀጥሉ።</p>
+
+                    <div className="plan-card" onClick={() => selectPlan('daily')}><h3>ዕለታዊ (Daily)</h3><p>5 ብር (ETB)</p><button className="plan-btn success-btn" style={{ padding: '10px' }}>ይህን ምረጥ</button></div>
+                    <div className="plan-card" onClick={() => selectPlan('monthly')}><h3>ወርሃዊ (Monthly)</h3><p>30 ብር (ETB)</p><button className="plan-btn success-btn" style={{ padding: '10px' }}>ይህን ምረጥ</button></div>
+                    
+                    <button className="premium-btn" style={{ marginTop: '20px' }} onClick={() => checkPremiumAccess('premium-services')}>⭐️ በክፍያ አገልግሎታችን ያሉትን ይመልከቱ / ይጎብኙን</button>
+                    
+                    <button className="wallet-btn" onClick={() => updateView('deposit-money')}>💰 ገንዘብ ማስቀመጥ/ምንዛሬ መግዛት</button>
+                    
+                    <button className="button-link delete-btn" onClick={() => updateView('home-view')}>ወደ መነሻ ተመለስ</button>
+                </div>
+                 
+                <div className="section" id="payment-methods" style={{ display: currentView === 'payment-methods' ? 'block' : 'none' }}>
+                    <h2>ክፍያ ይፈፅሙ (Payment)</h2>
+                    <p id="selected-plan-info" style={{ fontWeight: 'bold', color: '#dc3545', textAlign: 'center' }}></p>
+                    
+                    <div className="payment-info-box">
+                        <p>ይህ የሙከራ ገጽ ስለሆነ፣ ከታች ያለውን በተን ሲጫኑ ክፍያው እንደተፈጸመ ይቆጠራል።</p>
+                        <strong>(እውነተኛ ገንዘብ አይከፍሉም)</strong>
+                    </div>
+
+                    <button className="payment-btn success-btn" onClick={() => processPayment('Telebirr')}>ቴሌብር (Telebirr) ተጠቀም</button>
+                    <button className="payment-btn success-btn" onClick={() => processPayment('PayPal')}>ፔይፓል (PayPal) ተጠቀም</button>
+
+                    <button className="button-link delete-btn" onClick={() => updateView('pricing')}>ወደ ፕላኖች ተመለስ</button>
+                </div>
+
+                {/* 🛑 ሌሎችን View IDs (post-image, view-image, global-purchase-page, ወዘተ) በተመሳሳይ መልኩ መጨመር ያስፈልጋል */}
+                {/* ቪዲዮ እና ምስል መለጠፊያ ገጽ (Dummy) */}
+                <div className="section" id="post-image" style={{ display: currentView === 'post-image' ? 'block' : 'none' }}>
+                    <h2>📷 ምስል/ፎቶ ለመለጠፍ</h2>
+                    <p className="premium-notice" id="image-quality-notice">ለከፍተኛ ጥራት ምስል የ Premium አገልግሎት ያስፈልጋል።</p>
+                    <input type="file" id="image-file" accept="image/*" style={{ width: '100%', marginBottom: '20px' }} />
+                    <input type="text" id="post-image-title" placeholder="የምስሉ ርዕስ (Title)" required />
+                    <button className="main-btn" onClick={() => setStatusMessage('⚠️ ምስል የመለጠፍ ተግባር አልተዋቀረም!')}>ምስሉን ለጥፍ (Post)</button>
+                    <button className="button-link back-btn delete-btn" onClick={() => updateView('dashboard')}>ወደ ዳሽቦርድ ተመለስ</button>
+                </div>
+
+            </div>
+
+            {/* 5. 🎨 CSS Styles (በNext.js ህግ መሰረት) */}
+            <style jsx global>{`
+                /* --- የእርስዎ CSS ሙሉ በሙሉ ወደዚህ ተወስዷል --- */
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    text-align: center;
+                    padding: 20px;
+                    background-color: #f0f4f8;
+                    color: #333;
+                }
+                .section {
+                    max-width: 600px;
+                    margin: 40px auto;
+                    padding: 30px;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                    border-top: 6px solid #007bff;
+                    text-align: left;
+                    /* display: none; */ /* በ React State ይተካል */
+                }
+                h1 { color: #007bff; font-size: 32px; margin-bottom: 10px; text-align: center; }
+                h2 { color: #555; font-size: 24px; margin-top: 25px; margin-bottom: 25px; text-align: center; }
+                
+                /* --- የግብዓት እና አዝራር ስታይሎች --- */
+                input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea, input[type="file"] {
+                    width: 90%;
+                    padding: 15px;
+                    margin: 10px 0;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    box-sizing: border-box;
+                    font-size: 16px;
+                }
+                
+                /* --- የአዝራር መሰረት --- */
+                .button-link, button {
+                    display: block;
+                    width: 90%;
+                    padding: 18px;
+                    margin: 15px auto;
+                    text-align: center;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease, transform 0.2s ease;
+                    font-size: 18px;
+                }
+
+                /* --- የአዝራር ቀለሞች --- */
+                .main-btn {
+                    background-color: #007bff;
+                    color: white;
+                    border: none;
+                }
+                .main-btn:hover {
+                    background-color: #0056b3;
+                    transform: translateY(-2px);
+                }
+                
+                .success-btn {
+                    background-color: #28a745;
+                    color: white;
+                    border: none;
+                }
+                .success-btn:hover {
+                    background-color: #1e7e34;
+                }
+
+                .premium-btn {
+                    background-color: #ffc107;
+                    color: #333;
+                    border: none;
+                }
+                .premium-btn:hover {
+                    background-color: #e0a800;
+                }
+
+                .delete-btn {
+                    background-color: #dc3545; 
+                    color: white;
+                    border: none;
+                }
+                .delete-btn:hover {
+                    background-color: #c82333;
+                }
+
+                .global-pay-btn {
+                    background-color: #2e7d32;
+                    color: white;
+                    border: 2px solid #1b5e20;
+                }
+                .global-pay-btn:hover {
+                    background-color: #1b5e20;
+                }
+                
+                .wallet-btn {
+                    background-color: #1abc9c;
+                    color: white;
+                    border: none;
+                }
+                .wallet-btn:hover {
+                    background-color: #148f77;
+                }
+
+
+                /* --- ካርዶች እና ልዩ ቦታዎች --- */
+                .intro-text-box, .payment-info-box {
+                    background-color: #e9ecef;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 25px;
+                    border-left: 5px solid #007bff;
+                }
+                
+                /* የፖሊሲው ፅሁፍ የሚታይበት ቦታ */
+                .policy-text {
+                    background-color: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #ddd;
+                    text-align: left;
+                    max-height: 300px;
+                    overflow-y: auto;
+                }
+
+                .plan-card {
+                    padding: 15px;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    margin: 15px auto;
+                    cursor: pointer;
+                    transition: box-shadow 0.3s ease;
+                    text-align: center;
+                }
+                .plan-card:hover {
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                }
+                
+                .post-content-container {
+                    margin-top: 20px;
+                }
+                .post-item {
+                    border: 1px solid #ddd;
+                    padding: 15px;
+                    margin-bottom: 15px;
+                    border-radius: 8px;
+                    background-color: #f9f9f9;
+                }
+                .post-title {
+                    color: #007bff;
+                    margin-top: 0;
+                }
+                .post-date {
+                    display: block;
+                    font-size: 12px;
+                    color: #999;
+                    margin-top: 5px;
+                }
+                .no-content {
+                    text-align: center;
+                    padding: 40px;
+                    color: #dc3545;
+                    font-weight: bold;
+                    background-color: #ffeaea;
+                    border-radius: 8px;
+                }
+
+                /* --- Loading Spinner --- */
+                .loading-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(255, 255, 255, 0.9);
+                    display: none;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                    flex-direction: column;
+                    font-size: 20px;
+                    font-weight: bold;
+                    color: #007bff;
+                }
+                .spinner {
+                    border: 8px solid #f3f3f3;
+                    border-top: 8px solid #007bff;
+                    border-radius: 50%;
+                    width: 60px;
+                    height: 60px;
+                    animation: spin 1s linear infinite;
+                    margin-bottom: 20px;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
+        </>
+    );
+}
