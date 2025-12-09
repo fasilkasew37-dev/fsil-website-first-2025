@@ -1,0 +1,10 @@
+// ክፍያ አተገባበር
+const processPayment = (method) => {
+    showLoading(`ክፍያ በ${method} እየተፈፀመ ነው...`);
+
+    setTimeout(() => {
+        hideLoading();
+
+        alert(`✅ ክፍያዎ በ${method} ተሳክቶ ተከናውኗል!`);
+
+        // የተመ
