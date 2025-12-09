@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App (Frontend V9 - API Ready)</title>
+    <style>
+        /* --- መደበኛ CSS --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .section {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-top: 6px solid #007bff;
+            text-align: left;
+            display: none;
+        }
+        h1 { color: #007bff; font-size: 32px; margin-bottom: 10px; text-align: center; }
+        h2 { color: #555; font-size: 24px; margin-top: 25px; margin-bottom: 25px; text-align: center; }
+        
+        /* --- የግብዓት እና አዝራር ስታይሎች --- */
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea, input[type="file"] {
+            width: 90%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        
+        /* --- የአዝራር መሰረት --- */
+        .button-link, button {
+            display: block;
+            width: 90%;
+            padding: 18px;
+            margin: 15px auto;
+            text-align: center;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 18px;
+        }
+
+        /* --- የአዝራር ቀለሞች --- */
+        .main-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        .main-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .success-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+        .success-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        .premium-btn {
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+        }
+        .premium-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .delete-btn {
+            background-color: #dc3545; 
+            color: white;
+            border: none;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .global-pay-btn {
+            background-color: #2e7d32;
+            color: white;
+            border: 2px solid #1b5e20;
+        }
+        .global-pay-btn:hover {
+            background-color: #1b5e20;
+        }
+        
+        .wallet-btn {
+             background-color: #1abc9c;
+             color: white;
+             border: none;
+        }
+        .wallet-btn:hover {
+             background-color: #148f77;
+        }
+
+
+        /* --- ካርዶች እና ልዩ ቦታዎች --- */
+        .intro-text-box, .payment-info-box {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid #007bff;
+        }
+        
+        /* የፖሊሲው ፅሁፍ የሚታይበት ቦታ */
+        .policy-text {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .plan-card {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 15px auto;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease;
+            text-align: center;
+        }
+        .plan-card:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post-content-container {
+            margin-top: 20px;
+        }
+        .post-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .post-title {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .post-date {
+            display: block;
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        .no-content {
+            text-align: center;
+            padding: 40px;
+            color: #dc3545;
+            font-weight: bold;
+            background-color: #ffeaea;
+            border-radius: 8px;
+        }
+
+        /* --- Loading Spinner --- */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loading-message">... እየተጫነ ነው (Loading) ...</p>
+    </div>
+
+    <div class="section" id="home-view">
+        <h1>እንኳን ደህና መጡ ወደ ፋሲል ዌብ አፕ!</h1>
+        <div class="intro-text-box">
+            <h3>🌐 ስለ ፋሲል ዌብ አፕ</h3>
+            <p><strong>ፋሲል ዌብ አፕ</strong> በከፍተኛ ጥራት እና ፍጥነት የሚሰራ የዲጂታል መጋሪያ መድረክ ነው።</p>
+            <p><strong>ፋሲል አፕ</strong> ትክክለኛ መረጃዎችን፣ ፋይሎችን (ጽሑፍ፣ ኦዲዮ፣ ምስል፣ **PowerPoint**፣ PDF) በክፍያም በነጻም አማራጭ ያቀርባል። በተጨማሪም ገንዘብዎን ከዋጋ መናር ለመጠበቅ የ**ዲጂታል ምንዛሬ** ግብይት እና **ዓለም አቀፍ ግዥዎችን** ለመፈፀም ያስችላል።</p>
+
+            <p><strong>የአገልግሎት ጥራት:</strong></p>
+            <ul>
+                <li>✅ **ነፃ:** መሰረታዊ የፋይል ማጋራት አገልግሎቶችን በጥራት ቀንሶ ያቀርባል።</li>
+                <li>⭐ **ክፍያ (Premium):** ሁሉንም አገልግሎቶች በ**ከፍተኛ ጥራት**፣ **ፈጣን ፍጥነት** እና የ**ዓለም አቀፍ ግዥ** አገልግሎት ያገኛሉ።</li>
+            </ul>
+        </div>
+        
+        <h2 style="text-align: center;">የሚፈልጉትን የአገልግሎት አይነት በመምረጥ ይጀምሩ:</h2>
+        
+        <a href="#signup-form" class="button-link main-btn" onclick="updateView()">መመዝገብ/መግባት (ነፃ)</a>
+        <a href="#pricing" class="button-link premium-btn" style="background-color: #ffc107; color: #333;">በክፍያ አማራጭ (Premium)</a>
+    </div>
+
+    <div class="section" id="signup-form">
+        <h2 id="signup-title">መመዝገቢያ (Sign Up - ነፃ)</h2>
+        <input type="text" id="signup-phone" placeholder="ስልክ ቁጥር (Required)" required>
+        <input type="email" id="signup-email" placeholder="ኢሜል (Required)" required>
+        <input type="password" id="signup-password" placeholder="የይለፍ ቃል (6 አሀዝ Password)" required maxlength="6">
+        
+        <button class="main-btn" onclick="handleSignUp()">ተመዝገብ (Sign Up)</button>
+        
+        <p style="text-align: center; margin-top: 20px;"><a href="#login-form" onclick="updateView()">ከዚህ በፊት ተመዝግበዋል? ይግቡ (Log In)</a></p>
+    </div>
+
+    <div class="section" id="login-form">
+        <h2>መግቢያ (Log In)</h2>
+        <input type="text" id="login-phone" placeholder="ስልክ ቁጥር (Required)" required>
+        <input type="password" id="login-password" placeholder="የይለፍ ቃል (Password)" required>
+        
+        <button class="success-btn" onclick="handleLogin()">ግባ (Log In)</button>
+        
+        <p style="text-align: center; margin-top: 20px;"><a href="#signup-form" onclick="updateView()">አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)</a></p>
+    </div>
+
+    <div class="section" id="pricing">
+        <h2>የክፍያ አማራጮች (Premium Plans)</h2>
+        <p style="text-align: center;">ከሚከተሉት አማራጮች አንዱን በመምረጥ ወደ ክፍያ ይቀጥሉ።</p>
+
+        <div class="plan-card" onclick="selectPlan('daily')"><h3>ዕለታዊ (Daily)</h3><p>5 ብር (ETB)</p><button class="plan-btn success-btn" style="padding: 10px;">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('weekly')"><h3>ሳምንታዊ (Weekly)</h3><p>25 ብር (ETB)</p><button class="plan-btn success-btn" style="padding: 10px;">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('monthly')"><h3>ወርሃዊ (Monthly)</h3><p>30 ብር (ETB)</p><button class="plan-btn success-btn" style="padding: 10px;">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('yearly')"><h3>ዓመታዊ (Yearly)</h3><p>100 ብር (ETB)</p><button class="plan-btn success-btn" style="padding: 10px;">ይህን ምረጥ</button></div>
+        
+        <button class="premium-btn" style="margin-top: 20px;" onclick="checkPremiumAccess('premium-services')">⭐️ በክፍያ አገልግሎታችን ያሉትን ይመልከቱ / ይጎብኙን</button>
+        
+        <button class="wallet-btn" onclick="handleWalletAction('deposit')">💰 ገንዘብ ማስቀመጥ/ምንዛሬ መግዛት</button>
+        
+        <a href="#home-view" class="button-link delete-btn">ወደ መነሻ ተመለስ</a>
+    </div>
+
+    <div class="section" id="payment-methods">
+        <h2>ክፍያ ይፈፅሙ (Payment)</h2>
+        <p id="selected-plan-info" style="font-weight: bold; color: #dc3545; text-align: center;"></p>
+        
+        <div class="payment-info-box">
+             **💰 የክፍያ ግልፅነት:**
+             <p>ይህ ክፍል በ**Backend API** በኩል የክፍያ ትዕዛዝ ይልካል።</p>
+             <p>ይህ የሙከራ ገጽ ስለሆነ፣ ከታች ያለውን በተን ሲጫኑ ክፍያው እንደተፈጸመ ይቆጠራል።</p>
+             <strong>(እውነተኛ ገንዘብ አይከፍሉም)</strong>
+        </div>
+
+        <button class="payment-btn success-btn" onclick="processPayment('Telebirr')">ቴሌብር (Telebirr) ተጠቀም</button>
+        <button class="payment-btn success-btn" onclick="processPayment('PayPal')">ፔይፓል (PayPal) ተጠቀም</button>
+        <button class="payment-btn success-btn" onclick="processPayment('CBE')">CBE የባንክ ዝውውር ተጠቀም</button>
+
+        <a href="#pricing" class="button-link delete-btn">ወደ ፕላኖች ተመለስ</a>
+    </div>
+
+    <div class="section" id="privacy-policy">
+        <h2>የግላዊነት ፖሊሲ እና ጥብቅ የአጠቃቀም መመሪያ</h2>
+        <div class="policy-text">
+            <h3>🔴 ጥብቅ የአጠቃቀም መመሪያ (Mandatory Use Policy)</h3>
+            <p>የፋሲል አፕን በመጠቀምዎ የሚከተሉትን ህጎች ያለ ምንም ቅድመ ሁኔታ ተስማምተዋል፡</p>
+            <ul>
+                <li><strong>የፖለቲካ ትችት/ቅስቀሳ የተከለከለ ነው፡</strong> በመድረኩ ላይ ማንኛውንም አይነት የፖለቲካ ጥላቻ፣ ቅስቀሳ ወይም የሃይማኖት ግጭት ማሰራጨት በጥብቅ የተከለከለ ነው።</li>
+                <li><strong>ሃሰተኛ መረጃ ማሰራጨት የተከለከለ ነው፡</strong> መረጃው ትክክለኛ መሆኑ ሳይረጋገጥ ማስለጥ የተከለከለ ነው።</li>
+                <li><strong>የጥቃት ወይም የጥላቻ ንግግር የተከለከለ ነው፡</strong> ሰዎችን ወይም ቡድኖችን የሚያጠቁ ይዘቶችን መለጠፍ አይፈቀድም።</li>
+                <li><strong>እድሜ ገደብ፡</strong> አገልግሎቱን ለመጠቀም ቢያንስ 18 ዓመት መሙላት ግዴታ ነው።</li>
+            </ul>
+            
+            <p style="margin-top: 15px; font-weight: bold; color: #007bff;">በማንኛውም ጊዜ ይህንን ፖሊሲ ጥሰው ከተገኙ፣ አካውንትዎ ያለ ማስጠንቀቂያ ሊዘጋ ይችላል።</p>
+        </div>
+        
+        <button class="main-btn" onclick="handleAgreePolicy()">እስማማለሁ (Agree & Continue)</button>
+        <a href="#policy-disagree" class="button-link delete-btn">❌ አልስማማም/ይቅርብኝ (Disagree/Exit)</a>
+    </div>
+
+    <div class="section" id="policy-disagree">
+        <h2 style="color: #dc3545;">⚠️ ማስጠንቀቂያ: የአገልግሎት ውል</h2>
+        <p style="text-align: center; font-size: 18px; font-weight: bold; color: #dc3545;">
+            በፖሊሲያችን ካልተስማሙ ፋሲል ዌብ አፕን መጠቀም አይችሉም።
+        </p>
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="#privacy-policy" class="button-link main-btn" style="width: 150px; display: inline-block;">✅ አሁንም እሰማማለሁ</a>
+            <a href="#home-view" class="button-link delete-btn" style="width: 150px; display: inline-block;" onclick="handleExitPolicy()">🚪 ለመውጣት ይጫኑ</a>
+        </div>
+    </div>
+
+    <div class="section" id="dashboard">
+        <h1>ዋናው አገልግሎት (Dashboard)</h1>
+        
+        <p style="text-align: center; font-weight: bold; color: #1abc9c; display: none;" id="user-balance-display">የእርስዎ ሚዛን: 0.00 ETB / 0.00 USD (Dummy)</p>
+        
+        <p style="text-align: center;">የሚፈልጉትን ይምረጡና ወደ ትክክለኛው ገጽ ይሂዱ።</p>
+
+        <button class="global-pay-btn" style="margin-top: 25px; border: 2px solid #2e7d32;" onclick="checkPremiumAccess('global-purchase-page')">
+            🌍 ዓለም አቀፍ ግዥዎችን ለመፈፀም (Global Purchase)
+        </button>
+        <button class="premium-btn" style="margin-top: 5px; background-color: #ffc107; color: #333;" onclick="checkPremiumAccess('premium-services')">⭐️ በክፍያ አገልግሎታችን ያሉትን ይመልከቱ / ይጎብኙን</button>
+        <a href="#feedback-page" class="button-link main-btn" style="margin-top: 5px;">⭐ ለፋሲል ዌብ አፕ አስተያየት ለመስጠት</a>
+        <button class="premium-btn" style="margin-top: 5px; background-color: #00bcd4;" onclick="checkPremiumAccess('feedback-view-page')">👀 የተሰጡ አስተያየቶችን ይመልከቱ</button>
+
+        <h2 style="margin-top: 30px;">📄 የሰነድ ዝግጅት/ማጋራት (Premium)</h2>
+        <button class="premium-feature-btn main-btn" onclick="checkPremiumAccess('post-pdf')">📄 PDF ሰነድ ለማዘጋጀት/ለመለጠፍ</button>
+        <button class="premium-feature-btn main-btn" onclick="checkPremiumAccess('post-powerpoint')">📊 PowerPoint ለማዘጋጀት/ለመለጠፍ</button>
+
+
+        <h2 style="margin-top: 30px;">🎬 መዝናኛ (Entertainment) እና ዜና (News)</h2>
+        <button class="premium-feature-btn main-btn" onclick="checkPremiumAccess('view-video')">🎬 መዝናናት (ፊልም/ጥራት ያለው ቪዲዮ)</button>
+        <a href="#view-news" class="button-link main-btn">📰 ዜናዎችን መከታተል</a>
+
+        <h2 style="margin-top: 30px;">የተለጠፉ መረጃዎችን መመልከት:</h2>
+        <a href="#view-text" class="button-link main-btn">📄 ፅሁፍ/መረጃ ተመልከት</a>
+        <a href="#view-image" class="button-link main-btn">🖼️ ምስል/ፎቶ ተመልከት</a>
+        <a href="#view-audio" class="button-link main-btn">🎧 ኦዲዮ/ድምፅ ተመልከት</a>
+        
+        <a href="#delete-file-select" class="button-link delete-btn" style="margin-top: 15px;">🗑️ የለጠፉትን ፋይል ለመደለት እዚህ ይጫኑ</a>
+
+        <h2 style="margin-top: 30px;">አዲስ መረጃ ለመለጠፍ/ለማጋራት:</h2>
+        <a href="#post-text" class="button-link main-btn">✍️ ፅሁፍ ለመለጠፍ</a>
+        <a href="#post-image" class="button-link main-btn">📷 ምስል ለመለጠፍ</a>
+        <a href="#post-audio" class="button-link main-btn">🎙️ ኦዲዮ ለመለጠፍ</a>
+
+        <h2 style="margin-top: 30px;">💰 የኪስ ቦርሳ (Wallet) አማራጮች</h2>
+        <button class="wallet-btn" style="margin-top: 5px;" onclick="handleWalletAction('deposit')">💰 ገንዘብ ማስቀመጥ/ምንዛሬ መግዛት</button>
+        <button class="wallet-btn" style="background-color: #e67e22;" onclick="handleWalletAction('withdraw')">💸 ያስቀመጡትን ገንዘብ ማውጣት</button>
+    </div>
+    
+    <div class="section" id="global-purchase-page">
+        <h2>🌍 ዓለም አቀፍ ግዥዎችን ለመፈፀም</h2>
+        <p style="text-align: center;">በኢትዮጵያ ክፍያ የማይቀበሉ የዓለም አቀፍ አገልግሎቶችን በፋሲል አፕ በኩል ይግዙ!</p>
+        
+        <div class="payment-info-box">
+             **⚠️ የክፍያ ሂደት ግልፅነት:**
+             <p>የሚፈልጉትን አገልግሎት ሲመርጡ፣ በኢትዮጵያ ብር (ETB) ለመክፈል የሚያስፈልገውን **የምንዛሪ ተመን** እና የ**አገልግሎት ክፍያ (Service Fee)** እናሳውቅዎታለን።</p>
+        </div>
+
+        <h3 style="margin-top: 30px;">ታዋቂ ዓለም አቀፍ አገልግሎቶች:</h3>
+        
+        <button class="main-btn" onclick="handleGlobalPurchase('Domain Purchase')">🌐 Domain ለመግዛት</button>
+        <button class="main-btn" onclick="handleGlobalPurchase('Chat GPT Plus/Gemini Advanced')">🤖 ChatGPT Plus / AI Subscription</button>
+        <button class="main-btn" onclick="handleGlobalPurchase('Netflix/Disney+/Hulu')">🎬 Streaming Services Subscription</button>
+        <button class="main-btn" onclick="handleGlobalPurchase('Amazon/AliExpress Shipment')">📦 የአማዞን/አሊኤክስፕረስ መላኪያ ክፍያ</button>
+        
+        <h3 style="margin-top: 30px;">ሌላ አገልግሎት አለ?</h3>
+        <button class="global-pay-btn" style="background-color: #f7a31b;" onclick="handleOtherPurchase()">❓ ሌላ ድርጅት/አገልግሎት (Other)</button>
+        
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="post-pdf">
+        <h2>📄 PDF ሰነድ ለማዘጋጀት/ለመለጠፍ</h2>
+        <p class="no-content">🚧 ይህ ገፅ የPremium አገልግሎት ሲሆን PDF ሰነዶችን ከፅሁፍ ወይም ፋይል በመፍጠር ለመለጠፍ የሚያስችል ነው።</p>
+        <input type="text" id="post-pdf-title" placeholder="የሰነዱ ርዕስ" required>
+        <button class="main-btn" onclick="handlePostDocument('PDF')">ሰነዱን ለጥፍ (Post)</button>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="post-powerpoint">
+        <h2>📊 PowerPoint ለማዘጋጀት/ለመለጠፍ</h2>
+        <p class="no-content">🚧 ይህ ገፅ የPremium አገልግሎት ሲሆን PowerPoint ስላይዶችን ለመስራት እና ለመለጠፍ የሚያስችል ነው።</p>
+        <input type="text" id="post-powerpoint-title" placeholder="የፕረዘንቴሽኑ ርዕስ" required>
+        <button class="main-btn" onclick="handlePostDocument('PPT')">ሰነዱን ለጥፍ (Post)</button>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="post-text">
+        <h2>✍️ ጽሑፍ ወይም መልዕክት ለመለጠፍ</h2>
+        <input type="text" id="post-text-title" placeholder="ርዕስ (Title)" required>
+        <textarea id="post-text-content" placeholder="መልዕክትዎን እዚህ ይጻፉ..." rows="8" required></textarea>
+        
+        <button class="main-btn" onclick="handlePostText()">መልዕክቱን ለጥፍ (Post)</button>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="post-image">
+        <h2>📷 ምስል/ፎቶ ለመለጠፍ</h2>
+        <p class="premium-notice" id="image-quality-notice">ለከፍተኛ ጥራት ምስል የ Premium አገልግሎት ያስፈልጋል።</p>
+        
+        <input type="file" id="image-file" accept="image/*" style="width: 100%; margin-bottom: 20px;">
+        <input type="text" id="post-image-title" placeholder="የምስሉ ርዕስ (Title)" required>
+        
+        <button class="main-btn" onclick="handlePostImage()">ምስሉን ለጥፍ (Post)</button>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="post-audio">
+        <h2>🎙️ ኦዲዮ/ድምፅ ለመለጠፍ</h2>
+        <input type="file" id="audio-file" accept="audio/*" style="width: 100%; margin-bottom: 20px;">
+        <input type="text" id="post-audio-title" placeholder="የኦዲዮ ርዕስ (Title)" required>
+        
+        <button class="main-btn" onclick="handlePostAudio()">ኦዲዮውን ለጥፍ (Post)</button>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-text">
+        <h2>📄 የተለጠፉ ጽሑፎችን መመልከቻ</h2>
+        <div class="post-content-container" id="text-posts-container"></div>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="view-image">
+        <h2>🖼️ የተለጠፉ ምስሎችን መመልከቻ</h2>
+        <div class="post-content-container" id="image-posts-container"></div>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-audio">
+        <h2>🎧 የተለጠፉ ኦዲዮዎችን መመልከቻ</h2>
+        <div class="post-content-container" id="audio-posts-container"></div>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="view-video">
+        <h2>🎬 የተለጠፉ ቪዲዮዎችን/መዝናኛዎችን መመልከቻ</h2>
+        <p class="no-content">🚧 ምንም የተለጠፈ **ቪዲዮ/መዝናኛ** ፋይል የለም። (የPremium አገልግሎት)</p>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-news">
+        <h2>📰 ዜና መከታተያ</h2>
+        <p class="no-content">🚧 ምንም **ዜና** አልተጫነም።</p>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="delete-file-select">
+        <h2>🗑️ የትኛውን ፋይል መደለት ይፈልጋሉ?</h2>
+        <p style="text-align: center;">እባክዎ መደለት የሚፈልጉትን የፋይል አይነት ይምረጡ።</p>
+        
+        <button class="main-btn" onclick="prepareDelete('text')">📄 የተለጠፈ ጽሑፍ/መልዕክት</button>
+        <button class="main-btn" onclick="prepareDelete('image')">🖼️ የተለጠፈ ምስል/ፎቶ</button>
+        <button class="main-btn" onclick="prepareDelete('audio')">🎧 የተለጠፈ ኦዲዮ/ድምፅ</button>
+        
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="delete-file-view">
+        <h2 id="delete-view-title"> የተለጠፉ ፋይሎችን መደለት</h2>
+        <p style="text-align: center; font-weight: bold; color: #555;">ሁሉንም ልጥፎች ማየት ይችላሉ። የራስዎን ልጥፍ ብቻ መደለት ይችላሉ።</p>
+        <div class="post-content-container" id="delete-posts-container">
+            </div>
+        <a href="#delete-file-select" class="button-link back-btn delete-btn">ወደ መደለቻ ምርጫ ተመለስ</a>
+    </div>
+
+    <div class="section" id="feedback-page">
+        <h2>⭐ ሀሳብዎን በደስታ እንቀበላለን!</h2>
+        <p style="text-align: center;">እባክዎ **ሀሳብዎን** ወይም **አስተያየትዎን** በሚከተሉት አማራጮች ያቅርቡ።</p>
+        
+        <button class="feedback-btn-option main-btn" onclick="handleFeedback('ጽሁፍ')">📝 በጽሁፍ አስተያየት ይስጡ (Text)</button>
+        <button class="feedback-btn-option main-btn" onclick="handleFeedback('ድምፅ')">🎙️ በድምፅ አስተያየት ይስጡ (Audio)</button>
+        <button class="feedback-btn-option main-btn" onclick="handleFeedback('ቪዲዮ')">📹 በቪዲዮ አስተያየት ይስጡ (Video)</button>
+        
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="feedback-view-page">
+        <h2>👀 የተሰጡ አስተያየቶችን ይመልከቱ</h2>
+        <p style="text-align: center;">የሚፈልጉትን የአስተያየት አይነት በመምረጥ መመልከት ይችላሉ።</p>
+        
+        <button class="feedback-view-btn-option main-btn" onclick="handleFeedbackView('ፅሁፍ')">📄 በፅሁፍ የተሰጡ አስተያየቶችን ይመልከቱ</button>
+        <button class="feedback-view-btn-option main-btn" onclick="handleFeedbackView('ድምፅ')">🎧 በድምፅ የተሰጡ አስተያየቶችን ያዳምጡ</button>
+        <button class="feedback-view-btn-option main-btn" onclick="handleFeedbackView('ቪዲዮ')">📺 በቪዲዮ የተሰጡ አስተያየቶችን ይመልከቱ</button>
+        
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="premium-services">
+        <h2> እንኳን ወደ ክፍያ አገልግሎት መመልከቻ በደህና መጡ!</h2>
+        
+        <div style="background-color: #e6f7ff; border: 1px solid #007bff; padding: 15px; border-radius: 6px; margin-bottom: 20px; text-align: center; color: #0056b3;">
+            **🔔 ማሳሰቢያ:** ይህ የክፍያ አገልግሎት ዝርዝር ነው። ለመጠቀም መጀመሪያ <a href="#pricing">ክፍያ ይክፈሉ።</a>
+        </div>
+
+        <p style="text-align: center; font-weight: bold; color: #007bff;">በክፍያ (Premium) የሚያገኟቸው ዋና ዋና አገልግሎቶች ዝርዝር:</p>
+
+        <button class="premium-feature-btn global-pay-btn" style="background-color: #4CAF50;" onclick="checkPremiumAccess('global-purchase-page')">
+            <span class="feature-name">🌍 ዓለም አቀፍ ግዥዎችን በብር መፈፀም</span>
+            <span class="feature-benefit" style="display: block; font-size: 14px; font-weight: normal;">ገንዘብዎን ከዋጋ መናር ለመጠበቅ</span>
+        </button>
+        <button class="premium-feature-btn main-btn" onclick="checkPremiumAccess('view-video')">
+            <span class="feature-name">🎬 ቪዲዮ መመልከት/መለጠፍ</span>
+            <span class="feature-benefit" style="display: block; font-size: 14px; font-weight: normal;">በከፍተኛ ፍጥነት እና ጥራት</span>
+        </button>
+        <a href="#view-image" class="button-link premium-feature-btn main-btn">
+            <span class="feature-name">🖼️ ምስሎች መለጠፍ/መመልከት</span>
+            <span class="feature-benefit" style="display: block; font-size: 14px; font-weight: normal;">በሙሉ ጥራት/AI ማሻሻያ</span>
+        </a>
+        <a href="#dashboard" class="button-link premium-feature-btn main-btn">
+            <span class="feature-name">🛑 ማስታወቂያ አይኖርም</span>
+            <span class="feature-benefit" style="display: block; font-size: 14px; font-weight: normal;">ያለ ማቋረጥ አገልግሎት</span>
+        </a>
+
+
+        <a href="#pricing" class="button-link premium-btn" style="margin-top: 30px; background-color: #ffc107; color: #333;">አሁን ክፍያ ለመክፈል ይጫኑ</a>
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ነፃ አገልግሎት (Dashboard) ይሂዱ</a>
+    </div>
+    
+    <div class="section" id="deposit-money">
+        <h2>💰 ገንዘብ ማስቀመጥ (ምንዛሬ መግዛት)</h2>
+        <p style="text-align: center; font-weight: bold; color: #1abc9c; margin-bottom: 20px;" id="user-balance-display">የእርስዎ ሚዛን: 0.00 ETB / 0.00 USD (Dummy)</p>
+        
+        <p style="text-align: center; font-weight: bold;">ምን ያህል ETB ወደ የውጭ ምንዛሬ መቀየር ይፈልጋሉ?</p>
+
+        <select id="deposit-currency" style="width: 90%;">
+            <option value="USD">ዶላር (USD)</option>
+            <option value="EUR">ዩሮ (EUR)</option>
+            <option value="GBP">ፓውንድ (GBP)</option>
+        </select>
+        
+        <input type="number" id="deposit-amount-etb" placeholder="የሚቀይሩት የብር መጠን (ETB)" required min="10">
+        
+        <div id="exchange-rate-info" style="margin: 15px 0; padding: 10px; background-color: #f0f0f0; border-radius: 5px; text-align: center;">
+             የምንዛሪ ተመን: 1 USD = 55.00 ETB (Dummy Rate)
+        </div>
+        
+        <button class="main-btn" onclick="handleDepositPayment()">ገንዘብ ያስቀምጡ/ምንዛሬ ይግዙ</button>
+        
+        <a href="#dashboard" class="button-link back-btn delete-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <div class="section" id="withdraw-money">
+        <h2>💸 ያስቀመጡትን ገንዘብ ማውጣት</h2>
+        <p style="text-align: center; font-weight: bold; color: #1abc9c; margin-bottom: 20px;" id="user-balance-display">የእርስዎ ሚዛን: 0.00 ETB / 0.00 USD (Dummy)</p>
+        
+        <p style="text-align: center; font-weight: bold;">ገንዘብዎን በየትኛው ዓለም አቀፍ አገልግሎት ማውጣት ይፈልጋሉ?</p>
+
+        <select id="withdraw-method" style="width: 90%;">
+            <option value="PayPal">ፔይፓል (PayPal)</option>
+            <option value="Skrill">ስክሪል (Skrill)</option>
+            <option value="Wire_Transfer">ዓለም አቀፍ የባንክ ዝውውር</option>
+        </select>
+        
+        <input type="number" id="withdraw-amount-usd" placeholder="የሚያወጡት የዶላር መጠን (USD)" required min="1">
+        <input type="email" id="withdraw-recipient-email" placeholder="የፔይፓል/ተቀባይ ኢሜይል አድራሻ" required>
+        
+        <button class="delete-btn" onclick="handleWithdrawTransfer()">ገንዘብ ያስተላልፉ (Withdraw)</button>
+        
+        <a href="#dashboard" class="button-link back-btn main-btn">ወደ ዳሽቦርድ ተመለስ</a>
+    </div>
+
+    <script>
+        let currentSubscription = 'free';
+        let selectedPlan = null;
+        let deleteFileType = null; 
+        
+        // Dummy Wallet Balance - በLocal Storage ይቀመጥ
+        const DUMMY_RATES = { USD: 55.00, EUR: 60.00, GBP: 68.00 };
+
+        const PLANS = {
+            'daily': { name: 'ዕለታዊ', price: '5 ብር' },
+            'weekly': { name: 'ሳምንታዊ', price: '25 ብር' },
+            'monthly': { name: 'ወርሃዊ', price: '30 ብር' },
+            'yearly': { name: 'ዓመታዊ', price: '100 ብር' }
+        };
+
+        // --- የረዳት ተግባራት (Utility Functions) ---
+
+        function showLoading(message) {
+            document.getElementById('loading-message').textContent = message;
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+        
+        /**
+         * 🛑 የኪስ ቦርሳ ሚዛን በ Deposit ወይም Withdraw ገጾች ላይ ብቻ እንዲታይ ያደርጋል።
+         */
+        function updateWalletDisplay() {
+            const displayElement = document.getElementById('user-balance-display');
+            if (!displayElement) return;
+
+            if (window.location.hash === '#deposit-money' || window.location.hash === '#withdraw-money') {
+                 const etb = parseFloat(localStorage.getItem('fasil_wallet_etb') || 0).toFixed(2);
+                 const usd = parseFloat(localStorage.getItem('fasil_wallet_usd') || 0).toFixed(2);
+                 
+                 const currentView = document.getElementById(window.location.hash.substring(1));
+                 if (currentView) {
+                     const existingDisplay = currentView.querySelector('#user-balance-display');
+                     if (existingDisplay) {
+                        existingDisplay.textContent = `የእርስዎ ሚዛን: ${etb} ETB / ${usd} USD (Dummy)`;
+                        existingDisplay.style.display = 'block';
+                     }
+                 }
+                 
+            } else {
+                 const allDisplays = document.querySelectorAll('#user-balance-display');
+                 allDisplays.forEach(el => el.style.display = 'none');
+            }
+        }
+
+
+        // --- የተጠቃሚ አስተዳደር (User Management) ---
+
+        function setRegisteredUser(phone, password, tier) {
+            let users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+            
+            const existingIndex = users.findIndex(u => u.phone === phone);
+
+            if (existingIndex > -1) {
+                const updatedUser = { 
+                    phone, 
+                    password: password !== null ? password : users[existingIndex].password, 
+                    tier: tier || users[existingIndex].tier
+                };
+                users[existingIndex] = updatedUser;
+            } else {
+                users.push({ phone, password, tier: tier || 'free' });
+            }
+            
+            localStorage.setItem('fasil_app_users', JSON.stringify(users));
+            localStorage.setItem('fasil_current_user_phone', phone);
+            currentSubscription = tier;
+            
+            if (localStorage.getItem('fasil_wallet_etb') === null) {
+                localStorage.setItem('fasil_wallet_etb', 0.00);
+                localStorage.setItem('fasil_wallet_usd', 0.00);
+            }
+        }
+
+        function getCurrentUserPhone() {
+            return localStorage.getItem('fasil_current_user_phone');
+        }
+
+        function getCurrentUserTier() {
+            const phone = getCurrentUserPhone();
+            if (!phone) return 'free';
+
+            const users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+            const user = users.find(u => u.phone === phone);
+            
+            return user ? user.tier : 'free';
+        }
+
+        function handleSignUp() {
+            const phone = document.getElementById('signup-phone').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value.trim();
+
+            if (!phone || !email || password.length !== 6) {
+                alert("🔴 እባክዎ ሁሉንም መስኮች በትክክል ይሙሉ (የይለፍ ቃል 6 አሃዝ መሆን አለበት)።");
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+            
+            if (users.some(u => u.phone === phone)) {
+                alert("⚠️ ይቅርታ! ይህ ስልክ ቁጥር ከዚህ በፊት ተመዝግቧል። እባክዎ ይግቡ (Log In)።");
+                window.location.hash = '#login-form';
+                updateView();
+                return;
+            }
+            
+            setRegisteredUser(phone, password, 'free');
+            alert(`✅ ምዝገባዎ ተጠናቋል። እንኳን ደህና መጡ!`);
+            
+            window.location.hash = '#privacy-policy';
+            updateView();
+        }
+
+        function handleLogin() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!phone || !password) {
+                alert("🔴 እባክዎ የስልክ ቁጥር እና የይለፍ ቃል ያስገቡ።");
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+            const user = users.find(u => u.phone === phone && u.password === password);
+
+            if (user) {
+                localStorage.setItem('fasil_current_user_phone', phone);
+                currentSubscription = user.tier;
+                alert(`✅ በተሳካ ሁኔታ ገብተዋል!`);
+                
+                if (localStorage.getItem('fasil_policy_agreed') === 'true') {
+                    window.location.hash = '#dashboard';
+                } else {
+                    window.location.hash = '#privacy-policy';
+                }
+            } else {
+                alert("🔴 የስልክ ቁጥር ወይም የይለፍ ቃል ትክክል አይደለም።");
+            }
+            updateView();
+        }
+
+        function handleAgreePolicy() {
+            localStorage.setItem('fasil_policy_agreed', 'true');
+            alert("✅ በፖሊሲው ተስማምተዋል። ወደ ዳሽቦርድ ይቀጥሉ።");
+            window.location.hash = '#dashboard';
+            updateView();
+        }
+
+        function handleExitPolicy() {
+             alert("🚪 ከአገልግሎቱ ወጥተዋል!");
+             localStorage.removeItem('fasil_current_user_phone');
+             localStorage.removeItem('fasil_policy_agreed'); 
+             window.location.hash = '#home-view';
+             updateView();
+        }
+
+        // Premium Access መቆጣጠር
+        function checkPremiumAccess(destinationHash) {
+            if (getCurrentUserTier() !== 'premium') {
+                alert("🛑 ይህ Premium አገልግሎት ነው። እባክዎ ይመዝገቡና ክፍያ ይክፈሉ።");
+                window.location.hash = '#pricing';
+                updateView();
+            } else {
+                window.location.hash = '#' + destinationHash;
+                updateView();
+            }
+        }
+
+
+        // --- የክፍያ ተግባራት (Payment Functions) ---
+
+        function selectPlan(planKey) {
+            if (!getCurrentUserPhone()) { 
+                alert("🔴 እባክዎ ለመቀጠል ይግቡ!"); 
+                window.location.hash = '#login-form';
+                return; 
+            }
+            selectedPlan = planKey;
+            const planDetails = PLANS[selectedPlan];
+            
+            document.getElementById('selected-plan-info').textContent = 
+                `የመረጡት እቅድ: ${planDetails.name} - ${planDetails.price}`;
+
+            window.location.hash = '#payment-methods';
+            updateView();
+        }
+
+        function processPayment(method) {
+            if (!selectedPlan || !getCurrentUserPhone()) { return; }
+
+            const planDetails = PLANS[selectedPlan];
+            showLoading(`...ክፍያውን በ ${method} በማስፈጸም ላይ (${planDetails.price})...`);
+
+            setTimeout(() => {
+                hideLoading();
+                
+                const userPhone = getCurrentUserPhone();
+                if (userPhone) {
+                    setRegisteredUser(userPhone, null, 'premium');
+                    currentSubscription = 'premium';
+                    
+                    alert(`✅ እንኳን ደስ አለዎት! የ${planDetails.name} (${planDetails.price}) ክፍያ ተፈጽሟል! አሁን የPremium ተጠቃሚ ነዎት።`);
+                    
+                    window.location.hash = '#dashboard';
+                    updateView();
+                } 
+            }, 3000); 
+        }
+
+        // --- Wallet Functions (Local Storage Only) ---
+        function handleWalletAction(action) {
+             if (!getCurrentUserPhone()) { 
+                alert("🔴 እባክዎ ለመቀጠል ይግቡ!"); 
+                window.location.hash = '#login-form';
+                return; 
+            }
+
+            if (action === 'deposit') {
+                 window.location.hash = '#deposit-money';
+            } else if (action === 'withdraw') {
+                 window.location.hash = '#withdraw-money';
+            }
+            updateView();
+        }
+
+        function handleDepositPayment() {
+            const currency = document.getElementById('deposit-currency').value;
+            const etbAmount = parseFloat(document.getElementById('deposit-amount-etb').value);
+            
+            if (isNaN(etbAmount) || etbAmount < 10) {
+                 alert("🔴 እባክዎ ትክክለኛ የብር መጠን (ከ 10 ETB በላይ) ያስገቡ።");
+                 return;
+            }
+
+            const rate = DUMMY_RATES[currency];
+            const usdEquivalent = (etbAmount / rate).toFixed(2); 
+
+            showLoading(`...${etbAmount} ETB ወደ ${usdEquivalent} ${currency} ለመቀየር ክፍያ እየተፈጸመ ነው...`);
+
+            setTimeout(() => {
+                 hideLoading();
+                 
+                 let currentUsd = parseFloat(localStorage.getItem('fasil_wallet_usd') || 0);
+                 currentUsd += parseFloat(usdEquivalent); 
+
+                 localStorage.setItem('fasil_wallet_usd', currentUsd.toFixed(2));
+                 
+                 alert(`✅ ${etbAmount} ETB ተቀይሮ ${usdEquivalent} ${currency} (USD) በመዝገብዎ ላይ ተቀምጧል።`);
+                 
+                 window.location.hash = '#dashboard';
+                 updateView();
+            }, 3000);
+        }
+
+        function handleWithdrawTransfer() {
+            const method = document.getElementById('withdraw-method').value;
+            const usdAmount = parseFloat(document.getElementById('withdraw-amount-usd').value);
+            const recipientEmail = document.getElementById('withdraw-recipient-email').value.trim();
+
+            let currentUsd = parseFloat(localStorage.getItem('fasil_wallet_usd') || 0);
+
+            if (isNaN(usdAmount) || usdAmount < 1) {
+                alert("🔴 እባክዎ የሚያወጡትን የዶላር መጠን (ከ 1 USD በላይ) በትክክል ያስገቡ።");
+                return;
+            }
+            if (usdAmount > currentUsd) {
+                alert(`🛑 በቂ ሚዛን የለዎትም። ያለው ሚዛን: ${currentUsd} USD።`);
+                return;
+            }
+            if (!recipientEmail.includes('@') || !recipientEmail.includes('.')) {
+                 alert("🔴 ትክክለኛ የኢሜይል አድራሻ ማስገባት ያስፈልጋል።");
+                 return;
+            }
+
+            showLoading(`...${usdAmount} USD ወደ ${method} (${recipientEmail}) በመላክ ላይ...`);
+
+            setTimeout(() => {
+                 hideLoading();
+                 
+                 currentUsd -= usdAmount;
+                 localStorage.setItem('fasil_wallet_usd', currentUsd.toFixed(2));
+                 
+                 alert(`✅ ${usdAmount} USD ወደ ${method} በተሳካ ሁኔታ ተልኳል!`);
+                 
+                 window.location.hash = '#dashboard';
+                 updateView();
+            }, 4000);
+        }
+
+
+        // --- ዓለም አቀፍ ግዥ (Global Purchase Handlers - Dummy) ---
+        function handleGlobalPurchase(service) {
+            showLoading(`...የ ${service} አገልግሎት የዋጋ ስሌት በመፈለግ ላይ...`);
+            setTimeout(() => {
+                hideLoading();
+                alert(`🌐 የ ${service} ግዢ በትክክለኛው የምንዛሪ ተመን እና የአገልግሎት ክፍያ (Service Fee) ተሰልቶ ወደ ክፍያ ገጽ ይሄድ ነበር።`);
+            }, 2500);
+        }
+
+        function handleOtherPurchase() {
+            alert("❓ ሌላ አገልግሎት መግዛት ከፈለጉ፣ ወደ የድጋፍ መስመራችን (Support) መረጃ እንዲልኩ ይላካሉ።");
+        }
+
+
+        // --- የፖስት እና የDelete ተግባራት (Post & Delete Functions) ---
+        
+        function savePost(type, title, content) {
+            const userPhone = getCurrentUserPhone();
+            if (!userPhone) return;
+            
+            let posts = JSON.parse(localStorage.getItem(`fasil_posts_${type}`) || '[]');
+            posts.unshift({
+                id: Date.now(),
+                title: title,
+                content: content,
+                date: new Date().toLocaleDateString('am-ET'),
+                type: type,
+                postedBy: userPhone 
+            });
+            localStorage.setItem(`fasil_posts_${type}`, JSON.stringify(posts));
+        }
+
+        /**
+         * 🛑 ማሻሻያ: ጽሑፍ መለጠፍ አሁን ወደ /api/post-text እውነተኛ fetch ጥሪ ያደርጋል
+         */
+        async function handlePostText() { 
+            if (!getCurrentUserPhone()) { alert("🔴 ለመለጠፍ መግባት ያስፈልግዎታል!"); return; }
+            const title = document.getElementById('post-text-title').value.trim();
+            const content = document.getElementById('post-text-content').value.trim();
+            if (!title || !content) { alert("🔴 ርዕስ እና መልዕክት ማስገባት ግዴታ ነው።"); return; }
+            
+            const userPhone = getCurrentUserPhone();
+            showLoading("...መልዕክቱን ወደ ሰርቨር በመላክ ላይ...");
+
+            try {
+                // 🛑 ወደ Vercel Serverless Function ትክክለኛ ጥሪ
+                const response = await fetch('/api/post-text', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        title: title, 
+                        content: content,
+                        postedBy: userPhone // የላኪውን ስልክ ቁጥር ይልካል
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // ስኬታማ ከሆነ፣ የBackend ምላሽን ተጠቅሞ በLocal Storage ያስቀምጡ (ጊዜያዊ)
+                    savePost('text', data.title, data.content || "የተለጠፈ መልዕክት (API Success)");
+                    alert("✅ ጽሑፍዎ በተሳካ ሁኔታ ተልኮ በሰርቨር ተመዝግቧል።");
+                    window.location.hash = '#view-text';
+                } else {
+                    alert(`🔴 ስህተት ተፈጥሯል: ${data.error || 'ያልታወቀ የሰርቨር ችግር'} (ኮድ: ${response.status})`);
+                }
+
+            } catch (error) {
+                alert("🔴 ስህተት: ከሰርቨሩ ጋር መገናኘት አልተቻለም (Network/CORS Issue)። እባክዎ የpost-text.js ፋይል በትክክል መሰራቱን ያረጋግጡ።");
+                console.error('API Error:', error);
+            } finally {
+                hideLoading();
+                updateView();
+            }
+        }
+        
+        function handlePostDocument(type) {
+             if (!getCurrentUserPhone() || getCurrentUserTier() !== 'premium') { return; } 
+             
+             const titleId = type === 'PDF' ? 'post-pdf-title' : 'post-powerpoint-title';
+             const title = document.getElementById(titleId).value.trim();
+             
+             if (!title) { alert(`🔴 የ${type} ሰነድ ርዕስ ማስገባት ግዴታ ነው።`); return; }
+             
+             savePost(type.toLowerCase(), title, `የ${type} ሰነድ: ${title} - (Backend Generation Required)`);
+             alert(`✅ የ${type} ሰነድ ዝግጅት ትዕዛዝዎ ተልኳል። ሲጠናቀቅ ማየት ይችላሉ።`);
+             window.location.hash = '#dashboard';
+             updateView();
+        }
+
+        function handlePostImage() { 
+             if (!getCurrentUserPhone()) { alert("🔴 ለመለጠፍ መግባት ያስፈልግዎታል!"); return; }
+             const title = document.getElementById('post-image-title').value.trim();
+             const fileInput = document.getElementById('image-file');
+             const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "ምስል አልተመረጠም";
+             
+             if (!title || fileInput.files.length === 0) {
+                 alert("🔴 ርዕስ እና የምስል ፋይል መምረጥ ግዴታ ነው።");
+                 return;
+             }
+             savePost('image', title, fileName); 
+             alert("✅ ምስልዎ በተሳካ ሁኔታ ተለጥፏል።");
+             window.location.hash = '#view-image';
+             updateView();
+        }
+
+        function handlePostAudio() { 
+             if (!getCurrentUserPhone()) { alert("🔴 ለመለጠፍ መግባት ያስፈልግዎታል!"); return; }
+             const title = document.getElementById('post-audio-title').value.trim();
+             const fileInput = document.getElementById('audio-file');
+             const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "ኦዲዮ አልተመረጠም";
+             
+             if (!title || fileInput.files.length === 0) {
+                 alert("🔴 ርዕስ እና የኦዲዮ ፋይል መምረጥ ግዴታ ነው።");
+                 return;
+             }
+             savePost('audio', title, fileName); 
+             alert("✅ ኦዲዮዎ በተሳካ ሁኔታ ተለጥፏል።");
+             window.location.hash = '#view-audio';
+             updateView();
+        }
+
+        // የተለጠፉ ይዘቶችን መመልከት (Display Logic - Local Storage)
+        function renderPosts(type) {
+            const containerId = `${type}-posts-container`;
+            const postContainer = document.getElementById(containerId);
+            
+            let posts = JSON.parse(localStorage.getItem(`fasil_posts_${type}`) || '[]');
+            postContainer.innerHTML = ''; 
+
+            if (posts.length === 0) {
+                postContainer.innerHTML = `<p class="no-content">❌ ምንም የተለጠፈ **${type === 'text' ? 'ፅሑፍ/መረጃ' : type === 'image' ? 'ምስል/ፎቶ' : 'ኦዲዮ/ድምፅ'}** ፋይል የለም።</p>`;
+            } else {
+                posts.forEach(post => {
+                    let displayContent = '';
+                    if (type === 'text') {
+                        displayContent = `<p class="post-content">${post.content}</p>`;
+                    } else if (type === 'image') {
+                         displayContent = `
+                             <p class="post-content" style="font-weight: bold; color: #007bff;">[የምስል ፋይል: ${post.content}]</p>
+                             <p style="font-size: 14px;">(ምስሉ በ Backend ሲገነባ ይታያል)</p>
+                         `;
+                    } else if (type === 'audio') {
+                         displayContent = `
+                             <p class="post-content" style="font-weight: bold; color: #007bff;">[የኦዲዮ ፋይል: ${post.content}]</p>
+                             <p style="font-size: 14px;">(ኦዲዮው በ Backend ሲገነባ ይሰማል)</p>
+                         `;
+                    }
+
+                    postContainer.innerHTML += `
+                        <div class="post-item">
+                            <h4 class="post-title">${post.title}</h4>
+                            ${displayContent}
+                            <span class="post-date">የተለጠፈበት ቀን: ${post.date}</span>
+                            <p style="font-size: 12px; color: #777;">የለጠፈው: ${post.postedBy.substring(0, 4)}***${post.postedBy.substring(post.postedBy.length - 4)}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // ለ Delete ገጽ ማዘጋጀት
+        function prepareDelete(type) {
+            if (!getCurrentUserPhone()) {
+                alert("🔴 ፋይሎችን ለመደለት መጀመሪያ መግባት ያስፈልግዎታል።");
+                window.location.hash = '#login-form';
+                updateView();
+                return;
+            }
+            deleteFileType = type;
+            window.location.hash = '#delete-file-view';
+            updateView();
+        }
+
+        // ሁሉንም ልጥፎች ማሳየት ግን የሌሎችን መደለት መከልከል
+        function renderDeletePosts(type) {
+            const container = document.getElementById('delete-posts-container');
+            const titleElement = document.getElementById('delete-view-title');
+            container.innerHTML = '';
+            
+            titleElement.textContent = `🗑️ የተለጠፉ ${type === 'text' ? 'ጽሑፎችን' : type === 'image' ? 'ምስሎችን' : 'ኦዲዮዎችን'} መደለት`;
+            
+            const userPhone = getCurrentUserPhone();
+            if (!userPhone) return;
+
+            let posts = JSON.parse(localStorage.getItem(`fasil_posts_${type}`) || '[]');
+            
+            if (posts.length === 0) { 
+                container.innerHTML = `<p class="no-content">❌ ምንም የተለጠፈ **${type}** ፋይል አልተገኘም።</p>`;
+            } else {
+                posts.forEach(post => {
+                    const isMyPost = post.postedBy === userPhone;
+                    
+                    let actionButton = '';
+                    if (isMyPost) {
+                        actionButton = `
+                            <button class="delete-btn" style="width: 100%; padding: 10px; margin-top: 10px;" 
+                                    onclick="deletePost('${type}', ${post.id})">
+                                መድለት
+                            </button>
+                        `;
+                    } else {
+                        actionButton = `
+                            <button class="delete-btn" style="background-color: #f7a31b; color: #333; width: 100%;" 
+                                    onclick="alert('❌ ይህ የርስዎ ልጥፍ አይደለም። የሌሎች ሰዎችን ልጥፍ መደለት አይችሉም።')">
+                                የሌላ ሰው ልጥፍ (መደለት አይቻልም)
+                            </button>
+                        `;
+                    }
+                    
+                    container.innerHTML += `
+                        <div class="post-item" id="delete-item-${post.id}">
+                            <h4 class="post-title">${post.title}</h4>
+                            <p>ቀን: ${post.date}</p>
+                            <p style="font-size: 12px; color: #777;">የለጠፈው: ${post.postedBy.substring(0, 4)}***${post.postedBy.substring(post.postedBy.length - 4)}</p>
+                            ${actionButton}
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // ፋይልን ከ Local Storage የማደለት ተግባር
+        function deletePost(type, id) {
+            if (!confirm("በእርግጥ ይህንን ፋይል መደለት ይፈልጋሉ?")) {
+                return;
+            }
+            
+            const userPhone = getCurrentUserPhone();
+            if (!userPhone) {
+                alert("🔴 እባክዎ መጀመሪያ ይግቡ!");
+                return;
+            }
+
+            let posts = JSON.parse(localStorage.getItem(`fasil_posts_${type}`) || '[]');
+            
+            const postToDelete = posts.find(post => post.id === id);
+            
+            if (postToDelete && postToDelete.postedBy !== userPhone) {
+                 alert("❌ ይቅርታ! ይህ ፋይል የርስዎ ስላልሆነ መደለት አይችሉም።");
+                 return;
+            }
+
+            const initialLength = posts.length;
+            
+            posts = posts.filter(post => post.id !== id);
+            
+            if (posts.length < initialLength) {
+                localStorage.setItem(`fasil_posts_${type}`, JSON.stringify(posts));
+                alert("✅ ፋይሉ በተሳካ ሁኔታ ተደልቷል።");
+                renderDeletePosts(type); 
+            } else {
+                alert("⚠️ ችግር: ፋይሉን ማግኘት አልተቻለም።");
+            }
+        }
+
+        // --- ሌሎች Handlers (Dummy) ---
+
+        function handleFeedback(type) {
+            alert(`⭐ ሀሳብዎን በ ${type} መልክ ለመቅዳት / ለመፃፍ የሚያስችል ቅጽ ይከፈት ነበር።`);
+        }
+
+        function handleFeedbackView(type) {
+            alert(`👀 በ ${type} መልክ የተሰጡ አስተያየቶችን ከ Backend በመጎተት የማሳያ ገጽ ይከፈት ነበር።`);
+        }
+
+
+        // --- ገጽታ ቁጥጥር (View Controller) ---
+        function updateView() {
+            const sections = document.querySelectorAll('.section');
+            const hash = window.location.hash.substring(1) || 'home-view';
+            const userPhone = getCurrentUserPhone();
+            const userTier = getCurrentUserTier();
+            
+            updateWalletDisplay();
+
+            sections.forEach(element => {
+                 element.style.display = (element.id === hash) ? 'block' : 'none';
+            });
+
+            if (userPhone && localStorage.getItem('fasil_policy_agreed') !== 'true' && 
+                hash !== 'privacy-policy' && hash !== 'policy-disagree') {
+                
+                window.location.hash = '#privacy-policy';
+                return; 
+            }
+
+            if (!userPhone && hash !== 'home-view' && hash !== 'signup-form' && hash !== 'login-form' && hash !== 'pricing' && hash !== 'policy-disagree' && hash !== 'privacy-policy' ) {
+                 alert("🔴 እባክዎ ለመቀጠል ይግቡ!");
+                 window.location.hash = '#login-form';
+                 return;
+            }
+            
+            const imageNotice = document.getElementById('image-quality-notice');
+            if (imageNotice) {
+                 imageNotice.textContent = (userTier === 'premium') ? 
+                     "✅ Premium: ምስሉ በከፍተኛ ጥራት እና AI ማሻሻያ ይለጠፋል።" : 
+                     "⚠️ Free: ምስሉ በዝቅተኛ ጥራት ይለጠፋል። ለከፍተኛ ጥራት የ Premium አገልግሎት ያስፈልጋል።";
+            }
+            
+            if (hash === 'deposit-money') {
+                 const currency = document.getElementById('deposit-currency').value;
+                 const rate = DUMMY_RATES[currency] || 55.00;
+                 document.getElementById('exchange-rate-info').textContent = `የምንዛሪ ተመን: 1 ${currency} = ${rate.toFixed(2)} ETB (Dummy Rate)`;
+            }
+
+            if (hash === 'view-text') {
+                renderPosts('text');
+            } else if (hash === 'view-image') {
+                renderPosts('image');
+            } else if (hash === 'view-audio') {
+                renderPosts('audio');
+            } else if (hash === 'delete-file-view') {
+                renderDeletePosts(deleteFileType);
+            }
+        }
+
+        window.addEventListener('hashchange', updateView);
+        window.addEventListener('DOMContentLoaded', updateView); 
+    </script>
+</body>
+</html>
