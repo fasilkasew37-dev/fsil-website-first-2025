@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="app-title">ፋሲል ዌብ አፕ - Fasil Web App (V14.0)</title>
+    <style>
+        /* --- መደበኛ CSS --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .section {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-top: 6px solid var(--primary-color, #007bff);
+            text-align: left;
+            /* ይህ መደበኛ መደበቂያ ነው፤ ልዩ ገፆች ብቻ ይታያሉ */
+            display: none; 
+        }
+        /* --- መጀመሪያ የሚታየው ገጽ (Agreement View) --- */
+        #agreement-view {
+            display: block; /* ይህ ገጽ መጀመሪያ ላይ ይታያል */
+        }
+        
+        h1 { color: var(--primary-color, #007bff); font-size: 32px; margin-bottom: 10px; text-align: center; }
+        h2 { color: #555; font-size: 24px; margin-top: 25px; margin-bottom: 25px; text-align: center; }
+        
+        /* --- የግብዓት ስታይሎች --- */
+        input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea, input[type="file"] {
+            width: 90%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        
+        /* --- የአዝራር መሰረት (Stacked Layout) --- */
+        .button-link, button {
+            display: block;
+            width: 90%;
+            padding: 18px;
+            margin: 15px auto;
+            text-align: center;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 18px;
+            border: none;
+        }
+
+        /* --- የአዝራር ቀለሞች --- */
+        .main-btn { background-color: var(--primary-color, #007bff); color: white; }
+        .success-btn { background-color: #28a745; color: white; }
+        .delete-btn { background-color: #dc3545; color: white; }
+        .premium-btn { background-color: #ffc107; color: #333; }
+        .feature-btn { background-color: #8c5aee; color: white; }
+        .business-btn { background-color: #00a08e; color: white; }
+        .social-btn { background-color: #ff7043; color: white; }
+        .language-btn { background-color: #6c757d; color: white; }
+
+        /* --- ካርዶች እና ልዩ ቦታዎች --- */
+        .intro-text-box {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary-color, #007bff);
+        }
+        .alert-box {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .error-alert { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* --- Loading Spinner --- */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid var(--primary-color, #007bff);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* --- Business Balance Display --- */
+        .balance-display {
+            background-color: #00a08e;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .balance-display h3 {
+            margin: 0 0 5px 0;
+            font-size: 20px;
+        }
+        .balance-display p {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 5px 0 10px 0;
+        }
+
+        /* --- Agreement View Specific --- */
+        .agreement-box {
+            background-color: #ffe0b2; /* Light orange background */
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 5px solid #ff9800; /* Orange border */
+            font-size: 16px;
+            color: #333;
+        }
+        .agreement-box h3 {
+            color: #d84315; /* Deep orange */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loading-message">... እየተጫነ ነው (Loading) ...</p>
+    </div>
+
+    <div class="section" id="agreement-view">
+        <h1 id="agreement-title">እንኳን ወደ ፋሲል ዌብ በደህና መጡ</h1>
+        <div class="intro-text-box">
+            <h3 id="intro-title-agreement">🌐 ስለ ፋሲል ዌብ አፕ</h3>
+            <p id="intro-text-agreement">
+                <strong>ፋሲል ዌብ አፕ</strong> በተአማኒነት እንዲሰራ የተቀየሰ የዲጂታል መጋሪያ መድረክ ሲሆን 
+                በተጨማሪም እንደ **ፓወር ፖይንት** እና **ፒዲኤፍ** ያሉ አገልግሎቶችን ያቀርባል።
+            </p>
+        </div>
+        
+        <div class="agreement-box">
+            <h3 id="strict-rules-title">⚠️ ጥብቅ የአጠቃቀም መመሪያ</h3>
+            <p id="strict-rules-text">
+                በዚህ መድረክ ላይ የሚከተሉትን ነገሮች ማካሄድ በጥብቅ የተከለከለ ነው፡
+                <br>
+                **ፖለቲካዊ ግጭት፣ የሃይማኖት ጥላቻ፣ ዘረኝነት ወይም ሌላ ማንኛውንም የግጭት አጀንዳ ማካሄድ አይቻልም።**
+            </p>
+        </div>
+
+        <h2 style="text-align: center; margin-top: 30px;" id="agreement-prompt">ይህን መመሪያ ተቀብለው ይቀጥላሉ?</h2>
+
+        <button class="success-btn" onclick="handleAgreement('agree')" id="agree-btn">
+            ✅ እስማማለሁ
+        </button>
+        <button class="delete-btn" onclick="handleAgreement('disagree')" id="disagree-btn">
+            ❌ አልስማማም (ውጣ)
+        </button>
+        
+        <button class="language-btn" onclick="toggleLanguage()" id="language-toggle-btn-agreement" style="margin-top: 20px;">
+            ቋንቋ ለመቀየር (English)
+        </button>
+    </div>
+
+    <div class="section" id="home-view">
+        <h1 id="home-title">የመግቢያ/መመዝገቢያ ምርጫ</h1>
+        
+        <h2 style="text-align: center;" id="use-prompt">እንዴት መጠቀም ይፈልጋሉ?</h2>
+        
+        <a href="#signup-form" class="button-link main-btn" id="signup-free-btn">በነፃ ለመመዝገብ / ለመግባት</a>
+        <a href="#premium-options" class="button-link premium-btn" onclick="checkFreeSignupForPremiumAndGoToOptions(event)" id="signup-premium-btn">በክፍያ አማራጭ ለመመዝገብ</a>
+        
+        <button class="language-btn" onclick="toggleLanguage()" id="language-toggle-btn">
+            ቋንቋ ለመቀየር (English)
+        </button>
+        
+        <button class="delete-btn" onclick="showView('agreement-view')" style="background-color: #6c757d; margin-top: 30px;" id="back-to-agreement">ወደ መመሪያ ተመለስ</button>
+    </div>
+
+    <div class="section" id="signup-form">
+        <h2 id="signup-title-h2">አዲስ ተጠቃሚ ይመዝገቡ (ነፃ)</h2>
+        <div class="alert-box error-alert" id="signup-error" style="display: none;"></div>
+        
+        <input type="text" id="signup-name" placeholder="ሙሉ ስም" required>
+        <input type="text" id="signup-phone" placeholder="ስልክ ቁጥር (ለመግቢያ/Login)" required>
+        <input type="email" id="signup-email" placeholder="ኢሜል" required>
+        <input type="password" id="signup-password" placeholder="የይለፍ ቃል (ባለ 6 አሀዝ)" required maxlength="6">
+        
+        <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="profile-prompt">**እባክዎ የፕሮፋይል ፎቶ ያስገቡ**</p>
+        <input type="file" id="signup-profile-photo" accept="image/*" style="width: 90%; margin-bottom: 20px;">
+        
+        <button class="main-btn" onclick="handleSignUp()" id="signup-btn">መዝግብ (Sign Up)</button>
+        
+        <p style="text-align: center; margin-top: 20px;"><a href="#login-form" id="login-link">የተመዘገቡ ተጠቃሚ ከሆኑ ይግቡ (Log In)</a></p>
+    </div>
+
+    <div class="section" id="login-form">
+        <h2 id="login-title-h2">መግቢያ (Log In)</h2>
+        <div class="alert-box error-alert" id="login-error" style="display: none;"></div>
+        <input type="text" id="login-phone" placeholder="ስልክ ቁጥር" required>
+        <input type="password" id="login-password" placeholder="የይለፍ ቃል" required>
+        
+        <button class="success-btn" onclick="handleLogin()" id="login-btn">ግባ (Log In)</button>
+        
+        <p style="text-align: center; margin-top: 20px;"><a href="#signup-form" id="signup-link">አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)</a></p>
+    </div>
+
+    <div class="section" id="free-dashboard">
+        <h1 id="free-dashboard-title">ነፃ የአገልግሎት ማዕከል (Dashboard)</h1>
+        
+        <h2 style="margin-top: 30px;" id="free-services-h2">ነፃ አገልግሎቶች:</h2>
+        
+        <a href="#view-select" class="button-link main-btn" id="view-info-btn">
+            📄 መረጃ መመልከት (View)
+        </a>
+        <a href="#post-select" class="button-link main-btn" id="post-info-btn">
+            ✍️ መረጃ መለጠፍ / ማጋራት (Post/Share)
+        </a>
+        
+        <a href="#group-chat" class="button-link social-btn" onclick="handleGroup('Group')" id="create-group-btn">
+            👥 ቡድን ለመፍጠር
+        </a>
+        <a href="#private-chat" class="button-link social-btn" onclick="handleGroup('Private')" id="private-chat-btn">
+            💬 በውስጥ መስመር ከጓደኞች ጋር ለማውራት
+        </a>
+
+        <a href="#business-dashboard" class="button-link business-btn" id="business-btn-free">
+            💰 ቢዝነስ (Business)
+        </a>
+        
+        <a href="#change-password" class="button-link language-btn" id="change-password-btn-free" style="background-color: #6c757d;">
+            🔒 የይለፍ ቃል ለመቀየር
+        </a>
+
+        <a href="#delete-select" class="button-link delete-btn" id="delete-info-btn" style="margin-top: 5px;">
+            🗑️ የለጠፉትን መረጃ መደለት
+        </a>
+        
+        <a href="#premium-options" class="button-link feature-btn" style="margin-top: 20px;" id="visit-premium-btn-free">
+            ⭐️ የክፍያ አገልግሎታችን ይጎብኙ (Visit Premium Features)
+        </a>
+
+        <a href="#home-view" class="button-link delete-btn" style="background-color: #6c757d; margin-top: 20px;" id="back-to-home-free" onclick="handleLogout()">ውጣ (Log Out)</a>
+    </div>
+
+    <div class="section" id="premium-dashboard">
+        <h1 id="premium-dashboard-title">⭐️ የክፍያ የአገልግሎት ማዕከል (Premium Dashboard)</h1>
+        
+        <h2 style="margin-top: 30px;" id="premium-features-h2">ፕሪሚየም ተግባራት:</h2>
+        
+        <button class="main-btn" onclick="handlePremiumFeature('ppt_creation')" id="ppt-creation-btn">
+            📊 ፓወር ፖይንት ማዘጋጀት
+        </button>
+        <button class="main-btn" onclick="handlePremiumFeature('pdf_management')" id="pdf-management-btn">
+            📄 ፒዲኤፍ መለጠፍ / ማዘጋጀት
+        </button>
+        <button class="main-btn" onclick="handlePremiumFeature('quality_video')" id="quality-video-btn">
+            🎥 ጥራቱ የጠበቀ ቪዲዮ መመልከት
+        </button>
+        <button class="main-btn" onclick="handlePremiumFeature('news')" id="news-btn">
+            📰 ዜና መከታተል / መለጠፍ
+        </button>
+        
+        <h2 style="margin-top: 30px;" id="basic-features-h2">መሰረታዊ ተግባራት:</h2>
+
+        <a href="#view-select" class="button-link success-btn" id="view-info-btn-p">
+            📄 መረጃ መመልከት (View)
+        </a>
+        <a href="#post-select" class="button-link success-btn" id="post-info-btn-p">
+            ✍️ መረጃ መለጠፍ / ማጋራት (Post/Share)
+        </a>
+        
+        <a href="#group-chat" class="button-link social-btn" onclick="handleGroup('Group')" id="create-group-btn-p">
+            👥 ቡድን ለመፍጠር
+        </a>
+        <a href="#private-chat" class="button-link social-btn" onclick="handleGroup('Private')" id="private-chat-btn-p">
+            💬 በውስጥ መስመር ከጓደኞች ጋር ለማውራት
+        </a>
+
+        <a href="#business-dashboard" class="button-link business-btn" style="margin-top: 30px;" id="business-btn-p">
+            💰 ቢዝነስ (Business)
+        </a>
+
+        <a href="#change-password" class="button-link language-btn" id="change-password-btn-premium" style="background-color: #6c757d;">
+            🔒 የይለፍ ቃል ለመቀየር
+        </a>
+        
+        <a href="#delete-select" class="button-link delete-btn" style="margin-top: 5px;" id="delete-info-btn-p">
+            🗑️ የለጠፉትን መረጃ መደለት
+        </a>
+
+        <a href="#home-view" class="button-link delete-btn" style="background-color: #6c757d; margin-top: 20px;" id="back-to-home-premium" onclick="handleLogout()">ውጣ (Log Out)</a>
+    </div>
+    
+    <div class="section" id="premium-options">
+        <h2 id="premium-options-h2">⭐️ በክፍያ አማራጭ የሚገኙ አገልግሎቶች</h2>
+        <p style="text-align: center;" id="premium-options-prompt">ለመጠቀም ከሚፈልጉት አገልግሎት አንዱን ይምረጡ።</p>
+        
+        <button class="feature-btn" onclick="goToPricing('quality_video')" id="feature-quality-video">
+            🎥 ጥራቱ የጠበቀ ቪዲዮ መመልከት
+        </button>
+        <button class="feature-btn" onclick="goToPricing('news')" id="feature-news">
+            📰 ዜና መከታተል / መለጠፍ
+        </button>
+        <button class="feature-btn" onclick="goToPricing('ppt_creation')" id="feature-ppt-creation">
+            📊 ፓወር ፖይንት ማዘጋጀት
+        </button>
+        <button class="feature-btn" onclick="goToPricing('pdf_management')" id="feature-pdf-management">
+            📄 ፒዲኤፍ መለጠፍ / ማዘጋጀት
+        </button>
+        
+        <a href="#business-dashboard" class="button-link business-btn" style="margin-top: 30px;" id="business-btn-options">
+            💰 ቢዝነስ (Business)
+        </a>
+
+        <a href="#home-view" class="button-link delete-btn" style="margin-top: 30px;" id="back-to-home-options" onclick="handleLogout()">ውጣ (Log Out)</a>
+    </div>
+
+    <div class="section" id="pricing">
+        <h2 id="pricing-h2">የክፍያ አማራጮች (Premium Plans)</h2>
+        <p style="text-align: center;" id="pricing-context">ይህንን አገልግሎት ለመጠቀም የሚፈልጉትን የክፍያ ፕላን ይምረጡ።</p>
+        
+        <div class="plan-card" onclick="selectPlan('daily', 5)"><h3 id="plan-daily-title">ዕለታዊ (Daily)</h3><p id="plan-daily-price">5 ብር (ETB)</p><button class="success-btn" style="width: 80%; padding: 10px;" id="plan-daily-btn">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('monthly', 30)"><h3 id="plan-monthly-title">ወርሃዊ (Monthly)</h3><p id="plan-monthly-price">30 ብር (ETB)</p><button class="success-btn" style="width: 80%; padding: 10px;" id="plan-monthly-btn">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('yearly', 100)"><h3 id="plan-yearly-title">ዓመታዊ (Yearly)</h3><p id="plan-yearly-price">100 ብር (ETB)</p><button class="success-btn" style="width: 80%; padding: 10px;" id="plan-yearly-btn">ይህን ምረጥ</button></div>
+        
+        <a href="#premium-options" class="button-link delete-btn" id="back-to-features-btn">ወደ አገልግሎት ዝርዝር ተመለስ</a>
+    </div>
+    
+    <div class="section" id="payment-methods">
+        <h2 id="payment-h2">ክፍያ ይፈፅሙ (Payment)</h2>
+        <p id="selected-plan-info" style="font-weight: bold; color: #007bff; text-align: center;"></p>
+        
+        <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="receipt-prompt">**እባክዎ የከፈሉበትን ደረሰኝ ፎቶ ያስገቡ**</p>
+        <input type="file" id="receipt-photo" accept="image/*" style="width: 90%; margin-bottom: 20px;">
+
+        <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="payment-method-prompt">**ለመክፈል ዘዴ ይምረጡ**</p>
+
+        <button class="main-btn" onclick="processPayment('Telebirr')" id="pay-telebirr">በቴሌብር (Telebirr) ይክፈሉ</button>
+        <button class="main-btn" onclick="processPayment('CBE')" id="pay-cbe">በCBE የባንክ ዝውውር ይክፈሉ</button>
+        <button class="main-btn" onclick="processPayment('PayPal')" id="pay-paypal">በፔይፓል (PayPal) ይክፈሉ</button>
+
+        <a href="#pricing" class="button-link delete-btn" id="back-to-pricing-btn">ወደ ፕላኖች ተመለስ</a>
+    </div>
+
+    <div class="section" id="business-dashboard">
+        <h2 id="business-h2">💰 የቢዝነስ ማዕከል</h2>
+        
+        <div class="balance-display">
+            <h3 id="balance-title">የእርስዎ የሚዛን መጠን:</h3>
+            <p id="business-balance-display">0.00 USD</p>
+        </div>
+        
+        <p style="font-size: 14px; color: #777; margin-bottom: 25px;" id="balance-note">
+            ይህ ገንዘብ ከዋጋ ንረት (Inflation) እና ከብር (ETB) መዳከም ለመከላከል ሲባል **ወደ ዶላር ($)** ተቀይሮ ይቀመጣል።
+        </p>
+
+        <a href="#deposit" class="button-link success-btn" onclick="checkAuthAndRedirect('deposit')" id="deposit-btn">
+            💵 ገንዘብ ለማስቀመጥ
+        </a>
+        <a href="#withdraw" class="button-link main-btn" onclick="checkAuthAndRedirect('withdraw')" id="withdraw-btn">
+            💸 ገንዘብ ለማውጣት
+        </a>
+        <a href="#international-purchase" class="button-link premium-btn" onclick="checkAuthAndRedirect('international')" id="international-purchase-btn">
+            🌐 ዓለም አቀፍ ግዢዎችን ለመፈጸም
+        </a>
+
+        <button class="delete-btn" onclick="goBackToDashboard()" style="background-color: #6c757d;" id="back-to-dashboard-btn">ወደ ኋላ ተመለስ</button>
+    </div>
+
+    <div class="section" id="deposit">
+        <h2 id="deposit-h2">💵 ገንዘብ ለማስቀመጥ</h2>
+        <div class="alert-box error-alert" id="deposit-error" style="display: none;"></div>
+        
+        <input type="number" id="deposit-etb" placeholder="የETB መጠን ያስገቡ" required min="100">
+        
+        <select id="deposit-currency" style="width: 90%; margin-bottom: 20px;">
+            <option value="" disabled selected id="deposit-currency-placeholder">የሚቀየርለትን ምንዛሬ ይምረጡ</option>
+            <option value="USD">ዶላር (USD)</option>
+            <option value="EUR">ዩሮ (EUR)</option>
+            <option value="GBP">የእንግሊዝ ፓውንድ (GBP)</option>
+        </select>
+        
+        <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="deposit-receipt-prompt">**እባክዎ ገንዘብ ያስተላለፉበትን ደረሰኝ ፎቶ ያስገቡ**</p>
+        <input type="file" id="deposit-receipt-photo" accept="image/*" style="width: 90%; margin-bottom: 20px;">
+        
+        <button class="success-btn" onclick="handleDeposit()" id="deposit-submit-btn">ገንዘብ አስቀምጥ</button>
+        <a href="#business-dashboard" class="button-link delete-btn" id="back-to-business-deposit">ወደ ቢዝነስ ማዕከል ተመለስ</a>
+    </div>
+
+    <div class="section" id="withdraw">
+        <h2 id="withdraw-h2">💸 ገንዘብ ማውጣት</h2>
+        <div class="alert-box error-alert" id="withdraw-error" style="display: none;"></div>
+        
+        <input type="number" id="withdraw-amount" placeholder="ለማውጣት የሚፈልጉትን የዶላር መጠን ያስገቡ ($)" required min="1">
+        
+        <select id="withdraw-currency" style="width: 90%; margin-bottom: 20px;">
+            <option value="" disabled selected id="withdraw-currency-placeholder">ለመቀየር እና ለማውጣት የሚፈልጉት ምንዛሬ</option>
+            <option value="USD">ዶላር (USD)</option>
+            <option value="EUR">ዩሮ (EUR)</option>
+            <option value="GBP">ፓውንድ (GBP)</option>
+            <option value="ETB">ኢትዮጵያ ብር (ETB)</option>
+        </select>
+        
+        <select id="withdraw-method" style="width: 90%; margin-bottom: 20px;" onchange="updateReceiverInputPlaceholder()">
+            <option value="" disabled selected id="withdraw-method-placeholder">ገንዘቡን የሚያወጡበት ዘዴ</option>
+            <option value="Telebirr">ቴሌብር (Telebirr)</option>
+            <option value="CBE">ሲ.ቢ.ኢ (CBE) ባንክ</option>
+            <option value="PayPal">ፔይፓል (PayPal)</option>
+        </select>
+
+        <input type="text" id="receiver-input" placeholder="ተቀባይ መረጃ" required style="display: none;">
+        
+        <button class="main-btn" onclick="handleWithdraw()" id="withdraw-submit-btn">ገንዘብ አውጣ</button>
+        <a href="#business-dashboard" class="button-link delete-btn" id="back-to-business-withdraw">ወደ ቢዝነስ ማዕከል ተመለስ</a>
+    </div>
+
+    <div class="section" id="international-purchase">
+        <h2 id="international-purchase-h2">🌐 ዓለም አቀፍ ግዢዎችን ለመፈጸም</h2>
+        <p style="text-align: center; margin-bottom: 25px;" id="international-purchase-prompt">ለተለያዩ ዓለም አቀፍ ዲጂታል አገልግሎቶች በዶላር ይክፈሉ።</p>
+        
+        <button class="premium-btn" onclick="handlePurchaseSecurity('ChatGPT')" id="purchase-chatgpt">
+            🤖 ChatGPT ($20.00)
+        </button>
+        <button class="premium-btn" onclick="handlePurchaseSecurity('GeminiAdvanced')" id="purchase-gemini">
+            ✨ Gemini Advanced ($19.99)
+        </button>
+        <button class="premium-btn" onclick="handlePurchaseSecurity('Amazon')" id="purchase-amazon">
+            📦 Amazon ግዢ ($15.00)
+        </button>
+        <button class="premium-btn" onclick="handlePurchaseSecurity('Domain')" id="purchase-domain">
+            🔗 ዶሜን / ሆስቲንግ ግዢ ($12.00)
+        </button>
+        <button class="premium-btn" onclick="handlePurchaseSecurity('GoogleCloud')" id="purchase-gcloud">
+            ☁️ Google Cloud/AWS ክፍያ ($10.00)
+        </button>
+
+        <a href="#business-dashboard" class="button-link delete-btn" style="margin-top: 30px;" id="back-to-business-purchase">ወደ ቢዝነስ ማዕከል ተመለስ</a>
+    </div>
+    
+    <div class="section" id="change-password">
+        <h2 id="change-password-h2">🔒 የይለፍ ቃል ለመቀየር</h2>
+        <div class="alert-box error-alert" id="password-error" style="display: none;"></div>
+        
+        <input type="password" id="current-password" placeholder="የድሮውን የይለፍ ቃል ያስገቡ" required maxlength="6">
+        <input type="password" id="new-password" placeholder="አዲስ የይለፍ ቃል ያስገቡ (6 አሀዝ)" required maxlength="6">
+        <input type="password" id="confirm-password" placeholder="አዲስ የይለፍ ቃል ያረጋግጡ" required maxlength="6">
+
+        <button class="main-btn" onclick="handleChangePassword()" id="change-password-submit">የይለፍ ቃል ይቀይሩ</button>
+        <button class="delete-btn" onclick="goBackToDashboard()" id="back-to-dashboard-password">ወደ ኋላ ተመለስ</button>
+    </div>
+
+    <div class="section" id="view-select">
+        <h2 id="view-select-h2">📄 መረጃ መመልከት</h2>
+        <p id="view-select-prompt">የትኛውን አይነት መረጃ መመልከት ይፈልጋሉ?</p>
+        
+        <a href="#view-text" class="button-link main-btn" id="view-text-btn">ፅሁፍ / ቴክስት</a>
+        <a href="#view-image" class="button-link main-btn" id="view-image-btn">ምስል / ፎቶ</a>
+        <a href="#view-audio" class="button-link main-btn" id="view-audio-btn">ቪዲዮ / ኦዲዮ</a>
+        
+        <button class="delete-btn" onclick="goBackToDashboard()" id="view-select-back">ወደ ኋላ ተመለስ</button>
+    </div>
+    
+    <div class="section" id="post-select">
+        <h2 id="post-select-h2">✍️ መረጃ መለጠፍ / ማጋራት</h2>
+        <p id="post-select-prompt">የትኛውን አይነት ይዘት መለጠፍ ይፈልጋሉ?</p>
+        
+        <a href="#post-text" class="button-link main-btn" id="post-text-btn">ፅሁፍ / ቴክስት ለመለጠፍ</a>
+        <a href="#post-image" class="button-link main-btn" id="post-image-btn">ምስል / ፎቶ ለመለጠፍ</a>
+        <a href="#post-audio" class="button-link main-btn" id="post-audio-btn">ቪዲዮ / ኦዲዮ ለመለጠፍ</a>
+        
+        <button class="delete-btn" onclick="goBackToDashboard()" id="post-select-back">ወደ ኋላ ተመለስ</button>
+    </div>
+
+    <div class="section" id="delete-select">
+        <h2 id="delete-select-h2">🗑️ የለጠፉትን መረጃ መደለት</h2>
+        <p id="delete-select-prompt">የትኛውን አይነት መረጃ መደለት ይፈልጋሉ?</p>
+        
+        <select id="delete-file-type" style="width: 90%; margin-bottom: 20px;">
+            <option value="text" id="delete-option-text">ፅሁፍ / ቴክስት</option>
+            <option value="image" id="delete-option-image">ምስል / ፎቶ</option>
+            <option value="audio" id="delete-option-audio">ቪዲዮ / ኦዲዮ</option>
+        </select>
+        
+        <button class="delete-btn" onclick="showDeleteList()" id="show-delete-list-btn">ፋይሎች ዝርዝር አሳይ (ለመደለት)</button>
+        
+        <button class="main-btn" style="background-color: #6c757d;" onclick="goBackToDashboard()" id="delete-select-back">ወደ ኋላ ተመለስ</button>
+    </div>
+    
+    <div class="section" id="post-text">
+        <h2 id="post-text-h2">✍️ አዲስ ጽሑፍ ለመለጠፍ</h2>
+        <input type="text" id="post-text-title" placeholder="ርዕስ (Title)" required>
+        <textarea id="post-text-content" rows="10" placeholder="ፅሑፉን እዚህ ያስገቡ..." required></textarea>
+        <button class="main-btn" onclick="handlePost('text')" id="post-text-submit">ይለጥፉ (Post Text)</button>
+        <a href="#post-select" class="button-link delete-btn" id="post-text-back">ወደ መለጠፊያ ምድብ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="post-image">
+        <h2 id="post-image-h2">🖼️ አዲስ ምስል ለመለጠፍ</h2>
+        <input type="text" id="post-image-title" placeholder="ርዕስ (Title)" required>
+        <label for="post-image-file" style="display: block; margin: 15px 0 5px; font-weight: bold; width: 90%; margin-left: 5%;" id="post-image-label">የሚለጥፉትን ምስል ይምረጡ</label>
+        <input type="file" id="post-image-file" accept="image/*" style="width: 90%; margin-bottom: 20px;">
+        <button class="main-btn" onclick="handlePost('image')" id="post-image-submit">ይለጥፉ (Post Image)</button>
+        <a href="#post-select" class="button-link delete-btn" id="post-image-back">ወደ መለጠፊያ ምድብ ተመለስ</a>
+    </div>
+
+    <div class="section" id="post-audio">
+        <h2 id="post-audio-h2">🎧 አዲስ ቪዲዮ / ኦዲዮ ለመለጠፍ</h2>
+        <input type="text" id="post-audio-title" placeholder="ርዕስ (Title)" required>
+        <label for="post-audio-file" style="display: block; margin: 15px 0 5px; font-weight: bold; width: 90%; margin-left: 5%;" id="post-audio-label">የሚለጥፉትን ኦዲዮ/ቪዲዮ ይምረጡ</label>
+        <input type="file" id="post-audio-file" accept="audio/*,video/*" style="width: 90%; margin-bottom: 20px;">
+        <button class="main-btn" onclick="handlePost('audio')" id="post-audio-submit">ይለጥፉ (Post Audio/Video)</button>
+        <a href="#post-select" class="button-link delete-btn" id="post-audio-back">ወደ መለጠፊያ ምድብ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-text">
+        <h2 id="view-text-h2">📄 የተለጠፈ ጽሑፍ/መረጃ መመልከት</h2>
+        <div id="text-posts-container">
+            <p style="text-align: center; color: #777;" id="no-text-posts">ምንም ፅሁፎች የሉም።</p>
+        </div>
+        <a href="#view-select" class="button-link delete-btn" id="view-text-back">ወደ መመልከቻ ምድብ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="view-image">
+        <h2 id="view-image-h2">🖼️ የተለጠፈ ምስል/ፎቶ መመልከት</h2>
+        <div id="image-posts-container">
+            <p style="text-align: center; color: #777;" id="no-image-posts">ምንም ምስሎች የሉም።</p>
+        </div>
+        <a href="#view-select" class="button-link delete-btn" id="view-image-back">ወደ መመልከቻ ምድብ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-audio">
+        <h2 id="view-audio-h2">🎧 የተለጠፈ ቪዲዮ/ኦዲዮ መመልከት</h2>
+        <div id="audio-posts-container">
+            <p style="text-align: center; color: #777;" id="no-audio-posts">ምንም ቪዲዮ/ኦዲዮ ፋይሎች የሉም።</p>
+        </div>
+        <a href="#view-select" class="button-link delete-btn" id="view-audio-back">ወደ መመልከቻ ምድብ ተመለስ</a>
+    </div>
+
+    <div class="section" id="delete-file-view">
+        <h2 id="delete-file-view-h2">🗑️ የፋይሎች ዝርዝር (ለመደለጥ)</h2>
+        <div id="deletable-posts-container">
+            <p style="text-align: center; color: #777;" id="no-deletable-posts">እርስዎ የለጠፉት ፋይል የለም።</p>
+        </div>
+        <a href="#delete-select" class="button-link delete-btn" id="delete-file-view-back">ወደ መደለቻ ምድብ ተመለስ</a>
+    </div>
+
+<script>
+        let currentSubscription = 'none';
+        let selectedPlan = null;
+        let selectedPrice = 0;
+        let selectedFeature = null;
+        let posts = JSON.parse(localStorage.getItem('fasil_app_posts') || '[]');
+        let currentLanguage = localStorage.getItem('fasil_app_lang') || 'am'; // ቋንቋው በሎካል ስቶሬጅ ይቀመጣል
+        let currentUser = JSON.parse(localStorage.getItem('fasil_app_user'));
+
+        // --- Language dictionary ---
+        const dictionary = {
+            'am': {
+                'app-title': 'ፋሲል ዌብ አፕ - Fasil Web App (V14.0)',
+                
+                // Agreement View
+                'agreement-title': 'እንኳን ወደ ፋሲል ዌብ በደህና መጡ',
+                'intro-title-agreement': '🌐 ስለ ፋሲል ዌብ አፕ',
+                'intro-text-agreement': '<strong>ፋሲል ዌብ አፕ</strong> በተአማኒነት እንዲሰራ የተቀየሰ የዲጂታል መጋሪያ መድረክ ሲሆን በተጨማሪም እንደ **ፓወር ፖይንት** እና **ፒዲኤፍ** ያሉ አገልግሎቶችን ያቀርባል።',
+                'strict-rules-title': '⚠️ ጥብቅ የአጠቃቀም መመሪያ',
+                'strict-rules-text': 'በዚህ መድረክ ላይ የሚከተሉትን ነገሮች ማካሄድ በጥብቅ የተከለከለ ነው፡<br> **ፖለቲካዊ ግጭት፣ የሃይማኖት ጥላቻ፣ ዘረኝነት ወይም ሌላ ማንኛውንም የግጭት አጀንዳ ማካሄድ አይቻልም።**',
+                'agreement-prompt': 'ይህን መመሪያ ተቀብለው ይቀጥላሉ?',
+                'agree-btn': '✅ እስማማለሁ',
+                'disagree-btn': '❌ አልስማማም (ውጣ)',
+                'language-toggle-btn-agreement': 'ቋንቋ ለመቀየር (English)',
+                'alert-disagree': 'መመሪያውን ባለመቀበልዎ ምክንያት መጠቀም አይችሉም።',
+
+                // Home View (Login/Signup Selection)
+                'home-title': 'የመግቢያ/መመዝገቢያ ምርጫ',
+                'use-prompt': 'እንዴት መጠቀም ይፈልጋሉ?',
+                'signup-free-btn': 'በነፃ ለመመዝገብ / ለመግባት',
+                'signup-premium-btn': 'በክፍያ አማራጭ ለመመዝገብ',
+                'language-toggle-btn': 'ቋንቋ ለመቀየር (English)',
+                'back-to-agreement': 'ወደ መመሪያ ተመለስ',
+                
+                // Sign Up/Login
+                'signup-title-h2': 'አዲስ ተጠቃሚ ይመዝገቡ (ነፃ)',
+                'signup-name-ph': 'ሙሉ ስም',
+                'signup-phone-ph': 'ስልክ ቁጥር (ለመግቢያ/Login)',
+                'signup-email-ph': 'ኢሜል',
+                'signup-password-ph': 'የይለፍ ቃል (ባለ 6 አሀዝ)',
+                'profile-prompt': '**እባክዎ የፕሮፋይል ፎቶ ያስገቡ**',
+                'signup-btn': 'መዝግብ (Sign Up)',
+                'login-link': 'የተመዘገቡ ተጠቃሚ ከሆኑ ይግቡ (Log In)',
+                'login-title-h2': 'መግቢያ (Log In)',
+                'login-phone-ph': 'ስልክ ቁጥር',
+                'login-password-ph': 'የይለፍ ቃል',
+                'login-btn': 'ግባ (Log In)',
+                'signup-link': 'አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)',
+                'error-fill-all': 'ሁሉንም መስኮች በትክክል ይሙሉ (ፓስወርድ 6 አሀዝ መሆን አለበት)።',
+                'error-no-profile': 'እባክዎ የምዝገባ ፕሮፋይል ፎቶ ያስገቡ።',
+                'error-already-registered': '⚠️ በዚህ ስልክ ቁጥር ተመዝግበዋል። ድጋሜ መመዝገብ አይቻልም! እባክዎ ይግቡ።',
+                'alert-signed-up': 'እንኳን ደስ አልዎ! $NAME ተመዝግበዋል! አሁን ወደ ነፃ ዳሽቦርድ ይወስደዎታል።',
+                'error-login-fill': 'የስልክ ቁጥር እና የይለፍ ቃል ያስገቡ።',
+                'error-login-fail': 'ትክክለኛ ያልሆነ ስልክ ቁጥር ወይም የይለፍ ቃል።',
+                'error-premium-signup-required': '⚠️ የክፍያ አማራጮችን ከመመልከትዎ በፊት እባክዎ በነፃ ይመዝገቡ (Sign Up) ወይም ይግቡ (Log In)።',
+                'alert-logout': 'ከአገልግሎቱ ወጥተዋል (Logged Out)!',
+                
+                // Free Dashboard
+                'free-dashboard-title': 'ነፃ የአገልግሎት ማዕከል (Dashboard)',
+                'free-services-h2': 'ነፃ አገልግሎቶች:',
+                'view-info-btn': '📄 መረጃ መመልከት (View)',
+                'post-info-btn': '✍️ መረጃ መለጠፍ / ማጋራት (Post/Share)',
+                'create-group-btn': '👥 ቡድን ለመፍጠር',
+                'private-chat-btn': '💬 በውስጥ መስመር ከጓደኞች ጋር ለማውራት',
+                'business-btn-free': '💰 ቢዝነስ (Business)',
+                'change-password-btn-free': '🔒 የይለፍ ቃል ለመቀየር',
+                'delete-info-btn': '🗑️ የለጠፉትን መረጃ መደለት',
+                'visit-premium-btn-free': '⭐️ የክፍያ አገልግሎታችን ይጎብኙ (Visit Premium Features)',
+                'back-to-home-free': 'ውጣ (Log Out)',
+                
+                // Premium Dashboard
+                'premium-dashboard-title': '⭐️ የክፍያ የአገልግሎት ማዕከል (Premium Dashboard)',
+                'premium-features-h2': 'ፕሪሚየም ተግባራት:',
+                'ppt-creation-btn': '📊 ፓወር ፖይንት ማዘጋጀት',
+                'pdf-management-btn': '📄 ፒዲኤፍ መለጠፍ / ማዘጋጀት',
+                'quality-video-btn': '🎥 ጥራቱ የጠበቀ ቪዲዮ መመልከት',
+                'news-btn': '📰 ዜና መከታተል / መለጠፍ',
+                'basic-features-h2': 'መሰረታዊ ተግባራት:',
+                'back-to-home-premium': 'ውጣ (Log Out)',
+                
+                // Premium Options
+                'premium-options-h2': '⭐️ በክፍያ አማራጭ የሚገኙ አገልግሎቶች',
+                'premium-options-prompt': 'ለመጠቀም ከሚፈልጉት አገልግሎት አንዱን ይምረጡ።',
+                'feature-quality-video': '🎥 ጥራቱ የጠበቀ ቪዲዮ መመልከት',
+                'feature-news': '📰 ዜና መከታተል / መለጠፍ',
+                'feature-ppt-creation': '📊 ፓወር ፖይንት ማዘጋጀት',
+                'feature-pdf-management': '📄 ፒዲኤፍ መለጠፍ / ማዘጋጀት',
+                'business-btn-options': '💰 ቢዝነስ (Business)',
+                'back-to-home-options': 'ውጣ (Log Out)',
+
+                // Pricing
+                'pricing-h2': 'የክፍያ አማራጮች (Premium Plans)',
+                'pricing-context': 'ይህንን አገልግሎት ለመጠቀም የሚፈልጉትን የክፍያ ፕላን ይምረጡ።',
+                'plan-daily-title': 'ዕለታዊ (Daily)',
+                'plan-daily-price': '5 ብር (ETB)',
+                'plan-daily-btn': 'ይህን ምረጥ',
+                'plan-monthly-title': 'ወርሃዊ (Monthly)',
+                'plan-monthly-price': '30 ብር (ETB)',
+                'plan-monthly-btn': 'ይህን ምረጥ',
+                'plan-yearly-title': 'ዓመታዊ (Yearly)',
+                'plan-yearly-price': '100 ብር (ETB)',
+                'plan-yearly-btn': 'ይህን ምረጥ',
+                'back-to-features-btn': 'ወደ አገልግሎት ዝርዝር ተመለስ',
+                'alert-plan-selected': '$PLAN: $PRICE ብር መርጠዋል። አሁን ወደ ክፍያ ይወስደዎታል።',
+
+                // Payment
+                'payment-h2': 'ክፍያ ይፈፅሙ (Payment)',
+                'receipt-prompt': '**እባክዎ የከፈሉበትን ደረሰኝ ፎቶ ያስገቡ**',
+                'payment-method-prompt': '**ለመክፈል ዘዴ ይምረጡ**',
+                'pay-telebirr': 'በቴሌብር (Telebirr) ይክፈሉ',
+                'pay-cbe': 'በCBE የባንክ ዝውውር ይክፈሉ',
+                'pay-paypal': 'በፔይፓል (PayPal) ይክፈሉ',
+                'back-to-pricing-btn': 'ወደ ፕላኖች ተመለስ',
+                'error-receipt': 'እባክዎ የክፍያ ደረሰኝ ፎቶ ያስገቡ።',
+                'alert-payment-success': 'ክፍያዎ በስኬት ተልኳል! ከ1-2 ሰዓት ውስጥ ፕሪሚየም አገልግሎት ይጀምርልዎታል።',
+
+                // Business Dashboard
+                'business-h2': '💰 የቢዝነስ ማዕከል',
+                'balance-title': 'የእርስዎ የሚዛን መጠን:',
+                'balance-note': 'ይህ ገንዘብ ከዋጋ ንረት (Inflation) እና ከብር (ETB) መዳከም ለመከላከል ሲባል **ወደ ዶላር ($)** ተቀይሮ ይቀመጣል።',
+                'deposit-btn': '💵 ገንዘብ ለማስቀመጥ',
+                'withdraw-btn': '💸 ገንዘብ ለማውጣት',
+                'international-purchase-btn': '🌐 ዓለም አቀፍ ግዢዎችን ለመፈጸም',
+                'back-to-dashboard-btn': 'ወደ ኋላ ተመለስ',
+
+                // Deposit
+                'deposit-h2': '💵 ገንዘብ ለማስቀመጥ',
+                'deposit-etb-ph': 'የETB መጠን ያስገቡ',
+                'deposit-currency-placeholder': 'የሚቀየርለትን ምንዛሬ ይምረጡ',
+                'deposit-receipt-prompt': '**እባክዎ ገንዘብ ያስተላለፉበትን ደረሰኝ ፎቶ ያስገቡ**',
+                'deposit-submit-btn': 'ገንዘብ አስቀምጥ',
+                'back-to-business-deposit': 'ወደ ቢዝነስ ማዕከል ተመለስ',
+                'error-deposit-amount': 'የሚቀመጠው መጠን 100 ETB ወይም ከዚያ በላይ መሆን አለበት።',
+                'error-deposit-currency': 'እባክዎ የሚቀየርለትን ምንዛሬ ይምረጡ።',
+                'error-deposit-receipt': 'እባክዎ የደረሰኝ ፎቶ ያስገቡ።',
+                'alert-deposit-success': 'የገንዘብ ማስቀመጫ ጥያቄዎ በስኬት ተልኳል።',
+
+                // Withdraw
+                'withdraw-h2': '💸 ገንዘብ ማውጣት',
+                'withdraw-amount-ph': 'ለማውጣት የሚፈልጉትን የዶላር መጠን ያስገቡ ($)',
+                'withdraw-currency-placeholder': 'ለመቀየር እና ለማውጣት የሚፈልጉት ምንዛሬ',
+                'withdraw-method-placeholder': 'ገንዘቡን የሚያወጡበት ዘዴ',
+                'withdraw-submit-btn': 'ገንዘብ አውጣ',
+                'back-to-business-withdraw': 'ወደ ቢዝነስ ማዕከል ተመለስ',
+                'error-withdraw-amount': 'ለማውጣት የሚፈልጉትን የዶላር መጠን (ከ1$ በላይ) ያስገቡ።',
+                'error-withdraw-currency': 'እባክዎ ለማውጣት የሚፈልጉትን ምንዛሬ ይምረጡ።',
+                'error-withdraw-method': 'እባክዎ ገንዘቡን የሚያወጡበትን ዘዴ ይምረጡ።',
+                'error-receiver-input': 'እባክዎ ትክክለኛውን ተቀባይ መረጃ ያስገቡ።',
+                'alert-withdraw-success': 'የገንዘብ ማውጫ ጥያቄዎ በስኬት ተልኳል።',
+                'receiver-telebirr-ph': 'የቴሌብር ስልክ ቁጥር ያስገቡ',
+                'receiver-cbe-ph': 'የCBE አካውንት ቁጥር ያስገቡ',
+                'receiver-paypal-ph': 'የ PayPal ኢሜል አድራሻ ያስገቡ',
+
+                // International Purchase
+                'international-purchase-h2': '🌐 ዓለም አቀፍ ግዢዎችን ለመፈጸም',
+                'international-purchase-prompt': 'ለተለያዩ ዓለም አቀፍ ዲጂታል አገልግሎቶች በዶላር ይክፈሉ።',
+                'purchase-chatgpt': '🤖 ChatGPT ($20.00)',
+                'purchase-gemini': '✨ Gemini Advanced ($19.99)',
+                'purchase-amazon': '📦 Amazon ግዢ ($15.00)',
+                'purchase-domain': '🔗 ዶሜን / ሆስቲንግ ግዢ ($12.00)',
+                'purchase-gcloud': '☁️ Google Cloud/AWS ክፍያ ($10.00)',
+                'back-to-business-purchase': 'ወደ ቢዝነስ ማዕከል ተመለስ',
+                'prompt-purchase-security': 'እባክዎ የይለፍ ቃልዎን በማስገባት ለ$ITEM ግዢውን ያረጋግጡ።',
+                'error-purchase-password': 'የይለፍ ቃልዎ ትክክል አይደለም።',
+                'alert-purchase-success': 'የ$ITEM ግዢዎ በስኬት ተልኳል።',
+
+                // Change Password
+                'change-password-h2': '🔒 የይለፍ ቃል ለመቀየር',
+                'current-password-ph': 'የድሮውን የይለፍ ቃል ያስገቡ',
+                'new-password-ph': 'አዲስ የይለፍ ቃል ያስገቡ (6 አሀዝ)',
+                'confirm-password-ph': 'አዲስ የይለፍ ቃል ያረጋግጡ',
+                'change-password-submit': 'የይለፍ ቃል ይቀይሩ',
+                'back-to-dashboard-password': 'ወደ ኋላ ተመለስ',
+                'error-password-match': 'አዲሶቹ የይለፍ ቃሎች አይዛመዱም።',
+                'error-old-password': 'የድሮ የይለፍ ቃልዎ ትክክል አይደለም።',
+                'alert-password-success': 'የይለፍ ቃልዎ በስኬት ተቀይሯል።',
+
+                // View Select
+                'view-select-h2': '📄 መረጃ መመልከት',
+                'view-select-prompt': 'የትኛውን አይነት መረጃ መመልከት ይፈልጋሉ?',
+                'view-text-btn': 'ፅሁፍ / ቴክስት',
+                'view-image-btn': 'ምስል / ፎቶ',
+                'view-audio-btn': 'ቪዲዮ / ኦዲዮ',
+                'view-select-back': 'ወደ ኋላ ተመለስ',
+
+                // Post Select
+                'post-select-h2': '✍️ መረጃ መለጠፍ / ማጋራት',
+                'post-select-prompt': 'የትኛውን አይነት ይዘት መለጠፍ ይፈልጋሉ?',
+                'post-text-btn': 'ፅሁፍ / ቴክስት ለመለጠፍ',
+                'post-image-btn': 'ምስል / ፎቶ ለመለጠፍ',
+                'post-audio-btn': 'ቪዲዮ / ኦዲዮ ለመለጠፍ',
+                'post-select-back': 'ወደ ኋላ ተመለስ',
+                
+                // Delete Select
+                'delete-select-h2': '🗑️ የለጠፉትን መረጃ መደለት',
+                'delete-select-prompt': 'የትኛውን አይነት መረጃ መደለት ይፈልጋሉ?',
+                'delete-option-text': 'ፅሁፍ / ቴክስት',
+                'delete-option-image': 'ምስል / ፎቶ',
+                'delete-option-audio': 'ቪዲዮ / ኦዲዮ',
+                'show-delete-list-btn': 'ፋይሎች ዝርዝር አሳይ (ለመደለት)',
+                'delete-select-back': 'ወደ ኋላ ተመለስ',
+
+                // Post Text
+                'post-text-h2': '✍️ አዲስ ጽሑፍ ለመለጠፍ',
+                'post-text-title-ph': 'ርዕስ (Title)',
+                'post-text-content-ph': 'ፅሑፉን እዚህ ያስገቡ...',
+                'post-text-submit': 'ይለጥፉ (Post Text)',
+                'post-text-back': 'ወደ መለጠፊያ ምድብ ተመለስ',
+                
+                // Post Image
+                'post-image-h2': '🖼️ አዲስ ምስል ለመለጠፍ',
+                'post-image-title-ph': 'ርዕስ (Title)',
+                'post-image-label': 'የሚለጥፉትን ምስል ይምረጡ',
+                'post-image-submit': 'ይለጥፉ (Post Image)',
+                'post-image-back': 'ወደ መለጠፊያ ምድብ ተመለስ',
+                
+                // Post Audio
+                'post-audio-h2': '🎧 አዲስ ቪዲዮ / ኦዲዮ ለመለጠፍ',
+                'post-audio-title-ph': 'ርዕስ (Title)',
+                'post-audio-label': 'የሚለጥፉትን ኦዲዮ/ቪዲዮ ይምረጡ',
+                'post-audio-submit': 'ይለጥፉ (Post Audio/Video)',
+                'post-audio-back': 'ወደ መለጠፊያ ምድብ ተመለስ',
+                
+                // Post Common Errors/Success
+                'error-post-fill': 'እባክዎ ርዕስ እና ይዘት/ፋይል ያስገቡ።',
+                'alert-post-success': 'መረጃው በስኬት ተለጥፏል!',
+                
+                // View Text
+                'view-text-h2': '📄 የተለጠፈ ጽሑፍ/መረጃ መመልከት',
+                'no-text-posts': 'ምንም ፅሁፎች የሉም።',
+                'view-text-back': 'ወደ መመልከቻ ምድብ ተመለስ',
+                
+                // View Image
+                'view-image-h2': '🖼️ የተለጠፈ ምስል/ፎቶ መመልከት',
+                'no-image-posts': 'ምንም ምስሎች የሉም።',
+                'view-image-back': 'ወደ መመልከቻ ምድብ ተመለስ',
+                
+                // View Audio
+                'view-audio-h2': '🎧 የተለጠፈ ቪዲዮ/ኦዲዮ መመልከት',
+                'no-audio-posts': 'ምንም ቪዲዮ/ኦዲዮ ፋይሎች የሉም።',
+                'view-audio-back': 'ወደ መመልከቻ ምድብ ተመለስ',
+
+                // Delete File View
+                'delete-file-view-h2': '🗑️ የፋይሎች ዝርዝር (ለመደለጥ)',
+                'no-deletable-posts': 'እርስዎ የለጠፉት ፋይል የለም።',
+                'delete-file-view-back': 'ወደ መደለቻ ምድብ ተመለስ',
+                'delete-btn-label': 'ደልት',
+                'alert-delete-success': 'ፋይሉ በስኬት ተደልቷል።',
+                'confirm-delete': 'ይህን ፋይል በእርግጠኝነት መደለት ይፈልጋሉ?',
+                
+                // General
+                'loading-message': '... እየተጫነ ነው (Loading) ...',
+                'not-authenticated': '⚠️ ለመጠቀም በመጀመሪያ ይግቡ (Log In)።',
+                'currency-usd': 'ዶላር (USD)',
+                'currency-eur': 'ዩሮ (EUR)',
+                'currency-gbp': 'የእንግሊዝ ፓውንድ (GBP)',
+                'currency-etb': 'ኢትዮጵያ ብር (ETB)',
+                'alert-group-chat': '👥 ወደ ቡድን ውይይት ገጽ እየወሰደ ነው...',
+                'alert-private-chat': '💬 ወደ ግል ውይይት ገጽ እየወሰደ ነው...',
+                'alert-ppt': '📊 የፓወር ፖይንት ማዘጋጃ ገጽ እየተከፈተ ነው...',
+                'alert-pdf': '📄 የፒዲኤፍ ማኔጅመንት ገጽ እየተከፈተ ነው...',
+                'alert-video': '🎥 ከፍተኛ ጥራት ያለው ቪዲዮ እየተከፈተ ነው...',
+                'alert-news': '📰 የዜና መከታተያ ገጽ እየተከፈተ ነው...',
+            },
+            'en': {
+                'app-title': 'Fasil Web App - Fasil Web App (V14.0)',
+
+                // Agreement View
+                'agreement-title': 'Welcome to Fasil Web App',
+                'intro-title-agreement': '🌐 About Fasil Web App',
+                'intro-text-agreement': '<strong>Fasil Web App</strong> is a reliable digital sharing platform designed to work efficiently, offering services like **PowerPoint** and **PDF** management.',
+                'strict-rules-title': '⚠️ Strict Usage Policy',
+                'strict-rules-text': 'The following activities are strictly prohibited on this platform:<br> **Engaging in political conflict, religious hatred, racism, or any other conflict-driven agenda is not allowed.**',
+                'agreement-prompt': 'Do you accept this policy and wish to continue?',
+                'agree-btn': '✅ I Agree',
+                'disagree-btn': '❌ I Disagree (Exit)',
+                'language-toggle-btn-agreement': 'Switch Language (አማርኛ)',
+                'alert-disagree': 'You cannot use the service without accepting the terms.',
+
+                // Home View (Login/Signup Selection)
+                'home-title': 'Login/Signup Selection',
+                'use-prompt': 'How would you like to use the service?',
+                'signup-free-btn': 'Sign Up / Log In for Free',
+                'signup-premium-btn': 'Sign Up for Premium Options',
+                'language-toggle-btn': 'Switch Language (አማርኛ)',
+                'back-to-agreement': 'Back to Policy',
+                
+                // Sign Up/Login
+                'signup-title-h2': 'New User Sign Up (Free)',
+                'signup-name-ph': 'Full Name',
+                'signup-phone-ph': 'Phone Number (for Login)',
+                'signup-email-ph': 'Email',
+                'signup-password-ph': 'Password (6 digits)',
+                'profile-prompt': '**Please upload a profile photo**',
+                'signup-btn': 'Sign Up',
+                'login-link': 'Already Registered? Log In',
+                'login-title-h2': 'Log In',
+                'login-phone-ph': 'Phone Number',
+                'login-password-ph': 'Password',
+                'login-btn': 'Log In',
+                'signup-link': 'New User? Sign Up',
+                'error-fill-all': 'Please fill all fields correctly (Password must be 6 digits).',
+                'error-no-profile': 'Please upload a profile photo for registration.',
+                'error-already-registered': '⚠️ This phone number is already registered. Please Log In.',
+                'alert-signed-up': 'Congratulations, $NAME! You are signed up. Redirecting to Free Dashboard.',
+                'error-login-fill': 'Please enter phone number and password.',
+                'error-login-fail': 'Incorrect phone number or password.',
+                'error-premium-signup-required': '⚠️ Please Sign Up or Log In first before viewing Premium Options.',
+                'alert-logout': 'Successfully Logged Out!',
+                
+                // Free Dashboard
+                'free-dashboard-title': 'Free Service Dashboard',
+                'free-services-h2': 'Free Services:',
+                'view-info-btn': '📄 View Information (View)',
+                'post-info-btn': '✍️ Post / Share Information (Post/Share)',
+                'create-group-btn': '👥 Create Group',
+                'private-chat-btn': '💬 Private Chat with Friends',
+                'business-btn-free': '💰 Business',
+                'change-password-btn-free': '🔒 Change Password',
+                'delete-info-btn': '🗑️ Delete Your Posts',
+                'visit-premium-btn-free': '⭐️ Visit Premium Features',
+                'back-to-home-free': 'Log Out',
+                
+                // Premium Dashboard
+                'premium-dashboard-title': '⭐️ Premium Service Dashboard',
+                'premium-features-h2': 'Premium Features:',
+                'ppt-creation-btn': '📊 Create PowerPoint',
+                'pdf-management-btn': '📄 PDF Management / Posting',
+                'quality-video-btn': '🎥 View Quality Video',
+                'news-btn': '📰 Follow / Post News',
+                'basic-features-h2': 'Basic Features:',
+                'back-to-home-premium': 'Log Out',
+                
+                // Premium Options
+                'premium-options-h2': '⭐️ Premium Available Services',
+                'premium-options-prompt': 'Select one of the services you wish to use.',
+                'feature-quality-video': '🎥 View Quality Video',
+                'feature-news': '📰 Follow / Post News',
+                'feature-ppt-creation': '📊 Create PowerPoint',
+                'feature-pdf-management': '📄 PDF Management / Posting',
+                'business-btn-options': '💰 Business',
+                'back-to-home-options': 'Log Out',
+
+                // Pricing
+                'pricing-h2': 'Pricing Options (Premium Plans)',
+                'pricing-context': 'Select the payment plan you want to use for this service.',
+                'plan-daily-title': 'Daily',
+                'plan-daily-price': '5 Birr (ETB)',
+                'plan-daily-btn': 'Select This',
+                'plan-monthly-title': 'Monthly',
+                'plan-monthly-price': '30 Birr (ETB)',
+                'plan-monthly-btn': 'Select This',
+                'plan-yearly-title': 'Yearly',
+                'plan-yearly-price': '100 Birr (ETB)',
+                'plan-yearly-btn': 'Select This',
+                'back-to-features-btn': 'Back to Features List',
+                'alert-plan-selected': 'You selected $PLAN: $PRICE Birr. Redirecting to payment.',
+
+                // Payment
+                'payment-h2': 'Make Payment',
+                'receipt-prompt': '**Please upload a photo of your payment receipt**',
+                'payment-method-prompt': '**Select Payment Method**',
+                'pay-telebirr': 'Pay with Telebirr',
+                'pay-cbe': 'Pay with CBE Bank Transfer',
+                'pay-paypal': 'Pay with PayPal',
+                'back-to-pricing-btn': 'Back to Plans',
+                'error-receipt': 'Please upload a payment receipt photo.',
+                'alert-payment-success': 'Your payment has been successfully submitted! Premium service will start in 1-2 hours.',
+
+                // Business Dashboard
+                'business-h2': '💰 Business Center',
+                'balance-title': 'Your Current Balance:',
+                'balance-note': 'This money is stored converted to **USD ($)** to protect it from inflation and the weakening of the Ethiopian Birr (ETB).',
+                'deposit-btn': '💵 Deposit Money',
+                'withdraw-btn': '💸 Withdraw Money',
+                'international-purchase-btn': '🌐 Make International Purchases',
+                'back-to-dashboard-btn': 'Go Back',
+
+                // Deposit
+                'deposit-h2': '💵 Deposit Money',
+                'deposit-etb-ph': 'Enter ETB amount',
+                'deposit-currency-placeholder': 'Select currency to convert to',
+                'deposit-receipt-prompt': '**Please upload a photo of the transfer receipt**',
+                'deposit-submit-btn': 'Deposit Money',
+                'back-to-business-deposit': 'Back to Business Center',
+                'error-deposit-amount': 'The deposit amount must be 100 ETB or more.',
+                'error-deposit-currency': 'Please select the currency to convert to.',
+                'error-deposit-receipt': 'Please upload a receipt photo.',
+                'alert-deposit-success': 'Your deposit request has been successfully submitted.',
+
+                // Withdraw
+                'withdraw-h2': '💸 Withdraw Money',
+                'withdraw-amount-ph': 'Enter the Dollar amount to withdraw ($)',
+                'withdraw-currency-placeholder': 'Currency to convert and withdraw',
+                'withdraw-method-placeholder': 'Withdrawal Method',
+                'withdraw-submit-btn': 'Withdraw Money',
+                'back-to-business-withdraw': 'Back to Business Center',
+                'error-withdraw-amount': 'Please enter the dollar amount to withdraw (over $1).',
+                'error-withdraw-currency': 'Please select the currency you wish to withdraw.',
+                'error-withdraw-method': 'Please select the withdrawal method.',
+                'error-receiver-input': 'Please enter the correct receiver information.',
+                'alert-withdraw-success': 'Your withdrawal request has been successfully submitted.',
+                'receiver-telebirr-ph': 'Enter Telebirr Phone Number',
+                'receiver-cbe-ph': 'Enter CBE Account Number',
+                'receiver-paypal-ph': 'Enter PayPal Email Address',
+                
+                // International Purchase
+                'international-purchase-h2': '🌐 Make International Purchases',
+                'international-purchase-prompt': 'Pay for various international digital services in USD.',
+                'purchase-chatgpt': '🤖 ChatGPT ($20.00)',
+                'purchase-gemini': '✨ Gemini Advanced ($19.99)',
+                'purchase-amazon': '📦 Amazon Purchase ($15.00)',
+                'purchase-domain': '🔗 Domain / Hosting Purchase ($12.00)',
+                'purchase-gcloud': '☁️ Google Cloud/AWS Payment ($10.00)',
+                'back-to-business-purchase': 'Back to Business Center',
+                'prompt-purchase-security': 'Please confirm the purchase of $ITEM by entering your password.',
+                'error-purchase-password': 'Your password is incorrect.',
+                'alert-purchase-success': 'Your purchase request for $ITEM has been submitted successfully.',
+
+                // Change Password
+                'change-password-h2': '🔒 Change Password',
+                'current-password-ph': 'Enter old password',
+                'new-password-ph': 'Enter new password (6 digits)',
+                'confirm-password-ph': 'Confirm new password',
+                'change-password-submit': 'Change Password',
+                'back-to-dashboard-password': 'Go Back',
+                'error-password-match': 'New passwords do not match.',
+                'error-old-password': 'Your old password is incorrect.',
+                'alert-password-success': 'Your password has been changed successfully.',
+
+                // View Select
+                'view-select-h2': '📄 View Information',
+                'view-select-prompt': 'What type of information do you want to view?',
+                'view-text-btn': 'Text',
+                'view-image-btn': 'Image / Photo',
+                'view-audio-btn': 'Video / Audio',
+                'view-select-back': 'Go Back',
+
+                // Post Select
+                'post-select-h2': '✍️ Post / Share Information',
+                'post-select-prompt': 'What type of content do you want to post?',
+                'post-text-btn': 'Post Text',
+                'post-image-btn': 'Post Image / Photo',
+                'post-audio-btn': 'Post Video / Audio',
+                'post-select-back': 'Go Back',
+                
+                // Delete Select
+                'delete-select-h2': '🗑️ Delete Your Posts',
+                'delete-select-prompt': 'What type of information do you want to delete?',
+                'delete-option-text': 'Text',
+                'delete-option-image': 'Image / Photo',
+                'delete-option-audio': 'Video / Audio',
+                'show-delete-list-btn': 'Show Files List (to Delete)',
+                'delete-select-back': 'Go Back',
+
+                // Post Text
+                'post-text-h2': '✍️ Post New Text',
+                'post-text-title-ph': 'Title',
+                'post-text-content-ph': 'Enter text content here...',
+                'post-text-submit': 'Post Text',
+                'post-text-back': 'Back to Post Category',
+                
+                // Post Image
+                'post-image-h2': '🖼️ Post New Image',
+                'post-image-title-ph': 'Title',
+                'post-image-label': 'Select the image you want to post',
+                'post-image-submit': 'Post Image',
+                'post-image-back': 'Back to Post Category',
+                
+                // Post Audio
+                'post-audio-h2': '🎧 Post New Video / Audio',
+                'post-audio-title-ph': 'Title',
+                'post-audio-label': 'Select the audio/video you want to post',
+                'post-audio-submit': 'Post Audio/Video',
+                'post-audio-back': 'Back to Post Category',
+                
+                // Post Common Errors/Success
+                'error-post-fill': 'Please enter a title and content/file.',
+                'alert-post-success': 'Information posted successfully!',
+                
+                // View Text
+                'view-text-h2': '📄 View Posted Text/Information',
+                'no-text-posts': 'No text posts found.',
+                'view-text-back': 'Back to View Category',
+                
+                // View Image
+                'view-image-h2': '🖼️ View Posted Image/Photo',
+                'no-image-posts': 'No images found.',
+                'view-image-back': 'Back to View Category',
+                
+                // View Audio
+                'view-audio-h2': '🎧 View Posted Video/Audio',
+                'no-audio-posts': 'No video/audio files found.',
+                'view-audio-back': 'Back to View Category',
+
+                // Delete File View
+                'delete-file-view-h2': '🗑️ File List (to Delete)',
+                'no-deletable-posts': 'You have not posted any files.',
+                'delete-file-view-back': 'Back to Delete Category',
+                'delete-btn-label': 'Delete',
+                'alert-delete-success': 'File successfully deleted.',
+                'confirm-delete': 'Are you sure you want to delete this file?',
+
+                // General
+                'loading-message': '... Loading ...',
+                'not-authenticated': '⚠️ Please Log In first to use this feature.',
+                'currency-usd': 'Dollar (USD)',
+                'currency-eur': 'Euro (EUR)',
+                'currency-gbp': 'Pound (GBP)',
+                'currency-etb': 'Ethiopian Birr (ETB)',
+                'alert-group-chat': '👥 Redirecting to Group Chat page...',
+                'alert-private-chat': '💬 Redirecting to Private Chat page...',
+                'alert-ppt': '📊 Opening PowerPoint creation page...',
+                'alert-pdf': '📄 Opening PDF management page...',
+                'alert-video': '🎥 Opening High-Quality Video view...',
+                'alert-news': '📰 Opening News Feed page...',
+            }
+        };
+
+        // --- Core Functions ---
+
+        // 1. View Toggler
+        function showView(viewId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            const viewElement = document.getElementById(viewId);
+            if (viewElement) {
+                viewElement.style.display = 'block';
+            }
+            if (viewId === 'free-dashboard' || viewId === 'premium-dashboard' || viewId === 'business-dashboard') {
+                updateBalanceDisplay();
+            }
+        }
+
+        // 2. Language Toggle
+        function toggleLanguage() {
+            currentLanguage = (currentLanguage === 'am') ? 'en' : 'am';
+            localStorage.setItem('fasil_app_lang', currentLanguage);
+            applyLanguage();
+            // የመጨረሻውን የቋንቋ ቁልፍ ጽሑፍ ማስተካከል
+            document.getElementById('language-toggle-btn').textContent = dictionary[currentLanguage]['language-toggle-btn'];
+            document.getElementById('language-toggle-btn-agreement').textContent = dictionary[currentLanguage]['language-toggle-btn-agreement'];
+        }
+
+        // 3. Apply Language
+        function applyLanguage() {
+            const langData = dictionary[currentLanguage];
+
+            // ርዕሶችን ማስተካከል
+            document.getElementById('app-title').textContent = langData['app-title'];
+
+            // ጽሑፎችን ማስተካከል (በ ID)
+            for (const key in langData) {
+                const element = document.getElementById(key);
+                if (element) {
+                    // Placeholder Text
+                    if (key.endsWith('-ph')) {
+                        const targetId = key.replace('-ph', '');
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            targetElement.placeholder = langData[key];
+                        }
+                    } 
+                    // Inner HTML/Text Content
+                    else if (key.endsWith('-btn') || key.endsWith('-h2') || key.endsWith('-title') || key.endsWith('-prompt') || key.endsWith('-text') || key.endsWith('-link') || key.endsWith('-note') || key.endsWith('-label') || key.endsWith('-placeholder') || key.endsWith('-context')) {
+                        // የመመዝገቢያ/መግቢያ ቦታዎች (ለተለዋዋጭነት)
+                        if (key === 'intro-text-agreement' || key === 'strict-rules-text' || key === 'profile-prompt') {
+                            element.innerHTML = langData[key];
+                        } else if (!key.includes('language-toggle-btn')) { // የቋንቋ ቁልፉ በራሱ ይስተካከላል
+                             element.textContent = langData[key];
+                        }
+                    }
+                }
+            }
+
+            // የግብዓት ቦታዎችን ፕሌስሆልደር ማስተካከል
+            ['signup-name', 'signup-phone', 'signup-email', 'signup-password', 'login-phone', 'login-password', 'deposit-etb', 'withdraw-amount', 'current-password', 'new-password', 'confirm-password', 'post-text-title', 'post-text-content', 'post-image-title', 'post-audio-title'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.placeholder = langData[`${id}-ph`] || element.placeholder;
+                }
+            });
+
+            // ልዩ የፕሌስሆልደር ማስተካከያ
+            if (document.getElementById('deposit-currency-placeholder')) {
+                document.getElementById('deposit-currency-placeholder').textContent = langData['deposit-currency-placeholder'];
+            }
+            if (document.getElementById('withdraw-currency-placeholder')) {
+                document.getElementById('withdraw-currency-placeholder').textContent = langData['withdraw-currency-placeholder'];
+            }
+            if (document.getElementById('withdraw-method-placeholder')) {
+                document.getElementById('withdraw-method-placeholder').textContent = langData['withdraw-method-placeholder'];
+            }
+            updateReceiverInputPlaceholder(); // ተቀባይ መረጃ ቦታን ማስተካከል
+        }
+
+
+        // 4. Initial Load
+        function initializeApp() {
+            applyLanguage();
+            // መጀመሪያ ላይ የአገልግሎት ስምምነት ገጹን ያሳያል
+            showView('agreement-view'); 
+        }
+
+        // 5. Handle Agreement
+        function handleAgreement(action) {
+            if (action === 'agree') {
+                showView('home-view'); // ከተስማማ ወደ መግቢያ/መመዝገቢያ
+            } else {
+                alert(dictionary[currentLanguage]['alert-disagree']);
+                // ተጠቃሚው እንዳይቀጥል ለማድረግ (ወደ ሌላ ገጽ አያመራም)
+            }
+        }
+
+        // 6. Handle Signup
+        function handleSignUp() {
+            const name = document.getElementById('signup-name').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value.trim();
+            const photoFile = document.getElementById('signup-profile-photo').files[0];
+            const errorBox = document.getElementById('signup-error');
+
+            errorBox.style.display = 'none';
+
+            if (!name || !phone || !email || password.length !== 6) {
+                errorBox.textContent = dictionary[currentLanguage]['error-fill-all'];
+                errorBox.style.display = 'block';
+                return;
+            }
+            if (!photoFile) {
+                errorBox.textContent = dictionary[currentLanguage]['error-no-profile'];
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+            if (users.some(user => user.phone === phone)) {
+                errorBox.textContent = dictionary[currentLanguage]['error-already-registered'];
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // Simulate file upload (store base64 for demo)
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newUser = {
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    password: password,
+                    profilePhoto: e.target.result, // Base64 String
+                    subscription: 'free',
+                    balance: 0.00
+                };
+
+                users.push(newUser);
+                localStorage.setItem('fasil_app_users', JSON.stringify(users));
+
+                currentUser = newUser;
+                localStorage.setItem('fasil_app_user', JSON.stringify(currentUser));
+
+                alert(dictionary[currentLanguage]['alert-signed-up'].replace('$NAME', name));
+                currentSubscription = 'free';
+                showView('free-dashboard');
+            };
+            reader.readAsDataURL(photoFile);
+        }
+
+        // 7. Handle Login
+        function handleLogin() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const errorBox = document.getElementById('login-error');
+
+            errorBox.style.display = 'none';
+
+            if (!phone || !password) {
+                errorBox.textContent = dictionary[currentLanguage]['error-login-fill'];
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+            const user = users.find(u => u.phone === phone && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('fasil_app_user', JSON.stringify(currentUser));
+                currentSubscription = user.subscription;
+
+                if (currentSubscription === 'premium') {
+                    showView('premium-dashboard');
+                } else {
+                    showView('free-dashboard');
+                }
+            } else {
+                errorBox.textContent = dictionary[currentLanguage]['error-login-fail'];
+                errorBox.style.display = 'block';
+            }
+        }
+
+        // 8. Handle Logout
+        function handleLogout() {
+            currentUser = null;
+            currentSubscription = 'none';
+            localStorage.removeItem('fasil_app_user');
+            alert(dictionary[currentLanguage]['alert-logout']);
+            showView('home-view');
+        }
+
+        // 9. Check Auth and Redirect (for Business and Premium)
+        function checkAuthAndRedirect(target) {
+            if (!currentUser) {
+                alert(dictionary[currentLanguage]['not-authenticated']);
+                showView('login-form');
+                return false;
+            }
+            if (target === 'deposit') {
+                showView('deposit');
+            } else if (target === 'withdraw') {
+                showView('withdraw');
+            } else if (target === 'international') {
+                showView('international-purchase');
+            }
+            return true;
+        }
+
+        // 10. Check Free Signup for Premium Options
+        function checkFreeSignupForPremiumAndGoToOptions(event) {
+            if (!currentUser) {
+                event.preventDefault();
+                alert(dictionary[currentLanguage]['error-premium-signup-required']);
+                showView('home-view'); // ወደ ዋናው መግቢያ/መመዝገቢያ ገጽ ይመልሳል
+                return false;
+            }
+            showView('premium-options');
+        }
+
+
+        // 11. Go Back to Dashboard (Utility)
+        function goBackToDashboard() {
+            if (currentSubscription === 'premium') {
+                showView('premium-dashboard');
+            } else if (currentUser) {
+                showView('free-dashboard');
+            } else {
+                showView('home-view');
+            }
+        }
+
+        // 12. Handle Premium Feature Access
+        function handlePremiumFeature(feature) {
+             if (currentSubscription !== 'premium') {
+                alert("ይህ የፕሪሚየም አገልግሎት ነው! እባክዎ በክፍያ ይመዝገቡ።");
+                showView('premium-options');
+                return;
+            }
+            // ለጊዜው ማስታወቂያ ያሳያል
+            switch (feature) {
+                case 'ppt_creation':
+                    alert(dictionary[currentLanguage]['alert-ppt']);
+                    break;
+                case 'pdf_management':
+                    alert(dictionary[currentLanguage]['alert-pdf']);
+                    break;
+                case 'quality_video':
+                    alert(dictionary[currentLanguage]['alert-video']);
+                    break;
+                case 'news':
+                    alert(dictionary[currentLanguage]['alert-news']);
+                    break;
+            }
+        }
+
+        // 13. Premium Flow Functions
+        function goToPricing(feature) {
+            selectedFeature = feature;
+            showView('pricing');
+        }
+
+        function selectPlan(plan, price) {
+            selectedPlan = plan;
+            selectedPrice = price;
+            const planName = dictionary[currentLanguage][`plan-${plan}-title`];
+            alert(dictionary[currentLanguage]['alert-plan-selected'].replace('$PLAN', planName).replace('$PRICE', price));
+
+            document.getElementById('selected-plan-info').textContent = `${planName}: ${price} ${dictionary[currentLanguage]['currency-etb']}`;
+            showView('payment-methods');
+        }
+
+        function processPayment(method) {
+            const receipt = document.getElementById('receipt-photo').files[0];
+            if (!receipt) {
+                alert(dictionary[currentLanguage]['error-receipt']);
+                return;
+            }
+            
+            // Simulate payment processing (delay for realism)
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'flex';
+            document.getElementById('loading-message').textContent = '...ክፍያውን በማጣራት ላይ (Processing Payment)...';
+
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                alert(dictionary[currentLanguage]['alert-payment-success']);
+                
+                // Demo purposes: update user to premium after simulated payment
+                if (currentUser) {
+                    currentUser.subscription = 'premium';
+                    localStorage.setItem('fasil_app_user', JSON.stringify(currentUser));
+                    currentSubscription = 'premium';
+                }
+                showView('premium-dashboard');
+            }, 3000);
+        }
+        
+        // 14. Business Functions
+        function updateBalanceDisplay() {
+            const balanceElement = document.getElementById('business-balance-display');
+            if (currentUser && balanceElement) {
+                balanceElement.textContent = `${currentUser.balance.toFixed(2)} USD`;
+            }
+        }
+
+        // 15. Deposit Handler (Placeholder)
+        function handleDeposit() {
+            const etbAmount = parseFloat(document.getElementById('deposit-etb').value);
+            const currency = document.getElementById('deposit-currency').value;
+            const receiptFile = document.getElementById('deposit-receipt-photo').files[0];
+            const errorBox = document.getElementById('deposit-error');
+            errorBox.style.display = 'none';
+
+            if (isNaN(etbAmount) || etbAmount < 100) {
+                errorBox.textContent = dictionary[currentLanguage]['error-deposit-amount'];
+                errorBox.style.display = 'block';
+                return;
+            }
+            if (!currency) {
+                errorBox.textContent = dictionary[currentLanguage]['error-deposit-currency'];
+                errorBox.style.display = 'block';
+                return;
+            }
+            if (!receiptFile) {
+                errorBox.textContent = dictionary[currentLanguage]['error-deposit-receipt'];
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // Simulate deposit (assuming 1 USD = 55 ETB for demo)
+            const conversionRate = 55; 
+            const usdEquivalent = etbAmount / conversionRate;
+
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'flex';
+            document.getElementById('loading-message').textContent = '...የተቀማጭ ገንዘብዎን በማጣራት ላይ (Processing Deposit)...';
+
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                
+                if (currentUser) {
+                    currentUser.balance += usdEquivalent;
+                    localStorage.setItem('fasil_app_user', JSON.stringify(currentUser));
+                    // Update all users list too (for persistence)
+                    let users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+                    const userIndex = users.findIndex(u => u.phone === currentUser.phone);
+                    if (userIndex !== -1) {
+                        users[userIndex].balance = currentUser.balance;
+                        localStorage.setItem('fasil_app_users', JSON.stringify(users));
+                    }
+                }
+
+                alert(dictionary[currentLanguage]['alert-deposit-success']);
+                showView('business-dashboard');
+            }, 3000);
+        }
+
+        // 16. Withdraw Handler (Placeholder)
+        function handleWithdraw() {
+            const usdAmount = parseFloat(document.getElementById('withdraw-amount').value);
+            const currency = document.getElementById('withdraw-currency').value;
+            const method = document.getElementById('withdraw-method').value;
+            const receiverInput = document.getElementById('receiver-input').value.trim();
+            const errorBox = document.getElementById('withdraw-error');
+            errorBox.style.display = 'none';
+
+            if (isNaN(usdAmount) || usdAmount < 1) {
+                errorBox.textContent = dictionary[currentLanguage]['error-withdraw-amount'];
+                errorBox.style.display = 'block';
+                return;
+            }
+            if (!currency) {
+                errorBox.textContent = dictionary[currentLanguage]['error-withdraw-currency'];
+                errorBox.style.display = 'block';
+                return;
+            }
+            if (!method) {
+                errorBox.textContent = dictionary[currentLanguage]['error-withdraw-method'];
+                errorBox.style.display = 'block';
+                return;
+            }
+            if (!receiverInput) {
+                errorBox.textContent = dictionary[currentLanguage]['error-receiver-input'];
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            if (currentUser.balance < usdAmount) {
+                errorBox.textContent = 'የሚዛንዎ መጠን በቂ አይደለም።';
+                errorBox.style.display = 'block';
+                return;
+            }
+            
+            // Simulate withdrawal (deducting the USD amount)
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'flex';
+            document.getElementById('loading-message').textContent = '...የማውጣት ጥያቄን በማስኬድ ላይ (Processing Withdrawal)...';
+
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                
+                if (currentUser) {
+                    currentUser.balance -= usdAmount;
+                    localStorage.setItem('fasil_app_user', JSON.stringify(currentUser));
+                     // Update all users list too
+                    let users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+                    const userIndex = users.findIndex(u => u.phone === currentUser.phone);
+                    if (userIndex !== -1) {
+                        users[userIndex].balance = currentUser.balance;
+                        localStorage.setItem('fasil_app_users', JSON.stringify(users));
+                    }
+                }
+
+                alert(dictionary[currentLanguage]['alert-withdraw-success']);
+                showView('business-dashboard');
+            }, 3000);
+        }
+
+        // 17. Update Receiver Input Placeholder
+        function updateReceiverInputPlaceholder() {
+            const method = document.getElementById('withdraw-method').value;
+            const receiverInput = document.getElementById('receiver-input');
+            const langData = dictionary[currentLanguage];
+
+            if (method) {
+                receiverInput.style.display = 'block';
+                if (method === 'Telebirr') {
+                    receiverInput.placeholder = langData['receiver-telebirr-ph'];
+                } else if (method === 'CBE') {
+                    receiverInput.placeholder = langData['receiver-cbe-ph'];
+                } else if (method === 'PayPal') {
+                    receiverInput.placeholder = langData['receiver-paypal-ph'];
+                }
+            } else {
+                receiverInput.style.display = 'none';
+                receiverInput.placeholder = 'ተቀባይ መረጃ';
+            }
+        }
+        
+        // 18. International Purchase Security (Placeholder)
+        function handlePurchaseSecurity(item) {
+            const password = prompt(dictionary[currentLanguage]['prompt-purchase-security'].replace('$ITEM', item));
+
+            if (password && currentUser && password === currentUser.password) {
+                const itemPrice = {
+                    'ChatGPT': 20.00,
+                    'GeminiAdvanced': 19.99,
+                    'Amazon': 15.00,
+                    'Domain': 12.00,
+                    'GoogleCloud': 10.00
+                }[item];
+
+                if (currentUser.balance >= itemPrice) {
+                    // Simulate Purchase (deducting the USD amount)
+                    const loadingOverlay = document.getElementById('loading-overlay');
+                    loadingOverlay.style.display = 'flex';
+                    document.getElementById('loading-message').textContent = '...ግዢውን በማስኬድ ላይ (Processing Purchase)...';
+
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                        currentUser.balance -= itemPrice;
+                        localStorage.setItem('fasil_app_user', JSON.stringify(currentUser));
+                         // Update all users list too
+                        let users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+                        const userIndex = users.findIndex(u => u.phone === currentUser.phone);
+                        if (userIndex !== -1) {
+                            users[userIndex].balance = currentUser.balance;
+                            localStorage.setItem('fasil_app_users', JSON.stringify(users));
+                        }
+                        alert(dictionary[currentLanguage]['alert-purchase-success'].replace('$ITEM', item));
+                        showView('business-dashboard');
+                    }, 3000);
+                } else {
+                    alert('⚠️ የቢዝነስ የሚዛን መጠንዎ ለዚህ ግዢ በቂ አይደለም።');
+                }
+            } else if (password !== null) {
+                alert(dictionary[currentLanguage]['error-purchase-password']);
+            }
+        }
+
+        // 19. Change Password
+        function handleChangePassword() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorBox = document.getElementById('password-error');
+            errorBox.style.display = 'none';
+
+            if (!currentUser) {
+                alert(dictionary[currentLanguage]['not-authenticated']);
+                showView('login-form');
+                return;
+            }
+
+            if (newPassword.length !== 6 || confirmPassword.length !== 6) {
+                errorBox.textContent = dictionary[currentLanguage]['error-fill-all'];
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                errorBox.textContent = dictionary[currentLanguage]['error-password-match'];
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            if (currentPassword !== currentUser.password) {
+                errorBox.textContent = dictionary[currentLanguage]['error-old-password'];
+                errorBox.style.display = 'block';
+                return;
+            }
+            
+            // Update password
+            currentUser.password = newPassword;
+            localStorage.setItem('fasil_app_user', JSON.stringify(currentUser));
+
+            // Update all users list too
+            let users = JSON.parse(localStorage.getItem('fasil_app_users') || '[]');
+            const userIndex = users.findIndex(u => u.phone === currentUser.phone);
+            if (userIndex !== -1) {
+                users[userIndex].password = newPassword;
+                localStorage.setItem('fasil_app_users', JSON.stringify(users));
+            }
+
+            alert(dictionary[currentLanguage]['alert-password-success']);
+            goBackToDashboard();
+        }
+
+        // 20. Handle Post
+        function handlePost(type) {
+            if (!currentUser) {
+                alert(dictionary[currentLanguage]['not-authenticated']);
+                showView('login-form');
+                return;
+            }
+
+            let title, content, file, fileData;
+            
+            if (type === 'text') {
+                title = document.getElementById('post-text-title').value.trim();
+                content = document.getElementById('post-text-content').value.trim();
+                if (!title || !content) {
+                    alert(dictionary[currentLanguage]['error-post-fill']);
+                    return;
+                }
+            } else if (type === 'image') {
+                title = document.getElementById('post-image-title').value.trim();
+                file = document.getElementById('post-image-file').files[0];
+                if (!title || !file) {
+                    alert(dictionary[currentLanguage]['error-post-fill']);
+                    return;
+                }
+            } else if (type === 'audio') {
+                title = document.getElementById('post-audio-title').value.trim();
+                file = document.getElementById('post-audio-file').files[0];
+                if (!title || !file) {
+                    alert(dictionary[currentLanguage]['error-post-fill']);
+                    return;
+                }
+            }
+
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'flex';
+            document.getElementById('loading-message').textContent = '...ይዘት እየተለጠፈ ነው (Posting Content)...';
+
+
+            if (file) {
+                // Simulate file read (Base64 for demo purposes)
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileData = e.target.result;
+                    savePost(type, title, content, fileData);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                savePost(type, title, content, null);
+            }
+
+            function savePost(postType, postTitle, postContent, postFileData) {
+                const newPost = {
+                    id: Date.now(),
+                    type: postType,
+                    title: postTitle,
+                    content: postContent,
+                    fileData: postFileData,
+                    uploaderPhone: currentUser.phone,
+                    uploaderName: currentUser.name,
+                    timestamp: new Date().toISOString()
+                };
+
+                posts.push(newPost);
+                localStorage.setItem('fasil_app_posts', JSON.stringify(posts));
+
+                loadingOverlay.style.display = 'none';
+                alert(dictionary[currentLanguage]['alert-post-success']);
+                
+                // Clear inputs
+                if (postType === 'text') {
+                    document.getElementById('post-text-title').value = '';
+                    document.getElementById('post-text-content').value = '';
+                } else if (postType === 'image') {
+                    document.getElementById('post-image-title').value = '';
+                    document.getElementById('post-image-file').value = '';
+                } else if (postType === 'audio') {
+                    document.getElementById('post-audio-title').value = '';
+                    document.getElementById('post-audio-file').value = '';
+                }
+
+                showView('post-select');
+            }
+        }
+        
+        // 21. Display Posts
+        function displayPosts(type, containerId) {
+            const container = document.getElementById(containerId);
+            const langData = dictionary[currentLanguage];
+            container.innerHTML = '';
+            
+            const filteredPosts = posts.filter(post => post.type === type);
+
+            if (filteredPosts.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #777;">${langData[`no-${type}-posts`]}</p>`;
+                return;
+            }
+
+            filteredPosts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.style.border = '1px solid #ccc';
+                postElement.style.padding = '15px';
+                postElement.style.borderRadius = '8px';
+                postElement.style.marginBottom = '15px';
+                postElement.style.backgroundColor = '#fff';
+                
+                let mediaContent = '';
+                if (type === 'text') {
+                    mediaContent = `<p>${post.content.replace(/\n/g, '<br>')}</p>`;
+                } else if (type === 'image' && post.fileData) {
+                    mediaContent = `<img src="${post.fileData}" style="max-width: 100%; height: auto; border-radius: 6px; margin-top: 10px;">`;
+                } else if (type === 'audio' && post.fileData) {
+                    const mimeType = post.fileData.match(/^data:([a-z]+\/[a-z0-9-+.]+);base64/i);
+                    if (mimeType && mimeType[1].startsWith('video')) {
+                        mediaContent = `<video controls style="width: 100%; border-radius: 6px; margin-top: 10px;"><source src="${post.fileData}" type="${mimeType[1]}">የእርስዎ ብሮውዘር ቪዲዮውን አይደግፍም።</video>`;
+                    } else if (mimeType && mimeType[1].startsWith('audio')) {
+                         mediaContent = `<audio controls style="width: 100%; margin-top: 10px;"><source src="${post.fileData}" type="${mimeType[1]}">የእርስዎ ብሮውዘር ኦዲዮውን አይደግፍም።</audio>`;
+                    } else {
+                        mediaContent = `<p style="color: #dc3545;">ፋይል መጫን ላይ ስህተት ተፈጥሯል።</p>`;
+                    }
+                }
+                
+                postElement.innerHTML = `
+                    <h3 style="margin-top: 0; color: #007bff; font-size: 20px;">${post.title}</h3>
+                    <p style="font-size: 12px; color: #6c757d; margin-bottom: 5px;">${new Date(post.timestamp).toLocaleString(currentLanguage === 'am' ? 'am-ET' : 'en-US')}</p>
+                    ${mediaContent}
+                    <p style="font-size: 14px; margin-top: 10px; font-style: italic;">Uploader: ${post.uploaderName}</p>
+                `;
+                container.appendChild(postElement);
+            });
+        }
+        
+        // 22. Show Delete List
+        function showDeleteList() {
+            if (!currentUser) {
+                alert(dictionary[currentLanguage]['not-authenticated']);
+                showView('login-form');
+                return;
+            }
+
+            const type = document.getElementById('delete-file-type').value;
+            const container = document.getElementById('deletable-posts-container');
+            const langData = dictionary[currentLanguage];
+            container.innerHTML = '';
+            
+            const deletablePosts = posts.filter(post => post.uploaderPhone === currentUser.phone && post.type === type);
+
+            if (deletablePosts.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #777;">${langData['no-deletable-posts']}</p>`;
+            } else {
+                deletablePosts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.style.border = '1px solid #dc3545';
+                    postElement.style.padding = '15px';
+                    postElement.style.borderRadius = '8px';
+                    postElement.style.marginBottom = '15px';
+                    postElement.style.backgroundColor = '#f8d7da';
+                    
+                    postElement.innerHTML = `
+                        <h4 style="margin-top: 0; color: #721c24;">${post.title} (Type: ${post.type})</h4>
+                        <p style="font-size: 12px; color: #721c24; margin-bottom: 10px;">Posted: ${new Date(post.timestamp).toLocaleString(currentLanguage === 'am' ? 'am-ET' : 'en-US')}</p>
+                        <button class="delete-btn" style="width: 100%; padding: 10px;" onclick="deletePost(${post.id})">${langData['delete-btn-label']}</button>
+                    `;
+                    container.appendChild(postElement);
+                });
+            }
+
+            showView('delete-file-view');
+        }
+
+        // 23. Delete Post
+        function deletePost(postId) {
+            const langData = dictionary[currentLanguage];
+            if (confirm(langData['confirm-delete'])) {
+                posts = posts.filter(post => post.id !== postId);
+                localStorage.setItem('fasil_app_posts', JSON.stringify(posts));
+                alert(langData['alert-delete-success']);
+                showDeleteList(); // Refresh the delete list view
+            }
+        }
+
+
+        // 24. Event Listeners for Navigation (To ensure displayPosts is called when views are shown)
+        document.getElementById('view-text-btn').addEventListener('click', () => { displayPosts('text', 'text-posts-container'); showView('view-text'); });
+        document.getElementById('view-image-btn').addEventListener('click', () => { displayPosts('image', 'image-posts-container'); showView('view-image'); });
+        document.getElementById('view-audio-btn').addEventListener('click', () => { displayPosts('audio', 'audio-posts-container'); showView('view-audio'); });
+
+        // Call initializeApp when the page loads
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+    </script>
+</body>
+</html>
