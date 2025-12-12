@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="app-title">ፋሲል ዌብ አፕ - Fasil Web App (V14.0)</title>
+    <link rel="stylesheet" href="css/style.css"> 
+</head>
+<body>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loading-message">... እየተጫነ ነው (Loading) ...</p>
+    </div>
+
+    <div class="section" id="agreement-view">
+        <h1 id="agreement-title">እንኳን ወደ ፋሲል ዌብ በደህና መጡ</h1>
+        <div class="intro-text-box">
+            <h3 id="intro-title-agreement">🌐 ስለ ፋሲል ዌብ አፕ</h3>
+            <p id="intro-text-agreement">
+                <strong>ፋሲል ዌብ አፕ</strong> በተአማኒነት እንዲሰራ የተቀየሰ የዲጂታል መጋሪያ መድረክ ሲሆን 
+                በተጨማሪም እንደ **ፓወር ፖይንት** እና **ፒዲኤፍ** ያሉ አገልግሎቶችን ያቀርባል።
+            </p>
+        </div>
+        
+        <div class="agreement-box">
+            <h3 id="strict-rules-title">⚠️ ጥብቅ የአጠቃቀም መመሪያ</h3>
+            <p id="strict-rules-text">
+                በዚህ መድረክ ላይ የሚከተሉትን ነገሮች ማካሄድ በጥብቅ የተከለከለ ነው፡
+                <br>
+                **ፖለቲካዊ ግጭት፣ የሃይማኖት ጥላቻ፣ ዘረኝነት ወይም ሌላ ማንኛውንም የግጭት አጀንዳ ማካሄድ አይቻልም።**
+            </p>
+        </div>
+
+        <h2 style="text-align: center; margin-top: 30px;" id="agreement-prompt">ይህን መመሪያ ተቀብለው ይቀጥላሉ?</h2>
+
+        <button class="success-btn" onclick="handleAgreement('agree')" id="agree-btn">
+            ✅ እስማማለሁ
+        </button>
+        <button class="delete-btn" onclick="handleAgreement('disagree')" id="disagree-btn">
+            ❌ አልስማማም (ውጣ)
+        </button>
+        
+        <button class="language-btn" onclick="toggleLanguage()" id="language-toggle-btn-agreement" style="margin-top: 20px;">
+            ቋንቋ ለመቀየር (English)
+        </button>
+    </div>
+
+    <div class="section" id="home-view">
+        <h1 id="home-title">የመግቢያ/መመዝገቢያ ምርጫ</h1>
+        
+        <h2 style="text-align: center;" id="use-prompt">እንዴት መጠቀም ይፈልጋሉ?</h2>
+        
+        <a href="#signup-form" class="button-link main-btn" onclick="showView('signup-form')" id="signup-free-btn">በነፃ ለመመዝገብ / ለመግባት</a>
+        <a href="#premium-options" class="button-link premium-btn" onclick="checkFreeSignupForPremiumAndGoToOptions(event)" id="signup-premium-btn">በክፍያ አማራጭ ለመመዝገብ</a>
+        
+        <button class="language-btn" onclick="toggleLanguage()" id="language-toggle-btn">
+            ቋንቋ ለመቀየር (English)
+        </button>
+        
+        <button class="delete-btn" onclick="showView('agreement-view')" style="background-color: #6c757d; margin-top: 30px;" id="back-to-agreement">ወደ መመሪያ ተመለስ</button>
+    </div>
+
+    <div class="section" id="signup-form">
+        <h2 id="signup-title-h2">አዲስ ተጠቃሚ ይመዝገቡ (ነፃ)</h2>
+        <div class="alert-box error-alert" id="signup-error" style="display: none;"></div>
+        
+        <form id="signUpForm" enctype="multipart/form-data" onsubmit="handleSignUp(event)">
+            <input type="text" name="name" id="signup-name" placeholder="ሙሉ ስም" required>
+            <input type="text" name="phone" id="signup-phone" placeholder="ስልክ ቁጥር (ለመግቢያ/Login)" required>
+            <input type="email" name="email" id="signup-email" placeholder="ኢሜል" required>
+            <input type="password" name="password" id="signup-password" placeholder="የይለፍ ቃል (ባለ 6 አሀዝ)" required maxlength="6">
+            
+            <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="profile-prompt">**እባክዎ የፕሮፋይል ፎቶ ያስገቡ**</p>
+            <input type="file" name="profilePhoto" id="signup-profile-photo" accept="image/*" style="width: 90%; margin-bottom: 20px;">
+            
+            <button type="submit" class="main-btn" id="signup-btn">መዝግብ (Sign Up)</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px;"><a href="#login-form" id="login-link" onclick="showView('login-form')">የተመዘገቡ ተጠቃሚ ከሆኑ ይግቡ (Log In)</a></p>
+    </div>
+
+    <div class="section" id="login-form">
+        <h2 id="login-title-h2">መግቢያ (Log In)</h2>
+        <div class="alert-box error-alert" id="login-error" style="display: none;"></div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <input type="text" name="phone" id="login-phone" placeholder="ስልክ ቁጥር" required>
+            <input type="password" name="password" id="login-password" placeholder="የይለፍ ቃል" required>
+            
+            <button type="submit" class="success-btn" id="login-btn">ግባ (Log In)</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px;"><a href="#signup-form" id="signup-link" onclick="showView('signup-form')">አዲስ ተጠቃሚ? ይመዝገቡ (Sign Up)</a></p>
+    </div>
+
+    <div class="section" id="free-dashboard">
+        <h1 id="free-dashboard-title">ነፃ የአገልግሎት ማዕከል (Dashboard)</h1>
+        <h2 style="margin-top: 30px;" id="free-services-h2">ነፃ አገልግሎቶች:</h2>
+        <a href="#view-select" class="button-link main-btn" onclick="showView('view-select')" id="view-info-btn">📄 መረጃ መመልከት (View)</a>
+        <a href="#post-select" class="button-link main-btn" onclick="showView('post-select')" id="post-info-btn">✍️ መረጃ መለጠፍ / ማጋራት (Post/Share)</a>
+        <button class="feature-btn" onclick="showView('user-list-view')" id="user-list-btn-free">👥 የፋሲል ዌብ አፕ ተጠቃሚዎች</button>
+        <button class="button-link social-btn" onclick="handleGroupCreation()" id="create-group-btn">👥 ቡድን ለመፍጠር</button>
+        <button class="button-link social-btn" onclick="handlePrivateChatStart()" id="private-chat-btn">💬 በውስጥ መስመር ከጓደኞች ጋር ለማውራት</button>
+        <button class="success-btn" style="background-color: #00bcd4;" onclick="showView('feedback-center')" id="feedback-btn-free">📝 አስተያየት ለመስጠት እና ለመመልከት</button>
+        <a href="#business-dashboard" class="button-link business-btn" onclick="checkAuthAndRedirect('business-dashboard')" id="business-btn-free">💰 ቢዝነስ (Business)</a>
+        <a href="#change-password" class="button-link language-btn" onclick="showView('change-password')" id="change-password-btn-free" style="background-color: #6c757d;">🔒 የይለፍ ቃል ለመቀየር</a>
+        <a href="#delete-select" class="button-link delete-btn" onclick="showView('delete-select')" id="delete-info-btn" style="margin-top: 5px;">🗑️ የለጠፉትን መረጃ መደለት</a>
+        <a href="#premium-options" class="button-link feature-btn" style="margin-top: 20px;" onclick="showView('premium-options')" id="visit-premium-btn-free">⭐️ የክፍያ አገልግሎታችን ይጎብኙ (Visit Premium Features)</a>
+        <a href="#home-view" class="button-link delete-btn" style="background-color: #6c757d; margin-top: 20px;" id="back-to-home-free" onclick="handleLogout()">ውጣ (Log Out)</a>
+    </div>
+
+    <div class="section" id="premium-dashboard">
+        <h1 id="premium-dashboard-title">⭐️ የክፍያ የአገልግሎት ማዕከል (Premium Dashboard)</h1>
+        <h2 style="margin-top: 30px;" id="premium-features-h2">ፕሪሚየም ተግባራት:</h2>
+        <button class="main-btn" onclick="handlePremiumFeature('ppt_creation')" id="ppt-creation-btn">📊 ፓወር ፖይንት ማዘጋጀት</button>
+        <button class="main-btn" onclick="handlePremiumFeature('pdf_management')" id="pdf-management-btn">📄 ፒዲኤፍ መለጠፍ / ማዘጋጀት</button>
+        <button class="main-btn" onclick="handlePremiumFeature('quality_video')" id="quality-video-btn">🎥 ጥራቱ የጠበቀ ቪዲዮ መመልከት</button>
+        <button class="main-btn" onclick="handlePremiumFeature('news')" id="news-btn">📰 ዜና መከታተል / መለጠፍ</button>
+        <h2 style="margin-top: 30px;" id="basic-features-h2">መሰረታዊ ተግባራት:</h2>
+        <a href="#view-select" class="button-link success-btn" onclick="showView('view-select')" id="view-info-btn-p">📄 መረጃ መመልከት (View)</a>
+        <a href="#post-select" class="button-link success-btn" onclick="showView('post-select')" id="post-info-btn-p">✍️ መረጃ መለጠፍ / ማጋራት (Post/Share)</a>
+        <button class="feature-btn" onclick="showView('user-list-view')" id="user-list-btn-premium">👥 የፋሲል ዌብ አፕ ተጠቃሚዎች</button>
+        <button class="button-link social-btn" onclick="handleGroupCreation()" id="create-group-btn-p">👥 ቡድን ለመፍጠር</button>
+        <button class="button-link social-btn" onclick="handlePrivateChatStart()" id="private-chat-btn-p">💬 በውስጥ መስመር ከጓደኞች ጋር ለማውራት</button>
+        <button class="success-btn" style="background-color: #00bcd4;" onclick="showView('feedback-center')" id="feedback-btn-premium">📝 አስተያየት ለመስጠት እና ለመመልከት</button>
+        <a href="#business-dashboard" class="button-link business-btn" style="margin-top: 30px;" onclick="checkAuthAndRedirect('business-dashboard')" id="business-btn-p">💰 ቢዝነስ (Business)</a>
+        <a href="#change-password" class="button-link language-btn" onclick="showView('change-password')" id="change-password-btn-premium" style="background-color: #6c757d;">🔒 የይለፍ ቃል ለመቀየር</a>
+        <a href="#delete-select" class="button-link delete-btn" style="margin-top: 5px;" onclick="showView('delete-select')" id="delete-info-btn-p">🗑️ የለጠፉትን መረጃ መደለት</a>
+        <a href="#home-view" class="button-link delete-btn" style="background-color: #6c757d; margin-top: 20px;" id="back-to-home-premium" onclick="handleLogout()">ውጣ (Log Out)</a>
+    </div>
+
+    <div class="section" id="premium-options">
+        <h2 id="premium-options-h2">⭐️ በክፍያ አማራጭ የሚገኙ አገልግሎቶች</h2>
+        <p style="text-align: center;" id="premium-options-prompt">ለመጠቀም ከሚፈልጉት አገልግሎት አንዱን ይምረጡ።</p>
+        <button class="feature-btn" onclick="goToPricing('quality_video')" id="feature-quality-video">🎥 ጥራቱ የጠበቀ ቪዲዮ መመልከት</button>
+        <button class="feature-btn" onclick="goToPricing('news')" id="feature-news">📰 ዜና መከታተል / መለጠፍ</button>
+        <button class="feature-btn" onclick="goToPricing('ppt_creation')" id="feature-ppt-creation">📊 ፓወር ፖይንት ማዘጋጀት</button>
+        <button class="feature-btn" onclick="goToPricing('pdf_management')" id="feature-pdf-management">📄 ፒዲኤፍ መለጠፍ / ማዘጋጀት</button>
+        <a href="#business-dashboard" class="button-link business-btn" style="margin-top: 30px;" onclick="checkAuthAndRedirect('business-dashboard')" id="business-btn-options">💰 ቢዝነስ (Business)</a>
+        <a href="#home-view" class="button-link delete-btn" style="margin-top: 30px;" id="back-to-home-options" onclick="handleLogout()">ውጣ (Log Out)</a>
+    </div>
+
+    <div class="section" id="pricing">
+        <h2 id="pricing-h2">የክፍያ አማራጮች (Premium Plans)</h2>
+        <p style="text-align: center;" id="pricing-context">ይህንን አገልግሎት ለመጠቀም የሚፈልጉትን የክፍያ ፕላን ይምረጡ።</p>
+        <div class="plan-card" onclick="selectPlan('daily', 5)"><h3 id="plan-daily-title">ዕለታዊ (Daily)</h3><p id="plan-daily-price">5 ብር (ETB)</p><button class="success-btn" style="width: 80%; padding: 10px;" id="plan-daily-btn">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('monthly', 30)"><h3 id="plan-monthly-title">ወርሃዊ (Monthly)</h3><p id="plan-monthly-price">30 ብር (ETB)</p><button class="success-btn" style="width: 80%; padding: 10px;" id="plan-monthly-btn">ይህን ምረጥ</button></div>
+        <div class="plan-card" onclick="selectPlan('yearly', 100)"><h3 id="plan-yearly-title">ዓመታዊ (Yearly)</h3><p id="plan-yearly-price">100 ብር (ETB)</p><button class="success-btn" style="width: 80%; padding: 10px;" id="plan-yearly-btn">ይህን ምረጥ</button></div>
+        <a href="#premium-options" class="button-link delete-btn" onclick="showView('premium-options')" id="back-to-features-btn">ወደ አገልግሎት ዝርዝር ተመለስ</a>
+    </div>
+
+    <div class="section" id="payment-methods">
+        <h2 id="payment-h2">ክፍያ ይፈፅሙ (Payment)</h2>
+        <p id="selected-plan-info" style="font-weight: bold; color: #007bff; text-align: center;"></p>
+        <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="receipt-prompt">**እባክዎ የከፈሉበትን ደረሰኝ ፎቶ ያስገቡ**</p>
+        <input type="file" id="receipt-photo" accept="image/*" style="width: 90%; margin-bottom: 20px;">
+        <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="payment-method-prompt">**ለመክፈል ዘዴ ይምረጡ**</p>
+        <button class="main-btn" onclick="processPayment('Telebirr')" id="pay-telebirr">በቴሌብር (Telebirr) ይክፈሉ</button>
+        <button class="main-btn" onclick="processPayment('CBE')" id="pay-cbe">በCBE የባንክ ዝውውር ይክፈሉ</button>
+        <button class="main-btn" onclick="processPayment('PayPal')" id="pay-paypal">በፔይፓል (PayPal) ይክፈሉ</button>
+        <a href="#pricing" class="button-link delete-btn" onclick="showView('pricing')" id="back-to-pricing-btn">ወደ ፕላኖች ተመለስ</a>
+    </div>
+
+    <div class="section" id="business-dashboard">
+        <h2 id="business-h2">💰 የቢዝነስ ማዕከል</h2>
+        <div class="balance-display">
+            <h3 id="balance-title">የእርስዎ የሚዛን መጠን:</h3>
+            <p id="business-balance-display">0.00 USD</p>
+        </div>
+        <p style="font-size: 14px; color: #777; margin-bottom: 25px;" id="balance-note">
+            ይህ ገንዘብ ከዋጋ ንረት (Inflation) እና ከብር (ETB) መዳከም ለመከላከል ሲባል **ወደ ዶላር ($)** ተቀይሮ ይቀመጣል።
+        </p>
+        <a href="#deposit" class="button-link success-btn" onclick="checkAuthAndRedirect('deposit')" id="deposit-btn">💵 ገንዘብ ለማስቀመጥ</a>
+        <a href="#withdraw" class="button-link main-btn" onclick="checkAuthAndRedirect('withdraw')" id="withdraw-btn">💸 ገንዘብ ለማውጣት</a>
+        <a href="#international-purchase" class="button-link premium-btn" onclick="checkAuthAndRedirect('international')" id="international-purchase-btn">🌐 ዓለም አቀፍ ግዢዎችን ለመፈጸም</a>
+        <button class="delete-btn" onclick="goBackToDashboard()" style="background-color: #6c757d;" id="back-to-dashboard-btn">ወደ ኋላ ተመለስ</button>
+    </div>
+
+    <div class="section" id="deposit">
+        <h2 id="deposit-h2">💵 ገንዘብ ለማስቀመጥ</h2>
+        <div class="alert-box error-alert" id="deposit-error" style="display: none;"></div>
+        <input type="number" id="deposit-etb" placeholder="የETB መጠን ያስገቡ" required min="100">
+        <select id="deposit-currency" style="width: 90%; margin-bottom: 20px;">
+            <option value="" disabled selected id="deposit-currency-placeholder">የሚቀየርለትን ምንዛሬ ይምረጡ</option>
+            <option value="USD">ዶላር (USD)</option>
+            <option value="EUR">ዩሮ (EUR)</option>
+            <option value="GBP">የእንግሊዝ ፓውንድ (GBP)</option>
+        </select>
+        <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="deposit-receipt-prompt">**እባክዎ ገንዘብ ያስተላለፉበትን ደረሰኝ ፎቶ ያስገቡ**</p>
+        <input type="file" id="deposit-receipt-photo" accept="image/*" style="width: 90%; margin-bottom: 20px;">
+        <button class="success-btn" onclick="handleDeposit()" id="deposit-submit-btn">ገንዘብ አስቀምጥ</button>
+        <a href="#business-dashboard" class="button-link delete-btn" onclick="showView('business-dashboard')" id="back-to-business-deposit">ወደ ቢዝነስ ማዕከል ተመለስ</a>
+    </div>
+
+    <div class="section" id="withdraw">
+        <h2 id="withdraw-h2">💸 ገንዘብ ማውጣት</h2>
+        <div class="alert-box error-alert" id="withdraw-error" style="display: none;"></div>
+        <input type="number" id="withdraw-amount" placeholder="ለማውጣት የሚፈልጉትን የዶላር መጠን ያስገቡ ($)" required min="1">
+        <select id="withdraw-currency" style="width: 90%; margin-bottom: 20px;">
+            <option value="" disabled selected id="withdraw-currency-placeholder">ለመቀየር እና ለማውጣት የሚፈልጉት ምንዛሬ</option>
+            <option value="USD">ዶላር (USD)</option>
+            <option value="EUR">ዩሮ (EUR)</option>
+            <option value="GBP">ፓውንድ (GBP)</option>
+            <option value="ETB">ኢትዮጵያ ብር (ETB)</option>
+        </select>
+        <select id="withdraw-method" style="width: 90%; margin-bottom: 20px;" onchange="updateReceiverInputPlaceholder()">
+            <option value="" disabled selected id="withdraw-method-placeholder">ገንዘቡን የሚያወጡበት ዘዴ</option>
+            <option value="Telebirr">ቴሌብር (Telebirr)</option>
+            <option value="CBE">ሲ.ቢ.ኢ (CBE) ባንክ</option>
+            <option value="PayPal">ፔይፓል (PayPal)</option>
+        </select>
+        <input type="text" id="receiver-input" placeholder="ተቀባይ መረጃ" required style="display: none;">
+        <input type="password" id="withdraw-password" placeholder="ገንዘብ ለማውጣት የይለፍ ቃል ያስገቡ" required style="margin-top: 15px;">
+        
+        <button class="main-btn" onclick="handleWithdraw()" id="withdraw-submit-btn">ገንዘብ አውጣ</button>
+        <a href="#business-dashboard" class="button-link delete-btn" onclick="showView('business-dashboard')" id="back-to-business-withdraw">ወደ ቢዝነስ ማዕከል ተመለስ</a>
+    </div>
+
+    <div class="section" id="international-purchase">
+        <h2 id="international-purchase-h2">🌐 ዓለም አቀፍ ግዢዎችን ለመፈጸም</h2>
+        <p style="text-align: center; margin-bottom: 25px;" id="international-purchase-prompt">ለተለያዩ ዓለም አቀፍ ዲጂታል አገልግሎቶች በዶላር ይክፈሉ።</p>
+        <button class="premium-btn" onclick="handlePurchaseAmount('ChatGPT')" id="purchase-chatgpt">🤖 ChatGPT</button>
+        <button class="premium-btn" onclick="handlePurchaseAmount('GeminiAdvanced')" id="purchase-gemini">✨ Gemini Advanced</button>
+        <button class="premium-btn" onclick="handlePurchaseAmount('Amazon')" id="purchase-amazon">📦 Amazon ግዢ</button>
+        <button class="premium-btn" onclick="handlePurchaseAmount('Domain')" id="purchase-domain">🔗 ዶሜን / ሆስቲንግ ግዢ</button>
+        <button class="premium-btn" onclick="handlePurchaseAmount('GoogleCloud')" id="purchase-gcloud">☁️ Google Cloud/AWS ክፍያ</button>
+        <a href="#business-dashboard" class="button-link delete-btn" style="margin-top: 30px;" onclick="showView('business-dashboard')" id="back-to-business-purchase">ወደ ቢዝነስ ማዕከል ተመለስ</a>
+    </div>
+    
+    <div class="section" id="change-password">
+        <h2 id="change-password-h2">🔒 የይለፍ ቃል ለመቀየር</h2>
+        <div class="alert-box error-alert" id="password-error" style="display: none;"></div>
+        <input type="password" id="current-password" placeholder="የድሮውን የይለፍ ቃል ያስገቡ" required maxlength="6">
+        <input type="password" id="new-password" placeholder="አዲስ የይለፍ ቃል ያስገቡ (6 አሀዝ)" required maxlength="6">
+        <input type="password" id="confirm-password" placeholder="አዲስ የይለፍ ቃል ያረጋግጡ" required maxlength="6">
+        <button class="main-btn" onclick="handleChangePassword()" id="change-password-submit">የይለፍ ቃል ይቀይሩ</button>
+        <button class="delete-btn" onclick="goBackToDashboard()" id="back-to-dashboard-password">ወደ ኋላ ተመለስ</button>
+    </div>
+
+    <div class="section" id="view-select">
+        <h2 id="view-select-h2">📄 መረጃ መመልከት</h2>
+        <p id="view-select-prompt">የትኛውን አይነት መረጃ መመልከት ይፈልጋሉ?</p>
+        <a href="#view-text" class="button-link main-btn" onclick="viewContent('text')" id="view-text-btn">ፅሁፍ / ቴክስት</a>
+        <a href="#view-image" class="button-link main-btn" onclick="viewContent('image')" id="view-image-btn">ምስል / ፎቶ</a>
+        <a href="#view-audio" class="button-link main-btn" onclick="viewContent('audio')" id="view-audio-btn">ቪዲዮ / ኦዲዮ</a>
+        <button class="delete-btn" onclick="goBackToDashboard()" id="view-select-back">ወደ ኋላ ተመለስ</button>
+    </div>
+    
+    <div class="section" id="post-select">
+        <h2 id="post-select-h2">✍️ መረጃ መለጠፍ / ማጋራት</h2>
+        <p id="post-select-prompt">የትኛውን አይነት ይዘት መለጠፍ ይፈልጋሉ?</p>
+        <a href="#post-text" class="button-link main-btn" onclick="showView('post-text')" id="post-text-btn">ፅሁፍ / ቴክስት ለመለጠፍ</a>
+        <a href="#post-image" class="button-link main-btn" onclick="showView('post-image')" id="post-image-btn">ምስል / ፎቶ ለመለጠፍ</a>
+        <a href="#post-audio" class="button-link main-btn" onclick="showView('post-audio')" id="post-audio-btn">ቪዲዮ / ኦዲዮ ለመለጠፍ</a>
+        <button class="delete-btn" onclick="goBackToDashboard()" id="post-select-back">ወደ ኋላ ተመለስ</button>
+    </div>
+
+    <div class="section" id="delete-select">
+        <h2 id="delete-select-h2">🗑️ የለጠፉትን መረጃ መደለት</h2>
+        <p id="delete-select-prompt">የትኛውን አይነት መረጃ መደለት ይፈልጋሉ?</p>
+        <select id="delete-file-type" style="width: 90%; margin-bottom: 20px;">
+            <option value="text" id="delete-option-text">ፅሁፍ / ቴክስት</option>
+            <option value="image" id="delete-option-image">ምስል / ፎቶ</option>
+            <option value="audio" id="delete-option-audio">ቪዲዮ / ኦዲዮ</option>
+        </select>
+        <button class="delete-btn" onclick="showDeleteList()" id="show-delete-list-btn">ፋይሎች ዝርዝር አሳይ (ለመደለት)</button>
+        <button class="main-btn" style="background-color: #6c757d;" onclick="goBackToDashboard()" id="delete-select-back">ወደ ኋላ ተመለስ</button>
+    </div>
+    
+    <div class="section" id="post-text">
+        <h2 id="post-text-h2">✍️ አዲስ ጽሑፍ ለመለጠፍ</h2>
+        <input type="text" id="post-text-title" placeholder="ርዕስ (Title)" required>
+        <textarea id="post-text-content" rows="10" placeholder="ፅሑፉን እዚህ ያስገቡ..." required></textarea>
+        <button class="main-btn" onclick="handlePost('text')" id="post-text-submit">ይለጥፉ (Post Text)</button>
+        <a href="#post-select" class="button-link delete-btn" onclick="showView('post-select')" id="post-text-back">ወደ መለጠፊያ ምድብ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="post-image">
+        <h2 id="post-image-h2">🖼️ አዲስ ምስል ለመለጠፍ</h2>
+        <input type="text" id="post-image-title" placeholder="ርዕስ (Title)" required>
+        <label for="post-image-file" style="display: block; margin: 15px 0 5px; font-weight: bold; width: 90%; margin-left: 5%;" id="post-image-label">የሚለጥፉትን ምስል ይምረጡ</label>
+        <input type="file" id="post-image-file" accept="image/*" style="width: 90%; margin-bottom: 20px;">
+        <button class="main-btn" onclick="handlePost('image')" id="post-image-submit">ይለጥፉ (Post Image)</button>
+        <a href="#post-select" class="button-link delete-btn" onclick="showView('post-select')" id="post-image-back">ወደ መለጠፊያ ምድብ ተመለስ</a>
+    </div>
+
+    <div class="section" id="post-audio">
+        <h2 id="post-audio-h2">🎧 አዲስ ቪዲዮ / ኦዲዮ ለመለጠፍ</h2>
+        <input type="text" id="post-audio-title" placeholder="ርዕስ (Title)" required>
+        <label for="post-audio-file" style="display: block; margin: 15px 0 5px; font-weight: bold; width: 90%; margin-left: 5%;" id="post-audio-label">የሚለጥፉትን ኦዲዮ/ቪዲዮ ይምረጡ</label>
+        <input type="file" id="post-audio-file" accept="audio/*,video/*" style="width: 90%; margin-bottom: 20px;">
+        <button class="main-btn" onclick="handlePost('audio')" id="post-audio-submit">ይለጥፉ (Post Audio/Video)</button>
+        <a href="#post-select" class="button-link delete-btn" onclick="showView('post-select')" id="post-audio-back">ወደ መለጠፊያ ምድብ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-text">
+        <h2 id="view-text-h2">📄 የተለጠፈ ጽሑፍ/መረጃ መመልከት</h2>
+        <div id="text-posts-container">
+            <p style="text-align: center; color: #777;" id="no-text-posts">ምንም ፅሁፎች የሉም።</p>
+        </div>
+        <a href="#view-select" class="button-link delete-btn" onclick="showView('view-select')" id="view-text-back">ወደ መመልከቻ ምድብ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="view-image">
+        <h2 id="view-image-h2">🖼️ የተለጠፈ ምስል/ፎቶ መመልከት</h2>
+        <div id="image-posts-container">
+            <p style="text-align: center; color: #777;" id="no-image-posts">ምንም ምስሎች የሉም።</p>
+        </div>
+        <a href="#view-select" class="button-link delete-btn" onclick="showView('view-select')" id="view-image-back">ወደ መመልከቻ ምድብ ተመለስ</a>
+    </div>
+
+    <div class="section" id="view-audio">
+        <h2 id="view-audio-h2">🎧 የተለጠፈ ቪዲዮ/ኦዲዮ መመልከት</h2>
+        <div id="audio-posts-container">
+            <p style="text-align: center; color: #777;" id="no-audio-posts">ምንም ቪዲዮ/ኦዲዮ ፋይሎች የሉም።</p>
+        </div>
+        <a href="#view-select" class="button-link delete-btn" onclick="showView('view-select')" id="view-audio-back">ወደ መመልከቻ ምድብ ተመለስ</a>
+    </div>
+
+    <div class="section" id="delete-file-view">
+        <h2 id="delete-file-view-h2">🗑️ የፋይሎች ዝርዝር (ለመደለጥ)</h2>
+        <div id="deletable-posts-container">
+            <p style="text-align: center; color: #777;" id="no-deletable-posts">እርስዎ የለጠፉት ፋይል የለም።</p>
+        </div>
+        <a href="#delete-select" class="button-link delete-btn" onclick="showView('delete-select')" id="delete-file-view-back">ወደ መደለቻ ምድብ ተመለስ</a>
+    </div>
+    
+    <div class="section" id="user-list-view">
+        <h2 id="user-list-h2">👥 የፋሲል ዌብ አፕ ተጠቃሚዎች ዝርዝር</h2>
+        <p style="text-align: center;" id="user-list-prompt">በነፃ የተመዘገቡ ተጠቃሚዎች ዝርዝር</p>
+        <div id="user-list-container">
+            <p style="text-align: center; color: #777;" id="no-users-message">ምንም ተጠቃሚዎች አልተመዘገቡም።</p>
+        </div>
+        <button class="delete-btn" onclick="goBackToDashboard()" id="user-list-back">ወደ ኋላ ተመለስ</button>
+    </div>
+
+    <div class="section" id="feedback-center">
+        <h2 id="feedback-center-h2">📝 አስተያየት መስጫ ማዕከል</h2>
+        <div class="alert-box error-alert" id="feedback-error" style="display: none;"></div>
+        <p style="text-align: center; margin-top: 20px; font-weight: bold;" id="feedback-submit-prompt">አስተያየትዎን ለመስጠት ዘዴ ይምረጡ</p>
+        <button class="main-btn" onclick="handleFeedbackType('text')" id="feedback-text-btn">በፅሁፍ አስተያየት ለመስጠት</button>
+        <button class="main-btn" onclick="handleFeedbackType('audio')" id="feedback-audio-btn">በድምፅ አስተያየት ለመስጠት</button>
+        <button class="main-btn" onclick="handleFeedbackType('video')" id="feedback-video-btn">በቪዲዮ አስተያየት ለመስጠት</button>
+        <h3 id="feedback-list-h3" style="text-align: center; margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px;">የተሰጡ አስተያየቶች:</h3>
+        <div id="feedback-container">
+            <p style="text-align: center; color: #777;" id="no-feedback-message">ምንም አስተያየቶች አልተሰጡም።</p>
+        </div>
+        <button class="delete-btn" onclick="goBackToDashboard()" id="feedback-back-btn">ወደ ኋላ ተመለስ</button>
+    </div>
+
+    <script src="js/app_logic.js"></script> 
+    <script src="js/auth.js"></script>    
+    <script src="js/business.js"></script> 
+</body>
+</html>
