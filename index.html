@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App (V15.0)</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; background: #f0f4f8; }
+        .section { max-width: 700px; margin: 20px auto; padding: 30px; background: white; border-radius: 12px; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-top: 5px solid #007bff; }
+        #agreement-view { display: block; }
+        input, select, textarea { width: 90%; padding: 12px; margin: 10px auto; display: block; border: 1px solid #ccc; border-radius: 8px; }
+        button, .button-link { width: 90%; padding: 15px; margin: 10px auto; display: block; border-radius: 8px; cursor: pointer; border: none; font-size: 16px; color: white; text-decoration: none; }
+        .main-btn { background: #007bff; } .success-btn { background: #28a745; } .delete-btn { background: #dc3545; }
+        .feature-btn { background: #8c5aee; } .social-btn { background: #ff7043; } .business-btn { background: #00a08e; }
+        
+        /* Comment Buttons Style */
+        .comment-actions { display: flex; justify-content: space-around; margin-top: 10px; }
+        .comment-actions button { width: auto; padding: 5px 15px; font-size: 12px; border-radius: 20px; margin: 0; }
+        
+        .user-card { display: flex; align-items: center; padding: 10px; background: #f9f9f9; margin-bottom: 10px; border-radius: 8px; }
+        .user-card img { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:1000; align-items:center; justify-content:center;"><h3>... እየጫነ ነው (Loading) ...</h3></div>
+
+    <!-- Hidden Inputs for Files -->
+    <input type="file" id="global-file-input" style="display: none;">
+
+    <!-- 1. Agreement -->
+    <div class="section" id="agreement-view">
+        <h1>እንኳን ወደ ፋሲል ዌብ በደህና መጡ</h1>
+        <p>ይህ መድረክ ለትምህርት እና ለመረጃ ልውውጥ የተዘጋጀ ነው። ፖለቲካ፣ ዘረኝነት እና ጥላቻ ንግግር የተከለከለ ነው።</p>
+        <button class="success-btn" onclick="app.handleAgreement(true)">✅ እስማማለሁ</button>
+        <button class="delete-btn" onclick="alert('መጠቀም አይችሉም!')">❌ አልስማማም</button>
+    </div>
+
+    <!-- 2. Home (Login/Signup Choice) -->
+    <div class="section" id="home-view">
+        <h1>እንዴት መጠቀም ይፈልጋሉ?</h1>
+        <button class="main-btn" onclick="app.showView('signup-view')">በነፃ ለመመዝገብ / ለመግባት</button>
+        <button class="feature-btn" onclick="app.showView('signup-view')">በክፍያ አማራጭ ለመመዝገብ</button>
+    </div>
+
+    <!-- 3. Signup -->
+    <div class="section" id="signup-view">
+        <h2>አዲስ ምዝገባ</h2>
+        <div id="signup-error" style="color:red; display:none;"></div>
+        <input type="text" id="reg-name" placeholder="ሙሉ ስም">
+        <input type="text" id="reg-phone" placeholder="ስልክ ቁጥር">
+        <input type="email" id="reg-email" placeholder="ኢሜል (@gmail.com ብቻ)">
+        <input type="password" id="reg-pass" placeholder="የይለፍ ቃል (6 አሀዝ)">
+        <p>የፕሮፋይል ፎቶ:</p>
+        <input type="file" id="reg-photo">
+        <button class="main-btn" onclick="auth.signup()">መዝግብ (Sign Up)</button>
+        <p onclick="app.showView('login-view')" style="cursor:pointer; color:blue;">አካውንት ካለዎት ይግቡ</p>
+    </div>
+
+    <!-- 4. Login -->
+    <div class="section" id="login-view">
+        <h2>መግቢያ (Login)</h2>
+        <div id="login-error" style="color:red; display:none;"></div>
+        <input type="text" id="login-phone" placeholder="ስልክ ቁጥር">
+        <input type="password" id="login-pass" placeholder="የይለፍ ቃል">
+        <button class="success-btn" onclick="auth.login()">ግባ</button>
+    </div>
+
+    <!-- 5. Dashboard -->
+    <div class="section" id="dashboard-view">
+        <h1>የአገልግሎት ማዕከል</h1>
+        <button class="main-btn" onclick="app.loadPosts('text'); app.showView('posts-view')">📄 መረጃ መመልከት (Posts)</button>
+        <button class="main-btn" onclick="app.showView('create-post-view')">✍️ መረጃ መለጠፍ</button>
+        <button class="social-btn" onclick="app.startPrivateChat()">💬 በውስጥ መስመር ማውራት</button>
+        <button class="business-btn" onclick="app.showView('business-view'); biz.updateBalance()">💰 ቢዝነስ (Finance)</button>
+        <button class="delete-btn" onclick="auth.logout()">ውጣ (Log Out)</button>
+    </div>
+
+    <!-- 6. Posts View -->
+    <div class="section" id="posts-view">
+        <h2>የተለጠፉ መረጃዎች</h2>
+        <div style="display:flex; gap:10px;">
+            <button class="main-btn" onclick="app.loadPosts('text')">Text</button>
+            <button class="feature-btn" onclick="app.loadPosts('image')">Image</button>
+            <button class="social-btn" onclick="app.loadPosts('video')">Video</button>
+        </div>
+        <div id="posts-container"></div>
+        <button class="delete-btn" onclick="app.showView('dashboard-view')">ተመለስ</button>
+    </div>
+
+    <!-- 7. Create Post -->
+    <div class="section" id="create-post-view">
+        <h2>አዲስ መረጃ መለጠፍ</h2>
+        <select id="post-type">
+            <option value="text">ፅሁፍ</option>
+            <option value="image">ምስል</option>
+            <option value="video">ቪዲዮ</option>
+            <option value="audio">ድምፅ</option>
+        </select>
+        <input type="text" id="post-title" placeholder="ርዕስ">
+        <textarea id="post-content" placeholder="ፅሁፍ ከሆነ እዚህ ይፃፉ..."></textarea>
+        <input type="file" id="post-file">
+        <button class="success-btn" onclick="app.createPost()">ለጥፍ (Post)</button>
+        <button class="delete-btn" onclick="app.showView('dashboard-view')">ተመለስ</button>
+    </div>
+
+    <!-- 8. Business View -->
+    <div class="section" id="business-view">
+        <h2>የቢዝነስ ማዕከል</h2>
+        <h3 id="balance-display">Balance: 0.00 USD</h3>
+        <input type="number" id="amount-input" placeholder="መጠን">
+        <button class="success-btn" onclick="biz.deposit()">ገንዘብ አስገባ (Deposit)</button>
+        <button class="main-btn" onclick="biz.withdraw()">ገንዘብ አውጣ (Withdraw)</button>
+        <button class="delete-btn" onclick="app.showView('dashboard-view')">ተመለስ</button>
+    </div>
+
+    <!-- 9. Chat User Selection -->
+    <div class="section" id="user-list-view">
+        <h2>ተጠቃሚ ይምረጡ</h2>
+        <div id="user-list-container"></div>
+        <button class="delete-btn" onclick="app.showView('dashboard-view')">ተመለስ</button>
+    </div>
+
+    <!-- 10. Chat Room -->
+    <div class="section" id="chat-room-view">
+        <h2 id="chat-with-name"></h2>
+        <div id="chat-messages" style="height:300px; overflow-y:scroll; border:1px solid #ccc; margin-bottom:10px;"></div>
+        <input type="text" id="chat-input" placeholder="መልዕክት...">
+        <button class="main-btn" onclick="app.sendMessage('text')">ላክ</button>
+        <button class="delete-btn" onclick="app.showView('dashboard-view')">ዝጋ</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/business.js"></script>
+    <script src="js/app_logic.js"></script>
+</body>
+</html>
