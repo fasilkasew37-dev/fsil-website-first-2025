@@ -1,0 +1,618 @@
+ከ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App (Ultimate Version)</title>
+    <style>
+        /* --- መደበኛ CSS (የድሮው ኦሪጂናል) --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+        }
+        .section {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-top: 6px solid #007bff;
+            text-align: left;
+            display: none; 
+            padding-bottom: 80px;
+        }
+        #agreement-view { display: block; }
+        
+        h1 { color: #007bff; font-size: 28px; margin-bottom: 10px; text-align: center; }
+        h2 { color: #555; font-size: 22px; margin-top: 20px; margin-bottom: 20px; text-align: center; }
+        
+        input, select, textarea {
+            width: 100%; padding: 12px; margin: 10px 0;
+            border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px;
+        }
+        
+        /* Buttons (Original Styles) */
+        button, .button-link {
+            display: block; width: 100%; padding: 15px; margin: 12px 0;
+            text-align: center; border-radius: 8px; font-weight: bold;
+            cursor: pointer; border: none; font-size: 16px; color: white; transition: 0.3s;
+        }
+        .main-btn { background-color: #007bff; }
+        .success-btn { background-color: #28a745; }
+        .delete-btn { background-color: #dc3545; }
+        .premium-btn { background-color: #ffc107; color: #333; }
+        .feature-btn { background-color: #8c5aee; }
+        .business-btn { background-color: #00a08e; }
+        .social-btn { background-color: #ff7043; }
+        .language-btn { background-color: #6c757d; }
+
+        /* --- New: Center Modal (Alerts) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); display: none;
+            justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal-box {
+            background: white; padding: 25px; border-radius: 12px;
+            width: 85%; max-width: 400px; text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: popIn 0.3s ease;
+        }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        
+        /* Cards */
+        .user-card, .post-card {
+            border: 1px solid #eee; padding: 10px; border-radius: 8px;
+            margin-bottom: 10px; background-color: #f9f9f9;
+        }
+        .user-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; float: left; margin-right: 15px; }
+        .media-btn-group { display: flex; gap: 5px; margin-top: 5px; }
+        .media-btn-group button { padding: 5px; font-size: 12px; }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); display: none;
+            justify-content: center; align-items: center; z-index: 1000; flex-direction: column;
+        }
+        .spinner {
+            border: 6px solid #f3f3f3; border-top: 6px solid #007bff;
+            border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Loading -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p>... Loading ...</p>
+    </div>
+
+    <!-- 1. Center Alert Modal -->
+    <div class="modal-overlay" id="custom-modal">
+        <div class="modal-box">
+            <h3 id="modal-title"></h3>
+            <p id="modal-text"></p>
+            <button class="main-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- 2. Password Prompt Modal (For Withdraw/Purchase) -->
+    <div class="modal-overlay" id="password-modal">
+        <div class="modal-box">
+            <h3>Password Required</h3>
+            <p id="pass-prompt-text">እባክዎ የይለፍ ቃል ያስገቡ (Enter Password):</p>
+            <input type="password" id="modal-password-input" style="text-align: center;">
+            <button class="success-btn" onclick="confirmActionWithPassword()">Confirm</button>
+            <button class="delete-btn" onclick="document.getElementById('password-modal').style.display='none'">Cancel</button>
+        </div>
+    </div>
+
+    <!-- 3. Agreement View (Original Content) -->
+    <div class="section" id="agreement-view">
+        <h1 id="t-welcome">እንኳን ወደ ፋሲል ዌብ በደህና መጡ</h1>
+        <div style="background:#e9ecef; padding:20px; border-radius:8px; border-left:5px solid #007bff;">
+            <h3 id="t-about">🌐 ስለ ፋሲል ዌብ አፕ</h3>
+            <p id="t-about-txt">ፋሲል ዌብ አፕ ዲጂታል መጋሪያ መድረክ ሲሆን ፓወር ፖይንት እና ፒዲኤፍ ያሉ አገልግሎቶችን ያቀርባል።</p>
+        </div>
+        <div style="background:#ffe0b2; padding:20px; margin-top:20px; border-left:5px solid #ff9800;">
+            <h3 id="t-rules">⚠️ ጥብቅ የአጠቃቀም መመሪያ</h3>
+            <p id="t-rules-txt">ፖለቲካዊ ግጭት፣ የሃይማኖት ጥላቻ፣ ዘረኝነት ወይም ሌላ ማንኛውንም የግጭት አጀንዳ ማካሄድ አይቻልም።</p>
+        </div>
+        <h2 id="t-accept">ይህን መመሪያ ተቀብለው ይቀጥላሉ?</h2>
+        <button class="success-btn" onclick="showView('home-view')" id="btn-agree">✅ እስማማለሁ</button>
+        <button class="delete-btn" onclick="showAlert('መተግበሪያውን መጠቀም አይችሉም።', 'error')" id="btn-disagree">❌ አልስማማም</button>
+        <button class="language-btn" onclick="toggleLanguage()">Language: Amharic/English</button>
+    </div>
+
+    <!-- 4. Home View -->
+    <div class="section" id="home-view">
+        <h1 id="t-home-title">የመግቢያ ምርጫ</h1>
+        <h2 id="t-how-to">እንዴት መጠቀም ይፈልጋሉ?</h2>
+        <button class="main-btn" onclick="showView('signup-form')" id="btn-signup-home">በነፃ ለመመዝገብ / ለመግባት</button>
+        <button class="premium-btn" onclick="checkFreeSignupForPremium()" id="btn-prem-home">በክፍያ አማራጭ ለመመዝገብ</button>
+        <button class="language-btn" onclick="toggleLanguage()">Language: Amharic/English</button>
+        <button class="delete-btn" onclick="showView('agreement-view')" style="margin-top:30px;" id="btn-back-policy">ወደ መመሪያ ተመለስ</button>
+    </div>
+
+    <!-- 5. Signup -->
+    <div class="section" id="signup-form">
+        <h2 id="t-signup">አዲስ ምዝገባ</h2>
+        <input type="text" id="signup-name" placeholder="Full Name">
+        <input type="text" id="signup-phone" placeholder="Phone Number">
+        <input type="email" id="signup-email" placeholder="Email (@gmail.com only)">
+        <input type="password" id="signup-password" placeholder="Password (6 digits)" maxlength="6">
+        <p>**Profile Photo**</p>
+        <input type="file" id="signup-profile-photo" accept="image/*">
+        <button class="success-btn" onclick="handleSignUp()" id="btn-register">መዝግብ</button>
+        <p style="text-align:center; color:#007bff; cursor:pointer;" onclick="showView('login-form')" id="link-login">ተመዝግበዋል? ይግቡ</p>
+    </div>
+
+    <!-- 6. Login -->
+    <div class="section" id="login-form">
+        <h2 id="t-login">መግቢያ</h2>
+        <input type="text" id="login-phone" placeholder="Phone Number">
+        <input type="password" id="login-password" placeholder="Password">
+        <button class="main-btn" onclick="handleLogin()" id="btn-login-submit">ግባ</button>
+        <p style="text-align:center; color:#007bff; cursor:pointer;" onclick="showView('signup-form')" id="link-signup-2">አዲስ ተጠቃሚ? ይመዝገቡ</p>
+    </div>
+
+    <!-- 7. Dashboard (Original Buttons Restored + New Features) -->
+    <div class="section" id="dashboard-view">
+        <h1 id="t-dash">ዳሽቦርድ</h1>
+        
+        <h2 id="t-services">አገልግሎቶች:</h2>
+        <button class="main-btn" onclick="showView('view-select')" id="btn-view-info">📄 መረጃ መመልከት (View)</button>
+        <button class="main-btn" onclick="showView('post-select')" id="btn-post-info">✍️ መረጃ መለጠፍ (Post)</button>
+        
+        <!-- The Original User List Button Restored -->
+        <button class="feature-btn" onclick="showUserList(false)" id="btn-users-list">👥 የፋሲል ዌብ አፕ ተጠቃሚዎች</button>
+
+        <button class="social-btn" onclick="handleGroupCreation()" id="btn-create-group">👥 ቡድን ለመፍጠር</button>
+        <button class="social-btn" style="background:#5e35b1;" onclick="showMyGroupsList()" id="btn-my-groups">📂 የፈጠሩትን ግሩፕ ለመመልከት</button>
+        <button class="social-btn" onclick="handlePrivateChatStart()" id="btn-chat">💬 በውስጥ መስመር ማውራት</button>
+        
+        <button class="success-btn" style="background-color: #00bcd4;" onclick="showView('feedback-center')" id="btn-feedback">📝 አስተያየት ለመስጠት እና ለመመልከት</button>
+
+        <button class="business-btn" onclick="checkAuthAndRedirect('business-dashboard')" id="btn-biz">💰 ቢዝነስ ማዕከል</button>
+        
+        <button class="feature-btn" style="background-color: #ffc107; color: black;" onclick="showView('premium-services-list')" id="btn-prem-services">⭐️ የክፍያ አገልግሎቶች (Premium)</button>
+
+        <!-- The Original Delete Button Restored -->
+        <button class="delete-btn" onclick="showDeleteList()" id="btn-delete-posts">🗑️ የለጠፉትን መረጃ መደለት</button>
+        
+        <button class="language-btn" onclick="toggleLanguage()">Language: Amharic/English</button>
+        <button class="delete-btn" style="background-color: #6c757d; margin-top: 20px;" onclick="handleLogout()" id="btn-logout">ውጣ (Log Out)</button>
+    </div>
+
+    <!-- 8. Post Creation -->
+    <div class="section" id="post-select">
+        <h2 id="t-post-title">✍️ መረጃ መለጠፍ</h2>
+        <input type="text" id="post-title-input" placeholder="Title">
+        <textarea id="post-content-input" placeholder="Content..."></textarea>
+        <p>File (Image/Video/Audio):</p>
+        <input type="file" id="post-file-input">
+        <button class="success-btn" onclick="createNewPost()" id="btn-submit-post">ይለጥፉ</button>
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <!-- 9. View Selection -->
+    <div class="section" id="view-select">
+        <h2 id="t-view-title">📄 መረጃ መመልከት</h2>
+        <button class="main-btn" onclick="displayPosts('text')" id="btn-v-text">📝 ፅሁፍ (Text)</button>
+        <button class="main-btn" onclick="displayPosts('image')" id="btn-v-image">📷 ምስል (Image)</button>
+        <button class="main-btn" onclick="displayPosts('audio')" id="btn-v-media">🎥 ቪዲዮ/ድምፅ (Video/Audio)</button>
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <!-- 10. Posts Viewer (With Comments) -->
+    <div class="section" id="posts-viewer">
+        <h2 id="t-viewer-title">ዝርዝር</h2>
+        <div id="posts-container"></div>
+        <button class="delete-btn" onclick="showView('view-select')">Back</button>
+    </div>
+
+    <!-- 11. User List -->
+    <div class="section" id="user-list-view">
+        <h2 id="t-userlist-title">ተጠቃሚዎች</h2>
+        <div id="user-list-container"></div>
+        <button id="user-list-done-btn" class="success-btn" style="display:none;">Done</button>
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <!-- 12. Business Center -->
+    <div class="section" id="business-dashboard">
+        <h2 id="t-biz-title">💰 የቢዝነስ ማዕከል</h2>
+        <div style="background:#f8f9fa; border:1px solid #ddd; padding:15px; border-radius:8px; margin-bottom:15px;">
+            <h3>Balance (USD): <span id="main-usd" style="color:#007bff;">0.00</span></h3>
+            <div style="margin-top:10px;">
+                <span style="color:red; margin-right:10px;">GBP: <span id="bal-gbp">0.00</span></span>
+                <span style="color:green;">EUR: <span id="bal-eur">0.00</span></span>
+            </div>
+        </div>
+
+        <button class="success-btn" onclick="showView('deposit-view')" id="btn-biz-dep">💵 ገንዘብ ለማስገባት</button>
+        <button class="main-btn" onclick="showView('withdraw-view')" id="btn-biz-with">💸 ገንዘብ ለማውጣት</button>
+        <button class="premium-btn" onclick="showView('intl-purchase-view')" id="btn-biz-intl">🌐 ዓለም አቀፍ ግዢ</button>
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <!-- 13. Deposit -->
+    <div class="section" id="deposit-view">
+        <h2>💵 Deposit</h2>
+        <input type="number" id="deposit-amount" placeholder="ETB Amount">
+        <p>Convert to:</p>
+        <select id="deposit-target-currency">
+            <option value="USD">USD ($)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="EUR">EUR (€)</option>
+        </select>
+        <p>Receipt:</p>
+        <input type="file" id="deposit-receipt">
+        <button class="success-btn" onclick="handleDeposit()">Deposit</button>
+        <button class="delete-btn" onclick="showView('business-dashboard')">Cancel</button>
+    </div>
+
+    <!-- 14. Withdraw (With Validations) -->
+    <div class="section" id="withdraw-view">
+        <h2>💸 Withdraw</h2>
+        <p>From Currency:</p>
+        <select id="withdraw-source-currency">
+            <option value="USD">USD</option>
+            <option value="GBP">GBP</option>
+            <option value="EUR">EUR</option>
+        </select>
+        <input type="number" id="withdraw-amount" placeholder="Amount">
+        <p>Method:</p>
+        <select id="withdraw-method" onchange="toggleReceiverInput()">
+            <option value="Telebirr">Telebirr</option>
+            <option value="CBE">CBE</option>
+            <option value="PayPal">PayPal</option>
+        </select>
+        <input type="text" id="withdraw-receiver" placeholder="Receiver Info" style="display:none;">
+        <button class="main-btn" onclick="initiateWithdraw()">Withdraw</button>
+        <button class="delete-btn" onclick="showView('business-dashboard')">Cancel</button>
+    </div>
+
+    <!-- 15. International Purchase -->
+    <div class="section" id="intl-purchase-view">
+        <h2>🌐 International Purchase</h2>
+        <select id="intl-service">
+            <option value="ChatGPT">ChatGPT</option>
+            <option value="Gemini">Gemini</option>
+            <option value="Amazon">Amazon</option>
+            <option value="Hosting">Hosting</option>
+            <option value="Domain">Domain</option>
+        </select>
+        <input type="number" id="intl-amount" placeholder="Amount ($)">
+        <button class="success-btn" onclick="handleIntlPurchase()">Pay</button>
+        <button class="delete-btn" onclick="showView('business-dashboard')">Cancel</button>
+    </div>
+
+    <!-- 16. Premium List -->
+    <div class="section" id="premium-services-list">
+        <h2>⭐️ Premium Services</h2>
+        <button class="main-btn" onclick="openPricing('Video')">🎥 Quality Video</button>
+        <button class="main-btn" onclick="openPricing('News')">📰 News</button>
+        <button class="main-btn" onclick="openPricing('PPT')">📊 PowerPoint</button>
+        <button class="main-btn" onclick="openPricing('PDF')">📄 PDF Tools</button>
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <!-- 17. Pricing & Pay -->
+    <div class="section" id="pricing-view">
+        <h2 id="pricing-title">Payment</h2>
+        <button class="success-btn" onclick="processPay(5)">Daily (5 ETB)</button>
+        <button class="success-btn" onclick="processPay(25)">Weekly (25 ETB)</button>
+        <button class="success-btn" onclick="processPay(30)">Monthly (30 ETB)</button>
+        <button class="success-btn" onclick="processPay(100)">Yearly (100 ETB)</button>
+        <button class="delete-btn" onclick="showView('premium-services-list')">Cancel</button>
+    </div>
+
+    <!-- 18. Feedback -->
+    <div class="section" id="feedback-center">
+        <h2>📝 Feedback</h2>
+        <button class="main-btn" onclick="handleFeedback('text')">Text</button>
+        <button class="feature-btn" onclick="handleFeedback('voice')">Voice</button>
+        <button class="premium-btn" onclick="handleFeedback('video')">Video</button>
+        <input type="file" id="feedback-media-input" style="display:none;">
+        <hr>
+        <button class="social-btn" onclick="showAllFeedbacks()">View Feedbacks</button>
+        <div id="feedbacks-container"></div>
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <!-- 19. Chat & Groups (Simplified UI) -->
+    <div class="section" id="private-chat-view">
+        <h2 id="chat-header">Chat</h2>
+        <div id="chat-messages" style="height:200px; overflow-y:auto; border:1px solid #ddd;"></div>
+        <input type="text" id="chat-input" placeholder="Message">
+        <button class="main-btn" onclick="sendChat('text')">Send</button>
+        <button class="feature-btn" onclick="triggerChatMedia()">Media</button>
+        <input type="file" id="chat-file-hidden" style="display:none;">
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <div class="section" id="my-groups-view">
+        <h2>📂 Groups</h2>
+        <div id="groups-list"></div>
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <div class="section" id="single-group-view">
+        <h2 id="group-title">Group</h2>
+        <div id="group-messages" style="height:200px; overflow-y:auto; border:1px solid #ddd;"></div>
+        <button class="main-btn" onclick="postGroup('text')">Text</button>
+        <button class="feature-btn" onclick="postGroup('media')">Media</button>
+        <button class="delete-btn" onclick="showMyGroupsList()">Back</button>
+    </div>
+    
+    <div class="section" id="delete-files-view">
+        <h2>🗑️ Delete Files</h2>
+        <div id="delete-list"></div>
+        <button class="delete-btn" onclick="showView('dashboard-view')">Back</button>
+    </div>
+
+    <script>
+        // --- DATA ---
+        let currentUser = JSON.parse(localStorage.getItem('fasil_user')) || null;
+        let users = JSON.parse(localStorage.getItem('fasil_users')) || [];
+        let posts = JSON.parse(localStorage.getItem('fasil_posts')) || [];
+        let groups = JSON.parse(localStorage.getItem('fasil_groups')) || [];
+        let chats = JSON.parse(localStorage.getItem('fasil_chats')) || {};
+        let feedbacks = JSON.parse(localStorage.getItem('fasil_feedbacks')) || [];
+        let activeChatUser = null;
+        let activeGroup = null;
+        let pendingAction = null;
+        let currentLang = 'am';
+
+        const RATES = { USD:120, GBP:150, EUR:130 };
+        const TEXTS = {
+            'am': {
+                't-welcome':'እንኳን ወደ ፋሲል ዌብ በደህና መጡ', 't-home-title':'የመግቢያ ምርጫ', 'btn-signup-home':'በነፃ ለመመዝገብ / ለመግባት',
+                'btn-prem-home':'በክፍያ አማራጭ ለመመዝገብ', 't-dash':'ዳሽቦርድ', 'btn-view-info':'📄 መረጃ መመልከት', 'btn-post-info':'✍️ መረጃ መለጠፍ',
+                'btn-users-list':'👥 የፋሲል ዌብ አፕ ተጠቃሚዎች', 'btn-create-group':'👥 ቡድን ለመፍጠር', 'btn-my-groups':'📂 የፈጠሩትን ግሩፕ ለመመልከት',
+                'btn-chat':'💬 በውስጥ መስመር ማውራት', 'btn-biz':'💰 ቢዝነስ ማዕከል', 'btn-feedback':'📝 አስተያየት ለመስጠት', 'btn-delete-posts':'🗑️ የለጠፉትን መረጃ መደለት'
+            },
+            'en': {
+                't-welcome':'Welcome to Fasil Web App', 't-home-title':'Login Selection', 'btn-signup-home':'Free Signup / Login',
+                'btn-prem-home':'Premium Signup', 't-dash':'Dashboard', 'btn-view-info':'📄 View Info', 'btn-post-info':'✍️ Post Info',
+                'btn-users-list':'👥 User List', 'btn-create-group':'👥 Create Group', 'btn-my-groups':'📂 My Groups',
+                'btn-chat':'💬 Private Chat', 'btn-biz':'💰 Business Center', 'btn-feedback':'📝 Feedback', 'btn-delete-posts':'🗑️ Delete Posts'
+            }
+        };
+
+        // --- CORE ---
+        function showView(id) {
+            document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            if(id === 'business-dashboard') updateBalance();
+        }
+        function showAlert(msg, type) {
+            const m = document.getElementById('custom-modal');
+            document.getElementById('modal-title').textContent = type==='error'?'❌':'✅';
+            document.getElementById('modal-text').textContent = msg;
+            m.style.display='flex';
+        }
+        function closeModal() { document.getElementById('custom-modal').style.display='none'; }
+        function toggleLanguage() {
+            currentLang = currentLang==='am'?'en':'am';
+            const t = TEXTS[currentLang];
+            for(let k in t) { if(document.getElementById(k)) document.getElementById(k).textContent = t[k]; }
+        }
+
+        // --- AUTH ---
+        function handleSignUp() {
+            const n = document.getElementById('signup-name').value;
+            const p = document.getElementById('signup-phone').value;
+            const e = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-password').value;
+            
+            if(!e.endsWith('@gmail.com')) return showAlert("Email must be @gmail.com", "error");
+            if(users.some(u=>u.phone===p || u.email===e)) return showAlert("User exists", "error");
+            
+            users.push({name:n, phone:p, email:e, password:pass, balanceUSD:0, balanceGBP:0, balanceEUR:0, photo:''});
+            localStorage.setItem('fasil_users', JSON.stringify(users));
+            showAlert("Registered!", "success"); showView('login-form');
+        }
+        function handleLogin() {
+            const p = document.getElementById('login-phone').value;
+            const pass = document.getElementById('login-password').value;
+            const u = users.find(user=>user.phone===p && user.password===pass);
+            if(u) { currentUser=u; localStorage.setItem('fasil_user', JSON.stringify(u)); showView('dashboard-view'); }
+            else showAlert("Invalid credentials", "error");
+        }
+        function handleLogout() { currentUser=null; localStorage.removeItem('fasil_user'); showView('home-view'); }
+        function checkFreeSignupForPremium() { if(!currentUser) { showAlert("Signup First", "error"); showView('signup-form'); } else showView('premium-services-list'); }
+        function checkAuthAndRedirect(v) { if(currentUser) showView(v); else showView('login-form'); }
+
+        // --- POSTS ---
+        function createNewPost() {
+            const t = document.getElementById('post-title-input').value;
+            const c = document.getElementById('post-content-input').value;
+            const f = document.getElementById('post-file-input').files[0];
+            
+            const save=(d, type)=>{
+                posts.unshift({id:Date.now(), title:t, content:c, fileData:d, type, author:currentUser.name, comments:[]});
+                localStorage.setItem('fasil_posts', JSON.stringify(posts));
+                showAlert("Posted!", "success"); showView('dashboard-view');
+            };
+            if(f) {
+                let ty = f.type.startsWith('image')?'image':(f.type.startsWith('video')?'video':'audio');
+                const r = new FileReader(); r.onload=e=>save(e.target.result, ty); r.readAsDataURL(f);
+            } else save(null, 'text');
+        }
+        function displayPosts(type) {
+            const c = document.getElementById('posts-container'); c.innerHTML='';
+            const fs = posts.filter(p=>p.type===type || (type==='audio' && p.type==='video'));
+            if(!fs.length) c.innerHTML='<p>Empty</p>';
+            fs.forEach(p=>{
+                let m = p.fileData ? (p.type==='image'?`<img src="${p.fileData}" width="100%">`: (p.type==='video'?`<video src="${p.fileData}" controls width="100%"></video>`:`<audio src="${p.fileData}" controls></audio>`)) : '';
+                const d=document.createElement('div'); d.className='post-card';
+                d.innerHTML=`<h3>${p.title}</h3><p>${p.content}</p>${m}<hr>
+                <div class="media-btn-group">
+                    <button onclick="addComment(${p.id},'text')">Text</button>
+                    <button onclick="addComment(${p.id},'voice')">Voice</button>
+                    <button onclick="addComment(${p.id},'video')">Video</button>
+                    <button onclick="addComment(${p.id},'image')">Image</button>
+                </div>
+                <div id="comments-${p.id}">${p.comments.map(x=>`<div><b>${x.u}:</b> ${x.t}</div>`).join('')}</div>`;
+                c.appendChild(d);
+            });
+            showView('posts-viewer');
+        }
+        function addComment(pid, type) {
+            if(type==='text') {
+                const t=prompt("Comment:");
+                if(t) saveComment(pid, t);
+            } else {
+                // Mock media comment
+                alert("Media Comment Upload"); saveComment(pid, "[Media Comment]");
+            }
+        }
+        function saveComment(pid, text) {
+            const p = posts.find(x=>x.id===pid);
+            p.comments.push({u:currentUser.name, t:text});
+            localStorage.setItem('fasil_posts', JSON.stringify(posts));
+            showAlert("Commented", "success");
+        }
+        function showDeleteList() {
+            const c=document.getElementById('delete-list'); c.innerHTML='';
+            posts.filter(p=>p.author===currentUser.name).forEach(p=>{
+                c.innerHTML+=`<div class="post-card"><b>${p.title}</b> <button class="delete-btn" onclick="delPost(${p.id})">Delete</button></div>`;
+            });
+            showView('delete-files-view');
+        }
+        function delPost(id){ posts=posts.filter(p=>p.id!==id); localStorage.setItem('fasil_posts',JSON.stringify(posts)); showDeleteList(); }
+
+        // --- BUSINESS ---
+        function updateBalance() {
+            document.getElementById('main-usd').textContent=currentUser.balanceUSD.toFixed(2);
+            document.getElementById('bal-gbp').textContent=currentUser.balanceGBP.toFixed(2);
+            document.getElementById('bal-eur').textContent=currentUser.balanceEUR.toFixed(2);
+        }
+        function handleDeposit() {
+            const etb = parseFloat(document.getElementById('deposit-amount').value);
+            const cur = document.getElementById('deposit-target-currency').value;
+            if(etb>=100) {
+                if(cur==='USD') currentUser.balanceUSD+=etb/RATES.USD;
+                if(cur==='GBP') currentUser.balanceGBP+=etb/RATES.GBP;
+                if(cur==='EUR') currentUser.balanceEUR+=etb/RATES.EUR;
+                localStorage.setItem('fasil_user', JSON.stringify(currentUser));
+                showAlert("Deposited", "success"); showView('business-dashboard');
+            } else showAlert("Min 100 ETB", "error");
+        }
+        function toggleReceiverInput() {
+            const m=document.getElementById('withdraw-method').value;
+            const i=document.getElementById('withdraw-receiver');
+            i.style.display='block';
+            i.placeholder = m==='PayPal'?'Email (@gmail...)': (m==='CBE'?'1000... (13 Digits)':'Phone');
+        }
+        function initiateWithdraw() {
+            const m=document.getElementById('withdraw-method').value;
+            const r=document.getElementById('withdraw-receiver').value;
+            if(m==='PayPal' && !r.includes('@')) return showAlert("PayPal needs Email", "error");
+            if(m==='CBE' && (!r.startsWith('1000') && !r.startsWith('10000') || r.length!==13)) return showAlert("CBE must be 13 digits starting 1000/10000", "error");
+            
+            pendingAction = () => {
+                const amt=parseFloat(document.getElementById('withdraw-amount').value);
+                currentUser.balanceUSD-=amt; // Simplified
+                localStorage.setItem('fasil_user', JSON.stringify(currentUser));
+                showAlert("Success", "success"); showView('business-dashboard');
+            };
+            document.getElementById('password-modal').style.display='flex';
+        }
+        function handleIntlPurchase() {
+            pendingAction = () => {
+                 currentUser.balanceUSD -= parseFloat(document.getElementById('intl-amount').value);
+                 localStorage.setItem('fasil_user', JSON.stringify(currentUser));
+                 showAlert("Purchased", "success"); showView('business-dashboard');
+            };
+            document.getElementById('password-modal').style.display='flex';
+        }
+        function confirmActionWithPassword() {
+            if(document.getElementById('modal-password-input').value === currentUser.password) {
+                document.getElementById('password-modal').style.display='none';
+                if(pendingAction) pendingAction();
+            } else alert("Wrong Password");
+        }
+
+        // --- GROUPS & CHAT ---
+        function handleGroupCreation() {
+            const n=prompt("Name:"); if(!n)return;
+            showUserList(true);
+            document.getElementById('user-list-done-btn').onclick = () => {
+                const sel = document.querySelectorAll('.selected-user');
+                if(sel.length<2) return showAlert("Select 2+ users", "error");
+                groups.push({id:Date.now(), name:n, members:[currentUser.phone], posts:[]});
+                localStorage.setItem('fasil_groups', JSON.stringify(groups));
+                showAlert("Group Created", "success"); showView('dashboard-view');
+            };
+        }
+        function showUserList(selectMode) {
+            const c=document.getElementById('user-list-container'); c.innerHTML='';
+            users.forEach(u=>{
+                if(u.phone===currentUser.phone)return;
+                const d=document.createElement('div'); d.className='user-card'; d.innerHTML=`<img src="${u.photo||''}"> ${u.name}`;
+                if(selectMode) { d.onclick=()=>{d.classList.toggle('selected-user'); d.style.background='#ccc';}; }
+                else { d.onclick=()=>{ activeChatUser=u; startChat(); } }
+                c.appendChild(d);
+            });
+            document.getElementById('user-list-done-btn').style.display=selectMode?'block':'none';
+            showView('user-list-view');
+        }
+        function handlePrivateChatStart() { showUserList(false); }
+        function startChat() { showView('private-chat-view'); renderChat(); }
+        function renderChat() {
+            const id=[currentUser.phone, activeChatUser.phone].sort().join('_');
+            const msgs=chats[id]||[];
+            document.getElementById('chat-messages').innerHTML=msgs.map(m=>`<div>${m.t}</div>`).join('');
+        }
+        function sendChat(type) {
+            const t=document.getElementById('chat-input').value;
+            const id=[currentUser.phone, activeChatUser.phone].sort().join('_');
+            if(!chats[id]) chats[id]=[];
+            chats[id].push({s:currentUser.phone, t, type});
+            localStorage.setItem('fasil_chats', JSON.stringify(chats));
+            renderChat();
+        }
+        function showMyGroupsList() {
+            document.getElementById('groups-list').innerHTML=groups.map(g=>`<div onclick="openGroup(${g.id})" class="user-card">${g.name}</div>`).join('');
+            showView('my-groups-view');
+        }
+        function openGroup(gid) { activeGroup=groups.find(g=>g.id===gid); showView('single-group-view'); renderGroup(); }
+        function renderGroup() { document.getElementById('group-messages').innerHTML=activeGroup.posts.map(p=>`<div><b>${p.u}:</b> ${p.t}</div>`).join(''); }
+        function postGroup(type) {
+            const t = type==='text'?prompt("Text"): "Media";
+            activeGroup.posts.push({u:currentUser.name, t});
+            localStorage.setItem('fasil_groups', JSON.stringify(groups));
+            renderGroup();
+        }
+
+        // --- FEEDBACK ---
+        function handleFeedback(t) {
+            if(t==='text') { const x=prompt("Feedback:"); if(x) saveFb(x,t); }
+            else { document.getElementById('feedback-media-input').click(); }
+        }
+        function saveFb(c,t) { feedbacks.push({u:currentUser.name, c, t}); localStorage.setItem('fasil_feedbacks', JSON.stringify(feedbacks)); showAlert("Sent","success"); }
+        function showAllFeedbacks() {
+            document.getElementById('feedbacks-container').innerHTML=feedbacks.map(f=>`<div><b>${f.u}:</b> ${f.c} (${f.t})</div>`).join('');
+        }
+        
+        // --- PREMIUM ---
+        function openPricing(n) { showView('pricing-view'); }
+        function processPay(n) { showView('payment-confirm-view'); }
+        function finalizePayment() { showAlert("Success", "success"); showView('dashboard-view'); }
+
+        // Init
+        document.getElementById('loading-overlay').style.display='none';
+        toggleLanguage(); // set initial text
+    </script>
+</body>
+</html>
