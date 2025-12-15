@@ -1,0 +1,806 @@
+ረ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App (Original Full Version)</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- 1. GENERAL STYLES --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            background-color: #f0f4f8;
+            color: #333;
+            padding-bottom: 100px; /* Space for footer */
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        /* --- 2. HEADER STYLES --- */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 10px 15px;
+            border-bottom: 4px solid #007bff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-icon-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: top;
+            border: 2px solid #ccc;
+        }
+        .marquee-container-top {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 0 15px;
+            background-color: #e3f2fd;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .marquee-text-top {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 18s linear infinite;
+            color: #007bff;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* --- 3. FOOTER STYLES --- */
+        .footer-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: white;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+        }
+        .bottom-nav {
+            display: flex;
+            height: 60px;
+            width: 100%;
+        }
+        .nav-btn {
+            flex: 1;
+            border: none;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: background 0.3s;
+        }
+        .nav-home { background-color: #28a745; }
+        .nav-home:active { background-color: #218838; }
+        
+        .nav-live { background-color: #ffc107; color: black; }
+        .nav-live:active { background-color: #e0a800; }
+        
+        .nav-profile { background-color: #dc3545; }
+        .nav-profile:active { background-color: #c82333; }
+        
+        .bottom-marquee {
+            background: #f0f0f0;
+            color: #28a745;
+            font-weight: bold;
+            overflow: hidden;
+            white-space: nowrap;
+            height: 30px;
+            line-height: 30px;
+            font-size: 13px;
+            border-top: 1px solid #ccc;
+        }
+        .bottom-marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 14s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* --- 4. SECTIONS & LAYOUT --- */
+        .section {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            min-height: 400px;
+        }
+        .show {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Split Layout for Welcome */
+        .split-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .split-left {
+            width: 48%;
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            color: #007bff;
+            font-size: 13px;
+            line-height: 1.5;
+            border-left: 4px solid #007bff;
+        }
+        .split-right {
+            width: 48%;
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 8px;
+            color: #d35400;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.5;
+            border-left: 4px solid #d35400;
+        }
+        
+        .blue-spacer {
+            height: 40px;
+            background-color: #007bff;
+            margin: 20px 0;
+            border-radius: 8px;
+            opacity: 0.8;
+        }
+
+        /* Images */
+        .lion-full-img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+            margin-top: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .eagle-dash-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 15px;
+            border: 2px solid #28a745;
+        }
+
+        /* Dashboard Split */
+        .dash-layout {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        .dash-left {
+            width: 55%;
+            text-align: left;
+        }
+        .dash-right {
+            width: 45%;
+        }
+        
+        /* --- 5. BUTTONS & INPUTS --- */
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+            transition: transform 0.1s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button:active { transform: scale(0.98); }
+        
+        .btn-green { background-color: #28a745; }
+        .btn-red { background-color: #dc3545; }
+        .btn-blue { background-color: #007bff; }
+        .btn-yellow { background-color: #ffc107; color: black; }
+        .btn-admin { background-color: #343a40; color: white; display: none; }
+        
+        .btn-small {
+            padding: 10px;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .lang-btn {
+            background: #6c757d;
+            color: white;
+            padding: 5px 12px;
+            font-size: 12px;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        /* --- 6. MODALS --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-box {
+            background: white;
+            padding: 25px;
+            width: 85%;
+            max-width: 450px;
+            border-radius: 12px;
+            text-align: center;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: popIn 0.3s ease;
+        }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* --- 7. POST CARDS --- */
+        .post-card {
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+        .post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+        .post-content-media {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            flex-wrap: wrap;
+        }
+        .action-icon {
+            background: none;
+            border: none;
+            color: #007bff;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
+            margin: 0;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+        }
+        .action-icon:hover { background-color: #e3f2fd; border-radius: 5px; }
+
+        .delete-section {
+            margin-top: 10px;
+            text-align: right;
+            border-top: 1px solid #ffeeba;
+            padding-top: 5px;
+        }
+        
+        /* User List Items */
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .user-item:hover { background-color: #f9f9f9; }
+        .user-item img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+        .user-item.bright-blue {
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+        }
+
+        /* Live Video */
+        #live-video-element {
+            width: 100%;
+            height: 350px;
+            background: #000;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .hidden-input { display: none; }
+        .hidden { display: none; }
+        
+        /* Stats Box */
+        .stats-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="top-header">
+        <img src="eagle_image.jpg" class="header-icon-img" alt="Eagle">
+        <div class="marquee-container-top">
+            <span class="marquee-text-top" id="head-txt">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span>
+        </div>
+        <div style="text-align: right; display: flex; flex-direction: column; align-items: center;">
+            <img src="lion_image.jpg" class="header-icon-img" alt="Lion">
+            <button class="lang-btn" onclick="toggleLanguage()" id="lang-btn-txt">Language</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- GLOBAL MODALS -->
+        <div class="modal-overlay" id="custom-modal">
+            <div class="modal-box">
+                <h3 id="modal-title">Title</h3>
+                <p id="modal-msg">Message</p>
+                <button class="btn-blue" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+        
+        <div class="modal-overlay" id="pass-modal">
+            <div class="modal-box">
+                <h3 id="pass-title">Password Required</h3>
+                <input type="password" id="pass-input" placeholder="Password" style="text-align:center;">
+                <button class="btn-green" onclick="verifyPass()">Confirm</button>
+                <button class="btn-red" onclick="document.getElementById('pass-modal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+
+        <!-- COMMENT MODALS -->
+        <div class="modal-overlay" id="comment-type-modal">
+            <div class="modal-box">
+                <h3 id="t-com-act">Action</h3>
+                <button class="btn-blue" onclick="openComSub('give')">Give Comment</button>
+                <button class="btn-blue" onclick="openComSub('view')">View Comments</button>
+                <button class="btn-red" onclick="document.getElementById('comment-type-modal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="comment-media-modal">
+            <div class="modal-box">
+                <h3 id="t-com-media">Select Type</h3>
+                <button class="btn-blue" onclick="processComment('text')">Text</button>
+                <button class="btn-blue" onclick="processComment('image')">Image</button>
+                <button class="btn-blue" onclick="processComment('video')">Video</button>
+                <button class="btn-blue" onclick="processComment('audio')">Voice</button>
+                <button class="btn-red" onclick="document.getElementById('comment-media-modal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="view-comments-list-modal">
+            <div class="modal-box">
+                <h3>Comments</h3>
+                <div id="comments-display-area" style="text-align:left; max-height:300px; overflow-y:auto; margin-bottom:10px;"></div>
+                <button class="btn-red" onclick="document.getElementById('view-comments-list-modal').style.display='none'">Close</button>
+            </div>
+        </div>
+
+        <!-- SHARE MODAL -->
+        <div class="modal-overlay" id="share-modal">
+            <div class="modal-box">
+                <h3>Share To</h3>
+                <button class="btn-blue" onclick="shareTo('telegram')">Telegram</button>
+                <button class="btn-blue" onclick="shareTo('facebook')">Facebook</button>
+                <button class="btn-blue" onclick="shareTo('tiktok')">TikTok</button>
+                <button class="btn-blue" onclick="shareTo('youtube')">YouTube</button>
+                <button class="btn-red" onclick="closeShare()">Close</button>
+            </div>
+        </div>
+
+        <!-- ADMIN LOGIN MODAL -->
+        <div class="modal-overlay" id="admin-login-modal">
+            <div class="modal-box">
+                <h3>Admin Login</h3>
+                <input type="password" id="admin-pass-in" placeholder="Code (abc123456abd)">
+                <button class="btn-green" onclick="adminLogin()">Enter</button>
+                <button class="btn-red" onclick="document.getElementById('admin-login-modal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+
+        <!-- 1. VIEW: AGREEMENT -->
+        <div id="view-agreement" class="section show">
+            <div id="welcome-content">
+                <div class="split-container">
+                    <div class="split-left">
+                        <h4 id="t-w-s">እንኳን ደህና መጡ</h4>
+                        <!-- FULL TEXT RESTORED -->
+                        <p id="t-in">ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ የዲጂታል መረጃ መጋሪያ መድረክ ነው። ሁሌም ትክክለኛ መረጃዎችን በታማኝነት ያቀርባል። በተጨማሪም ተጨማሪ አገልግሎቶች ፓወር ፖይንት፣ ፒዲኤፍ፣ መረጃ መለጠፍ፣ ማዘጋጀት ያቀርባል። በተጨማሪ በኤኣይ የታገዙ አገልግሎቶችን እናቀርባለን። አገልግሎታችንን ስለመረጡ እናመሰግናለን።</p>
+                    </div>
+                    <div class="split-right">
+                        <h4 id="t-p-s">ጥብቅ መመሪያ</h4>
+                        <!-- FULL TEXT RESTORED -->
+                        <p id="t-po">በዚህ መድረክ ፖለቲካ፣ ጥላቻ፣ ዘረኝነት፣ የሃይማኖት፣ የብሔር ጥላቻ፣ ሀሰተኛ መረጃ ማቅረብ አይቻልም። ይህን ካደረጉ በጥብቅ የሲስተም ቁጥጥር እና ተጨማሪ የኤኣይ ረዳት ቁጥጥር ሲስተማችን በራሱ ያለምንም ማስጠንቀቅያ ከአገልግሎታችን ያግድታል።</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-green btn-small" onclick="handleAgree()" id="btn-agree">እስማማለሁ</button>
+                    <button class="btn-red btn-small" onclick="showAlert('አልተስማሙም', 'error')" id="btn-disagree">አልስማማም</button>
+                </div>
+                <div class="blue-spacer"></div>
+            </div>
+            
+            <div id="auth-section" style="display:none;">
+                <p style="color: green; font-weight: bold; font-size: 14px;" id="t-thx">አገልግሎታችንን ስለመረጡ እናመሰግናለን! ዋና አገልግሎታችንን ለመጠቀም አዲስ ከሆኑ እባክዎ ይመዝገቡ ወይም ከአሁን በፊት ተመዝግበው ከሆነ ይግቡ።</p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-red" onclick="showAuth('signup')" id="btn-sh-s">መመዝገቢያ</button>
+                    <button class="btn-red" onclick="showAuth('login')" id="btn-sh-l">መግቢያ</button>
+                </div>
+                
+                <div id="form-signup" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <div id="signup-step-1">
+                        <h3 style="color:#dc3545;" id="h-s">ምዝገባ</h3>
+                        <input type="text" id="reg-name" placeholder="Full Name">
+                        <input type="text" id="reg-phone" placeholder="Phone (09... 10 digits)">
+                        <input type="email" id="reg-email" placeholder="Email (@gmail.com only)">
+                        <input type="password" id="reg-pass" placeholder="Password (6 digits)">
+                        <button class="btn-green" onclick="preSignup()">Submit</button>
+                    </div>
+                    <div id="signup-step-2" style="display:none;">
+                        <h3>Upload Profile Photo</h3>
+                        <button class="btn-blue" onclick="promptUpload('profile')">Upload Photo</button>
+                        <input type="file" id="file-profile" class="hidden-input" accept="image/*">
+                        <button class="btn-green" onclick="finalSignup()">Complete Registration</button>
+                    </div>
+                </div>
+
+                <div id="form-login" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <h3 style="color:#dc3545;" id="h-l">መግቢያ</h3>
+                    <input type="text" id="log-phone" placeholder="Phone">
+                    <input type="password" id="log-pass" placeholder="Password">
+                    <button class="btn-blue" onclick="doLogin()">Login</button>
+                </div>
+                <!-- Image Placeholder -->
+                <div><img src="lion_image.jpg" class="lion-full-img"></div>
+            </div>
+        </div>
+
+        <!-- 2. VIEW: MAIN DASHBOARD -->
+        <div id="view-home" class="section">
+            <div style="display:flex; align-items:center; border-bottom:1px solid #ddd; padding-bottom:5px;">
+                <img src="eagle_image.jpg" class="eagle-dash-img"><h2 id="t-d" style="margin:0;">ዳሽቦርድ</h2>
+            </div>
+            <div class="dash-layout" style="margin-top:10px;">
+                <div class="dash-left">
+                    <button class="btn-green" style="border-radius: 0;" id="btn-fc" onclick="toggleList('free')">የነፃ አገልግሎት ማዕከል</button>
+                    <div id="list-free" style="display:none; padding-left: 10px;">
+                        <button class="btn-green btn-small" onclick="navTo('view-info')" id="btn-lv">መረጃ መመልከት</button>
+                        <button class="btn-green btn-small" onclick="navTo('post-info')" id="btn-lp">መረጃ መለጠፍ</button>
+                        <button class="btn-green btn-small" onclick="handleGroupCreate()" id="btn-lg">ግሩፕ መፍጠር</button>
+                        <button class="btn-green btn-small" onclick="showMyGroups()" id="btn-lmg">የፈጠሩትን ግሩፕ ለመመልከት</button>
+                        <button class="btn-green btn-small" onclick="handleChatList()" id="btn-lc">ቻት</button>
+                        <button class="btn-green btn-small" onclick="navTo('feedback-sec')" id="btn-lf">ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት እና ለመመልከት</button>
+                        <button class="btn-green btn-small" onclick="showUserList(false)" id="btn-lu">ተጠቃሚዎች</button>
+                        <button class="btn-green btn-small" onclick="checkAuth('business-sec')" id="btn-lb">ቢዝነስ</button>
+                        <!-- Admin Only Button -->
+                        <button class="btn-green btn-small" style="background-color:#333;" onclick="checkAuth('report-inbox')" id="btn-admin-rep">ሪፖርት መቀበያ (Admin)</button>
+                    </div>
+                    <button class="btn-yellow" style="border-radius: 0; margin-top: 10px;" id="btn-pc" onclick="toggleList('prem')">የክፍያ ፕሪሚየም አገልግሎት</button>
+                    <div id="list-prem" style="display:none; padding-left: 10px;">
+                        <button class="btn-yellow btn-small" onclick="openPrem('video')" id="btn-pv">ጥራት ያለው ቪዲዮ</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('news')" id="btn-pn">ዜና</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('ppt')" id="btn-pp">PowerPoint</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('pdf')" id="btn-ppdf">PDF</button>
+                    </div>
+                </div>
+                <div class="dash-right"><img src="lion_image.jpg" class="lion-full-img"></div>
+            </div>
+            <button class="btn-red" style="margin-top:20px;" onclick="doLogout()" id="btn-out">ውጣ</button>
+        </div>
+
+        <!-- 3. FUNCTIONAL SECTIONS -->
+
+        <!-- Post -->
+        <div id="post-info" class="section">
+            <h3 id="t-ph">መረጃ መለጠፍ</h3>
+            <div id="post-type-select">
+                <button class="btn-blue" onclick="setupPost('text')" id="btn-pt">📝 Text</button>
+                <button class="btn-blue" onclick="setupPost('image')" id="btn-pi">📷 Image</button>
+                <button class="btn-blue" onclick="setupPost('video')" id="btn-pv">🎥 Video</button>
+                <button class="btn-blue" onclick="setupPost('audio')" id="btn-pa">🎙️ Audio</button>
+            </div>
+            <div id="post-form-area" style="display:none; border-top:1px solid #ccc; margin-top:10px; padding-top:10px;">
+                <p id="post-instr" style="color:blue; font-size:12px;"></p>
+                <input type="file" id="file-post" class="hidden-input">
+                <input type="text" id="p-title" placeholder="Title (Required)">
+                <textarea id="p-content" placeholder="Details (Text Only)..." style="display:none;"></textarea>
+                <button class="btn-green" onclick="submitPost()" id="btn-pnow">Post Now</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk1">Back</button>
+        </div>
+
+        <!-- View -->
+        <div id="view-info" class="section">
+            <h3 id="t-vh">መረጃ መመልከት</h3>
+            <div style="display:flex; gap:5px;">
+                <button class="btn-blue btn-small" onclick="renderPosts('text')" id="btn-vt">Text</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('image')" id="btn-vi">Image</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('video')" id="btn-vv">Video</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('audio')" id="btn-va">Audio</button>
+            </div>
+            <div id="feed-container" style="margin-top:10px;"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk2">Back</button>
+        </div>
+
+        <!-- Admin Report Inbox -->
+        <div id="report-inbox" class="section">
+            <h3>ሪፖርት መቀበያ (Admin)</h3>
+            <div style="margin-bottom:10px;">
+                <button class="btn-blue btn-small" onclick="changeAdminPassUI()">Change Admin Pass</button>
+                <button class="btn-blue btn-small" onclick="showUserStats()">User Activity Monitor</button>
+            </div>
+            <div id="report-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Business -->
+        <div id="business-sec" class="section">
+            <h3 id="t-bh">ቢዝነስ ማዕከል</h3>
+            <div style="background:#f9f9f9; padding:10px; border:1px solid #ddd;">
+                <p>USD: <b id="bal-usd">0.00</b> | GBP: <b id="bal-gbp" style="color:red;">0.00</b> | EUR: <b id="bal-eur" style="color:blue;">0.00</b></p>
+                <p>ETB: <b id="bal-etb" style="color:green;">0.00</b></p>
+                <hr>
+                <p style="color:green; font-weight:bold;">Total (USD): <span id="bal-total">0.00</span></p>
+                <p style="color:red; font-weight:bold;">Total (ETB): <span id="bal-total-etb">0.00</span></p>
+            </div>
+            <button class="btn-green" onclick="navTo('deposit-sec')" id="btn-bd">Deposit</button>
+            <button class="btn-blue" onclick="navTo('withdraw-sec')" id="btn-bw">Withdraw</button>
+            <button class="btn-yellow" onclick="navTo('intl-sec')" id="btn-bi">International Purchase</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk3">Back</button>
+        </div>
+
+        <!-- Deposit -->
+        <div id="deposit-sec" class="section">
+            <h3 id="t-dep-h">Deposit</h3>
+            <div id="dep-step-1">
+                <input type="number" id="dep-amt" placeholder="Amount (ETB)">
+                <select id="dep-cur"><option value="ETB">ETB</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="EUR">EUR</option></select>
+                <button class="btn-green" onclick="preDeposit()">Submit</button>
+            </div>
+            <div id="dep-step-2" class="hidden">
+                <button class="btn-blue" onclick="promptUpload('deposit')">Upload Receipt</button>
+                <input type="file" id="file-deposit" class="hidden-input">
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk4">Back</button>
+        </div>
+
+        <!-- Withdraw -->
+        <div id="withdraw-sec" class="section">
+            <h3 id="t-with-h">Withdraw</h3>
+            <select id="w-cur"><option value="USD">From USD</option><option value="GBP">From GBP</option><option value="EUR">From EUR</option><option value="ETB">From ETB</option></select>
+            <input type="number" id="w-amt" placeholder="Amount">
+            <select id="w-method" onchange="toggleReceiverInput()"><option value="Telebirr">Telebirr</option><option value="CBE">CBE</option><option value="PayPal">PayPal</option></select>
+            <input type="text" id="w-dest" placeholder="Receiver Info" style="display:none;">
+            <button class="btn-blue" onclick="reqWithdraw()" id="btn-sub-with">Withdraw</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk5">Back</button>
+        </div>
+
+        <!-- Intl Purchase -->
+        <div id="intl-sec" class="section">
+            <h3 id="t-intl-h">International Purchase</h3>
+            <button class="btn-blue" onclick="document.getElementById('intl-list').style.display='block'">ምረጥ (Select)</button>
+            <div id="intl-list" class="hidden" style="margin-top:10px;">
+                <select id="intl-item"><option>1. ChatGPT</option><option>2. Amazon</option><option>3. Hosting</option><option>4. Domain</option><option>5. Netflix</option></select>
+                <input type="number" id="intl-amt" placeholder="Amount ($)">
+                <button class="btn-blue" onclick="promptUpload('intl')">Upload Receipt</button>
+                <input type="file" id="file-intl" class="hidden-input">
+                <button class="btn-green" onclick="doIntl()">Pay</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk6">Back</button>
+        </div>
+
+        <!-- Premium Pay -->
+        <div id="prem-pricing" class="section">
+            <h3 id="t-pay-h">Payment</h3>
+            <button class="btn-green" onclick="pay(5)">Daily (5 ETB)</button>
+            <button class="btn-green" onclick="pay(25)">Weekly (25 ETB)</button>
+            <button class="btn-green" onclick="pay(30)">Monthly (30 ETB)</button>
+            <div id="pay-up-area" style="display:none;">
+                <button class="btn-blue" onclick="promptUpload('pay')">Upload Receipt</button>
+                <input type="file" id="file-pay" class="hidden-input">
+                <button class="btn-green" onclick="finPay()">Confirm</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk7">Back</button>
+        </div>
+
+        <!-- Feedback -->
+        <div id="feedback-sec" class="section">
+            <h3 id="t-fh">Feedback</h3>
+            <p id="t-fb-sub">ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት</p>
+            <button class="btn-blue" onclick="giveFb('text')" id="btn-fb-txt">Text</button>
+            <button class="btn-yellow" onclick="showLiveStream()" id="btn-fb-live">Live</button>
+            <hr>
+            <button class="btn-blue" onclick="viewFbs()" id="btn-view-fb">View Feedbacks</button>
+            <div id="fb-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk8">Back</button>
+        </div>
+
+        <!-- Chat / Group -->
+        <div id="chat-sec" class="section">
+            <h3 id="t-chat-h">Chat</h3>
+            <div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ddd; margin-bottom:5px;"></div>
+            <input type="text" id="chat-in" placeholder="Message">
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <button class="btn-blue btn-small" onclick="sendChat('text')">Send</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-img')">📷</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-vid')">🎥</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-aud')">🎙️</button>
+                <button class="btn-red btn-small" onclick="showLiveStream()">🔴</button>
+            </div>
+            <input type="file" id="file-chat" class="hidden-input">
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk9">Back</button>
+        </div>
+
+        <!-- User List (Read Only) -->
+        <div id="user-list-sec" class="section">
+            <h3 id="t-users-h">Users</h3>
+            <div id="ul-cont"></div>
+            <button class="btn-green" id="btn-grp-done" style="display:none;" onclick="createGroup()">Done (5+)</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk10">Back</button>
+        </div>
+
+        <!-- My Groups -->
+        <div id="my-groups-sec" class="section">
+            <h3 id="t-mygrp-h">My Groups</h3>
+            <div id="grp-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk11">Back</button>
+        </div>
+
+        <!-- Live View (Real Camera) -->
+        <div id="view-live" class="section">
+            <h2 id="t-live">ቀጥታ ስርጭት (Live)</h2>
+            <video id="live-video-element" autoplay playsinline></video>
+            <button class="btn-red" onclick="stopLive()">Stop Live</button>
+        </div>
+
+        <!-- Profile -->
+        <div id="view-profile" class="section">
+            <h2 id="t-prof">የግል ማዕከል</h2>
+            <div style="text-align:left;">
+                <p>Phone: <b id="prof-phone"></b> (Disabled)</p>
+                <h4 id="t-edit-prof">Edit Profile</h4>
+                <input type="text" id="prof-name-edit" placeholder="Name">
+                <input type="password" id="old-pass" placeholder="Old Password">
+                <input type="password" id="new-pass" placeholder="New Password">
+                <input type="password" id="conf-pass" placeholder="Confirm Password">
+                <button class="btn-blue" onclick="promptUpload('profile-edit')" id="btn-chg-pic">Change Photo</button>
+                <input type="file" id="file-profile-edit" class="hidden-input" accept="image/*">
+                <button class="btn-green" onclick="saveProfile()" id="btn-up-prof">Update</button>
+            </div>
+            <button class="btn-red" style="margin-top:10px;" onclick="doLogout()" id="btn-prof-out">Logout</button>
+        </div>
+
+    </div>
+
+    <!-- Hidden Input for Comments/Files -->
+    <input type="file" id="comment-file-input" class="hidden-input">
+    <input type="file" id="universal-file" class="hidden-input">
+
+    <!-- Footer Wrapper with Marquee Below -->
+    <div class="footer-wrapper">
+        <div class="bottom-nav">
+            <button class="nav-btn nav-home" onclick="navTab('home')"><i class="fas fa-home"></i> <span id="nav-h">Home</span></button>
+            <button class="nav-btn nav-live" onclick="navTab('live')"><i class="fas fa-broadcast-tower"></i> <span id="nav-l">Live</span></button>
+            <button class="nav-btn nav-profile" onclick="navTab('profile')"><i class="fas fa-user"></i> <span id="nav-p">Profile</span></button>
+        </div>
+        <div class="bottom-marquee">
+            <span>ፋሲል ዌብ አፕ - Fasil Web App (Service Center)</span>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        let user = JSON.parse(localStorage.getItem('fg_user')) || null;
+        let users = JSON.parse(localStorage.getItem('fg_users')) || [];
+        let posts = JSON.parse(localStorage.getItem('fg_posts')) || [];
+        let groups = JSON.parse(localStorage.getItem('fg_groups')) || [];
+        let chats = JSON.parse(localStorage.getItem('fg_chats')) || {};
+        let feedbacks = JSON.parse(localStorage.getItem('fg_fbs')) || [];
+        let reports = JSON.parse(localStorage.getItem('fg_reports')) || [];
+        let adminPass = localStorage.getItem('fg_admin_pass') || 'abc123456abd';
+        
+        let lang = 'am';
+        let hasAgreed = false;
+        let viewHistory = [];
+        let activePostType = 'text';
+        let activeChat = null;
+        let activeCommentPostId = null;
+        let pendingAct = null;
+        let uploadTarget = '';
+        let liveStream = null;
+        let comMode = 'view'; 
+
+        const RATES = {USD:120, GBP:150, EUR:130};
+
+        // --- TRANSLATIONS (Strict 100%) ---
+        const TXT = {
+            'am': {
+                'head-txt':'እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!', 'lang-btn-txt':'እንግሊዝኛ (English)',
+                't-w-s':'እንኳን ደህና መጡ', 't-in':'ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ሁሌም ትክክለኛ መረጃዎችን ያቀርባል። እውነተኛ መረጃወችን መመልከት እና መጋራት ይችላሉ በተጨማሪም ሌሎች የፓወር ፖይንት የቢዝነስ እና ፒዲኤፍ አገልግሎቶችን ያገኛሉ እናመሰግናለን።',
+                't-p-s':'ጥብቅ መመሪያ', 't-po':'ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው። ፖሊሲያችን ጥሰው ከተገኙ በጥብቅ የሲስተም ቁጥጥራችን እና በጥብቅ ሲስተማችን በራስ ሰር ከአገልግሎታችን ሲስተም ሊያግድወት ይችላል።',
+                'btn-agree':'እስማማለሁ', 'btn-disagree':'አልስማማም',
+                't-thx':'አገልግሎታችንን ስለመረጡ እናመሰግናለን! አዲስ ከሆኑ ይመዝገቡ፣ ካለዎት ይግቡ።',
+                'btn-sh-s':'መመዝገቢያ', 'btn-sh-l':'መግቢያ', 'h-s':'ምዝገባ', 'h-l':'መግቢያ',
+                't-d':'ዳሽቦርድ', 'btn-fc':'የነፃ አገልግሎት ማዕከል', 'btn-pc':'የክፍያ ፕሪሚየም አገልግሎት', 'btn-out':'ውጣ', 
+                'btn-lv':'መረጃ መመልከት', 'btn-lp':'መረጃ መለጠፍ', 'btn-lg':'ግሩፕ መፍጠር', 'btn-lmg':'የፈጠሩትን ግሩፕ',
+                'btn-lc':'ቻት', 'btn-lf':'ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት እና ለመመልከት', 'btn-lu':'ተጠቃሚዎች', 'btn-lb':'ቢዝነስ', 'btn-admin-rep':'ሪፖርት መቀበያ (Admin)',
+                'btn-pv':'ጥራት ቪዲዮ', 'btn-pn':'ዜና', 'btn-pp':'PowerPoint', 'btn-ppdf':'PDF',
