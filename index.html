@@ -1,0 +1,1099 @@
+ፌመስService Center', 'btn-pc':'Premium Service', 'btn-out':'Logout',
+				'btn-lv':'View Information', 'btn-lp':'Post Information', 'btn-lg':'Create Group', 'btn-lmg':'My Groups',
+				'btn-lc':'Chat', 'btn-lf':'Feedback/View to Creator', 'btn-lu':'Users', 'btn-lb':'Business', 'btn-admin-rep':'Report Inbox (Admin)',
+				'btn-pv':'Quality Video', 'btn-pn':'News', 'btn-pp':'PowerPoint', 'btn-ppdf':'PDF',
+				't-ph':'Post Information', 't-vh':'View Information', 't-bh':'Business Center', 't-dep-h':'Deposit',
+				't-with-h':'Withdraw', 't-intl-h':'International Purchase', 't-pay-h':'Payment', 't-fb-h':'Feedback',
+				't-chat-h':'Chat', 't-users-h':'Users', 't-mygrp-h':'My Groups', 't-live':'Live Broadcast', 't-prof':'Profile Center',
+				'nav-h':'Home', 'nav-l':'Live', 'nav-p':'Profile', 'btn-back-1':'Back', 'btn-select':'Select',
+				'btn-p-txt':'📝 Text', 'btn-p-img':'📷 Image', 'btn-p-vid':'🎥 Video', 'btn-p-aud':'🎙️ Voice',
+				'btn-v-txt':'Text', 'btn-v-img':'Image', 'btn-v-vid':'Video', 'btn-v-aud':'Voice',
+				'btn-post-now':'Post Now', 'btn-dep':'Deposit', 'btn-with':'Withdraw', 'btn-intl':'Intl. Purchase',
+				't-edit-prof':'Edit Profile', 'btn-chg-pic':'Change Photo', 'btn-up-prof':'Update', 'btn-prof-out':'Logout',
+				't-fb-sub':'To Admin (Text / Live)', 'btn-fb-txt':'Text', 'btn-fb-live':'Live', 'btn-view-fb':'View Feedbacks',
+				't-choose-com':'Choose Comment Type', 't-post-instr':'Please enter information', 't-com-act':'Action', 't-com-media':'Select Type'
+			}
+		};
+
+		// --- CORE FUNCTIONS ---
+
+		function updateLocalStorage() {
+			localStorage.setItem('fg_user', JSON.stringify(user));
+			localStorage.setItem('fg_users', JSON.stringify(users));
+			localStorage.setItem('fg_posts', JSON.stringify(posts));
+			localStorage.setItem('fg_groups', JSON.stringify(groups));
+			localStorage.setItem('fg_chats', JSON.stringify(chats));
+			localStorage.setItem('fg_fbs', JSON.stringify(feedbacks));
+			localStorage.setItem('fg_reports', JSON.stringify(reports));
+			localStorage.setItem('fg_admin_pass', adminPass);
+		}
+
+		function getTxt(key) {
+			return TXT[lang][key] || TXT['am'][key];
+		}
+
+		function updateTexts() {
+			document.getElementById('head-txt').innerText = getTxt('head-txt');
+			document.getElementById('lang-btn-txt').innerText = getTxt('lang-btn-txt');
+			document.getElementById('t-w-s').innerText = getTxt('t-w-s');
+			document.getElementById('t-in').innerText = getTxt('t-in');
+			document.getElementById('t-p-s').innerText = getTxt('t-p-s');
+			document.getElementById('t-po').innerText = getTxt('t-po');
+			document.getElementById('btn-agree').innerText = getTxt('btn-agree');
+			document.getElementById('btn-disagree').innerText = getTxt('btn-disagree');
+			document.getElementById('t-thx').innerText = getTxt('t-thx');
+			document.getElementById('btn-sh-s').innerText = getTxt('btn-sh-s');
+			document.getElementById('btn-sh-l').innerText = getTxt('btn-sh-l');
+			document.getElementById('h-s').innerText = getTxt('h-s');
+			document.getElementById('h-l').innerText = getTxt('h-l');
+			document.getElementById('t-d').innerText = getTxt('t-d');
+			document.getElementById('btn-fc').innerText = getTxt('btn-fc');
+			document.getElementById('btn-pc').innerText = getTxt('btn-pc');
+			document.getElementById('btn-out').innerText = getTxt('btn-out');
+			document.getElementById('btn-lv').innerText = getTxt('btn-lv');
+			document.getElementById('btn-lp').innerText = getTxt('btn-lp');
+			document.getElementById('btn-lg').innerText = getTxt('btn-lg');
+			document.getElementById('btn-lmg').innerText = getTxt('btn-lmg');
+			document.getElementById('btn-lc').innerText = getTxt('btn-lc');
+			document.getElementById('btn-lf').innerText = getTxt('btn-lf');
+			document.getElementById('btn-lu').innerText = getTxt('btn-lu');
+			document.getElementById('btn-lb').innerText = getTxt('btn-lb');
+			document.getElementById('btn-admin-rep').innerText = getTxt('btn-admin-rep');
+			document.getElementById('btn-pv').innerText = getTxt('btn-pv');
+			document.getElementById('btn-pn').innerText = getTxt('btn-pn');
+			document.getElementById('btn-pp').innerText = getTxt('btn-pp');
+			document.getElementById('btn-ppdf').innerText = getTxt('btn-ppdf');
+			document.getElementById('t-ph').innerText = getTxt('t-ph');
+			document.getElementById('t-vh').innerText = getTxt('t-vh');
+			document.getElementById('t-bh').innerText = getTxt('t-bh');
+			document.getElementById('t-dep-h').innerText = getTxt('t-dep-h');
+			document.getElementById('t-with-h').innerText = getTxt('t-with-h');
+			document.getElementById('t-intl-h').innerText = getTxt('t-intl-h');
+			document.getElementById('t-pay-h').innerText = getTxt('t-pay-h');
+			document.getElementById('t-fb-h').innerText = getTxt('t-fb-h');
+			document.getElementById('t-chat-h').innerText = getTxt('t-chat-h');
+			document.getElementById('t-users-h').innerText = getTxt('t-users-h');
+			document.getElementById('t-mygrp-h').innerText = getTxt('t-mygrp-h');
+			document.getElementById('t-live').innerText = getTxt('t-live');
+			document.getElementById('t-prof').innerText = getTxt('t-prof');
+			document.getElementById('nav-h').innerText = getTxt('nav-h');
+			document.getElementById('nav-l').innerText = getTxt('nav-l');
+			document.getElementById('nav-p').innerText = getTxt('nav-p');
+			document.getElementById('btn-pt').innerText = getTxt('btn-p-txt');
+			document.getElementById('btn-pi').innerText = getTxt('btn-p-img');
+			document.getElementById('btn-pv').innerText = getTxt('btn-p-vid');
+			document.getElementById('btn-pa').innerText = getTxt('btn-p-aud');
+			document.getElementById('btn-vt').innerText = getTxt('btn-v-txt');
+			document.getElementById('btn-vi').innerText = getTxt('btn-v-img');
+			document.getElementById('btn-vv').innerText = getTxt('btn-v-vid');
+			document.getElementById('btn-va').innerText = getTxt('btn-v-aud');
+			document.getElementById('btn-pnow').innerText = getTxt('btn-post-now');
+			document.getElementById('btn-bd').innerText = getTxt('btn-dep');
+			document.getElementById('btn-bw').innerText = getTxt('btn-with');
+			document.getElementById('btn-bi').innerText = getTxt('btn-intl');
+			document.getElementById('t-edit-prof').innerText = getTxt('t-edit-prof');
+			document.getElementById('btn-chg-pic').innerText = getTxt('btn-chg-pic');
+			document.getElementById('btn-up-prof').innerText = getTxt('btn-up-prof');
+			document.getElementById('btn-prof-out').innerText = getTxt('btn-prof-out');
+			document.getElementById('t-fb-sub').innerText = getTxt('t-fb-sub');
+			document.getElementById('btn-fb-txt').innerText = getTxt('btn-fb-txt');
+			document.getElementById('btn-fb-live').innerText = getTxt('btn-fb-live');
+			document.getElementById('btn-view-fb').innerText = getTxt('btn-view-fb');
+			document.getElementById('t-com-act').innerText = getTxt('t-com-act');
+			document.getElementById('t-com-media').innerText = getTxt('t-com-media');
+
+			// Update placeholders/titles
+			document.getElementById('p-title').placeholder = lang === 'am' ? 'ርዕስ (አስፈላጊ)' : 'Title (Required)';
+			document.getElementById('p-content').placeholder = lang === 'am' ? 'ዝርዝር መረጃ (ፅሁፍ ብቻ)...' : 'Details (Text Only)...';
+			document.getElementById('chat-in').placeholder = lang === 'am' ? 'መልእክት' : 'Message';
+		}
+
+		function toggleLanguage() {
+			lang = lang === 'am' ? 'en' : 'am';
+			localStorage.setItem('fg_lang', lang);
+			updateTexts();
+			// Re-render dashboard elements
+			if (document.getElementById('view-home').classList.contains('show')) {
+				updateDashb();
+			}
+			// Re-render feed if visible
+			if (document.getElementById('view-info').classList.contains('show')) {
+				renderPosts(activePostType);
+			}
+		}
+
+		function showAlert(title, msg, type = 'info') {
+			document.getElementById('modal-title').innerText = title;
+			document.getElementById('modal-msg').innerText = msg;
+			document.getElementById('custom-modal').style.display = 'flex';
+		}
+
+		function closeModal() {
+			document.getElementById('custom-modal').style.display = 'none';
+		}
+
+		function showSection(id) {
+			document.querySelectorAll('.section').forEach(sec => sec.classList.remove('show'));
+			const newSec = document.getElementById(id);
+			if (newSec) {
+				newSec.classList.add('show');
+				if (viewHistory[viewHistory.length - 1] !== id && id !== 'view-agreement') {
+					viewHistory.push(id);
+				}
+			}
+			window.scrollTo(0, 0);
+		}
+
+		function goBack() {
+			if (viewHistory.length > 1) {
+				const prevSec = viewHistory.pop(); // Remove current
+				const targetSec = viewHistory.pop(); // Get previous
+				showSection(targetSec);
+			} else {
+				showSection('view-home');
+			}
+		}
+
+		function navTab(tab) {
+			if (!user) {
+				showAlert('Access Denied', 'Please Login or Register first.');
+				showSection('view-agreement');
+				return;
+			}
+			if (tab === 'home') {
+				showSection('view-home');
+				updateDashb();
+			} else if (tab === 'live') {
+				showSection('view-live');
+				openLiveCamera();
+			} else if (tab === 'profile') {
+				showSection('view-profile');
+				updateProfile();
+			}
+		}
+
+		// --- AUTH ---
+
+		function handleAgree() {
+			hasAgreed = true;
+			document.getElementById('welcome-content').style.display = 'none';
+			document.getElementById('auth-section').style.display = 'block';
+		}
+
+		function showAuth(type) {
+			document.getElementById('form-signup').style.display = type === 'signup' ? 'block' : 'none';
+			document.getElementById('form-login').style.display = type === 'login' ? 'block' : 'none';
+		}
+
+		function preSignup() {
+			const name = document.getElementById('reg-name').value;
+			const phone = document.getElementById('reg-phone').value;
+			const email = document.getElementById('reg-email').value;
+			const pass = document.getElementById('reg-pass').value;
+
+			if (!name || !phone || !email || !pass) {
+				showAlert('Error', 'All fields are required.');
+				return;
+			}
+			if (phone.length !== 10 || !phone.startsWith('09')) {
+				showAlert('Error', 'Phone must be 10 digits and start with 09.');
+				return;
+			}
+			if (!email.endsWith('@gmail.com')) {
+				showAlert('Error', 'Email must be a @gmail.com address.');
+				return;
+			}
+			if (pass.length !== 6 || isNaN(pass)) {
+				showAlert('Error', 'Password must be 6 digits.');
+				return;
+			}
+			if (users.some(u => u.phone === phone)) {
+				showAlert('Error', 'Phone number already registered.');
+				return;
+			}
+
+			user = { name, phone, email, pass, pic: 'default_profile.png', role: 'user', groups: [], balances: { USD: 0, GBP: 0, EUR: 0, ETB: 0 }, isPremium: false };
+
+			document.getElementById('signup-step-1').style.display = 'none';
+			document.getElementById('signup-step-2').style.display = 'block';
+		}
+
+		function finalSignup() {
+			if (!user) return;
+
+			users.push(user);
+			updateLocalStorage();
+			showAlert('Success', 'Registration complete. Welcome!');
+			showSection('view-home');
+			updateDashb();
+		}
+
+		function doLogin() {
+			const phone = document.getElementById('log-phone').value;
+			const pass = document.getElementById('log-pass').value;
+
+			const foundUser = users.find(u => u.phone === phone && u.pass === pass);
+
+			if (foundUser) {
+				user = foundUser;
+				updateLocalStorage();
+				showAlert('Success', 'Login successful. Welcome back!');
+				showSection('view-home');
+				updateDashb();
+			} else {
+				showAlert('Error', 'Invalid phone or password.');
+			}
+		}
+
+		function doLogout() {
+			user = null;
+			updateLocalStorage();
+			showAlert('Logged Out', 'You have been successfully logged out.');
+			showSection('view-agreement');
+			window.location.reload(); // Simple refresh to clear state
+		}
+
+		// --- DASHBOARD ---
+
+		function updateDashb() {
+			if (user && user.role === 'admin') {
+				document.getElementById('btn-admin-rep').style.display = 'block';
+			} else {
+				document.getElementById('btn-admin-rep').style.display = 'none';
+			}
+		}
+
+		function toggleList(type) {
+			const target = document.getElementById(type === 'free' ? 'list-free' : 'list-prem');
+			target.style.display = target.style.display === 'block' ? 'none' : 'block';
+		}
+
+		function navTo(id) {
+			if (!user) {
+				showAlert('Access Denied', 'Please Login or Register first.');
+				return;
+			}
+			showSection(id);
+		}
+
+		function checkAuth(secId) {
+			if (!user || user.role === 'user') {
+				showAlert('Permission Denied', 'You need an upgraded account for this service.');
+				return;
+			}
+			if (secId === 'business-sec') {
+				showSection(secId);
+				updateBalances();
+			} else if (secId === 'report-inbox') {
+				if (user.role !== 'admin') {
+					document.getElementById('admin-login-modal').style.display = 'flex';
+				} else {
+					showSection(secId);
+					renderReports();
+				}
+			}
+		}
+
+		// --- POSTING ---
+
+		function setupPost(type) {
+			activePostType = type;
+			document.getElementById('post-form-area').style.display = 'block';
+			document.getElementById('p-content').style.display = type === 'text' ? 'block' : 'none';
+			document.getElementById('file-post').style.display = type === 'text' ? 'none' : 'block';
+			document.getElementById('file-post').accept = type === 'image' ? 'image/*' : type === 'video' ? 'video/*' : type === 'audio' ? 'audio/*' : '';
+
+			const instrKey = type === 'text' ? 't-post-instr' : lang === 'am' ? 'አባክዎ ፋይል ይምረጡ' : 'Please select a file';
+			document.getElementById('post-instr').innerText = getTxt(instrKey);
+		}
+
+		function submitPost() {
+			const title = document.getElementById('p-title').value;
+			const content = document.getElementById('p-content').value;
+			const fileInput = document.getElementById('file-post');
+			let mediaUrl = '';
+
+			if (!title) {
+				showAlert('Error', 'Title is required.');
+				return;
+			}
+
+			if (activePostType === 'text' && !content) {
+				showAlert('Error', 'Content is required for text posts.');
+				return;
+			}
+
+			if (activePostType !== 'text') {
+				if (fileInput.files.length === 0) {
+					showAlert('Error', 'Media file is required.');
+					return;
+				}
+				// Mock file upload to generate a URL
+				mediaUrl = 'mock_url_' + Date.now();
+			}
+
+			const newPost = {
+				id: Date.now().toString(),
+				userId: user.phone,
+				userName: user.name,
+				userPic: user.pic,
+				type: activePostType,
+				title: title,
+				content: activePostType === 'text' ? content : null,
+				media: mediaUrl,
+				timestamp: new Date().toLocaleString(),
+				likes: 0,
+				comments: [],
+				reports: 0
+			};
+
+			posts.unshift(newPost); // Add to the top
+			updateLocalStorage();
+			showAlert('Success', 'Post published successfully!');
+
+			// Clear form
+			document.getElementById('p-title').value = '';
+			document.getElementById('p-content').value = '';
+			document.getElementById('post-form-area').style.display = 'none';
+			document.getElementById('post-type-select').style.display = 'block';
+		}
+
+		// --- VIEWING ---
+
+		function renderPosts(type) {
+			activePostType = type;
+			const container = document.getElementById('feed-container');
+			container.innerHTML = '';
+			const filteredPosts = posts.filter(p => p.type === type);
+
+			if (filteredPosts.length === 0) {
+				container.innerHTML = `<p style="text-align:center; color:#999;">${lang === 'am' ? 'ምንም የሚታይ መረጃ የለም።' : 'No posts to display.'}</p>`;
+				return;
+			}
+
+			filteredPosts.forEach(post => {
+				const postEl = document.createElement('div');
+				postEl.className = 'post-card';
+				
+				let mediaContent = '';
+				if (post.type === 'image') {
+					mediaContent = `<img src="${post.userPic}" alt="${post.title}" style="width:100%; height:auto; max-height:300px; object-fit:cover; margin-top:10px; border-radius:5px;">`;
+				} else if (post.type === 'video') {
+					mediaContent = `<video controls style="width:100%; height:auto; margin-top:10px; border-radius:5px;"><source src="${post.media}" type="video/mp4"></video>`;
+				} else if (post.type === 'audio') {
+					mediaContent = `<audio controls style="width:100%; margin-top:10px;"><source src="${post.media}" type="audio/mp3"></audio>`;
+				}
+
+				postEl.innerHTML = `
+					<div class="post-header">
+						<img src="${post.userPic}" alt="Profile">
+						<div>
+							<b style="font-size:14px;">${post.userName}</b><br>
+							<small style="color:#666;">${post.timestamp}</small>
+						</div>
+					</div>
+					<h4>${post.title}</h4>
+					<p>${post.content || ''}</p>
+					${mediaContent}
+					<div class="post-actions">
+						<button class="action-icon" onclick="toggleLike('${post.id}')"><i class="fas fa-thumbs-up"></i> ${post.likes}</button>
+						<button class="action-icon" onclick="openCommentAction('${post.id}')"><i class="fas fa-comment"></i> ${post.comments.length}</button>
+						<button class="action-icon" onclick="openShare()"><i class="fas fa-share-alt"></i></button>
+						<button class="action-icon" onclick="reportPost('${post.id}')"><i class="fas fa-flag" style="color:red;"></i> ${post.reports}</button>
+					</div>
+				`;
+				container.appendChild(postEl);
+			});
+		}
+
+		function toggleLike(postId) {
+			const post = posts.find(p => p.id === postId);
+			if (post) {
+				post.likes = post.likes + 1; // Simple like toggle
+				updateLocalStorage();
+				renderPosts(activePostType);
+			}
+		}
+
+		// --- COMMENTS ---
+
+		function openCommentAction(postId) {
+			activeCommentPostId = postId;
+			document.getElementById('comment-type-modal').style.display = 'flex';
+		}
+
+		function openComSub(mode) {
+			comMode = mode;
+			document.getElementById('comment-type-modal').style.display = 'none';
+
+			if (mode === 'give') {
+				document.getElementById('comment-media-modal').style.display = 'flex';
+			} else if (mode === 'view') {
+				viewPostComments(activeCommentPostId);
+			}
+		}
+
+		function processComment(mediaType) {
+			document.getElementById('comment-media-modal').style.display = 'none';
+			
+			const post = posts.find(p => p.id === activeCommentPostId);
+			if (!post) return;
+
+			if (mediaType === 'text') {
+				const commentText = prompt(getTxt('t-choose-com'));
+				if (commentText) {
+					addComment(post.id, 'text', commentText);
+				}
+			} else {
+				// Mock media comment creation
+				showAlert('Media Comment', `Mocking upload for a ${mediaType} comment...`);
+				addComment(post.id, mediaType, 'Media Comment (URL)');
+			}
+		}
+		
+		function addComment(postId, type, content) {
+			const post = posts.find(p => p.id === postId);
+			if (post) {
+				const newComment = {
+					userId: user.phone,
+					userName: user.name,
+					type: type,
+					content: content,
+					timestamp: new Date().toLocaleTimeString()
+				};
+				post.comments.unshift(newComment);
+				updateLocalStorage();
+				showAlert('Success', 'Comment added.');
+				renderPosts(activePostType);
+			}
+		}
+
+		function viewPostComments(postId) {
+			const post = posts.find(p => p.id === postId);
+			const container = document.getElementById('comments-display-area');
+			container.innerHTML = '';
+
+			if (!post || post.comments.length === 0) {
+				container.innerHTML = `<p style="text-align:center; color:#999;">${lang === 'am' ? 'ምንም አስተያየቶች የሉም።' : 'No comments yet.'}</p>`;
+			} else {
+				post.comments.forEach(c => {
+					const commentEl = document.createElement('div');
+					commentEl.style.borderBottom = '1px dotted #ccc';
+					commentEl.style.padding = '5px 0';
+					commentEl.innerHTML = `
+						<div style="font-weight:bold; color:#007bff;">${c.userName} (${c.type})</div>
+						<small>${c.content}</small> <small style="float:right; color:#666;">${c.timestamp}</small>
+					`;
+					container.appendChild(commentEl);
+				});
+			}
+
+			document.getElementById('view-comments-list-modal').style.display = 'flex';
+		}
+
+		// --- REPORTING ---
+
+		function reportPost(postId) {
+			const post = posts.find(p => p.id === postId);
+			if (post) {
+				const reason = prompt('Please enter the reason for reporting this post (Political, Hate, Fake News, etc.):');
+				if (reason) {
+					post.reports += 1;
+					reports.push({ postId, reportedBy: user.phone, reason, timestamp: new Date().toLocaleString() });
+					updateLocalStorage();
+					showAlert('Report Sent', 'Thank you for reporting this post. Admin will review it.');
+					renderPosts(activePostType);
+				}
+			}
+		}
+
+		// --- ADMIN ---
+
+		function verifyPass() {
+			const inputPass = document.getElementById('pass-input').value;
+			if (inputPass === adminPass) {
+				document.getElementById('pass-modal').style.display = 'none';
+				showAlert('Success', 'Admin privileges granted.');
+				user.role = 'admin'; // For the session
+				showSection('report-inbox');
+				renderReports();
+				document.getElementById('pass-input').value = '';
+			} else {
+				showAlert('Error', 'Invalid Admin Code.');
+			}
+		}
+
+		function renderReports() {
+			const container = document.getElementById('report-list');
+			container.innerHTML = '';
+			
+			if (reports.length === 0) {
+				container.innerHTML = `<p style="text-align:center; color:#999;">${lang === 'am' ? 'ምንም ሪፖርት የለም።' : 'No reports in inbox.'}</p>`;
+				return;
+			}
+
+			reports.forEach(r => {
+				const post = posts.find(p => p.id === r.postId);
+				const postTitle = post ? post.title : 'Post Not Found';
+
+				const reportEl = document.createElement('div');
+				reportEl.className = 'post-card';
+				reportEl.innerHTML = `
+					<p><b>Post Title:</b> ${postTitle}</p>
+					<p><b>Reason:</b> ${r.reason}</p>
+					<p><b>Reported By:</b> ${r.reportedBy}</p>
+					<p><small>${r.timestamp}</small></p>
+					<button class="btn-red btn-small" onclick="deletePost('${r.postId}')">Delete Post</button>
+					<button class="btn-blue btn-small" onclick="banUser('${r.reportedBy}')">Ban User</button>
+				`;
+				container.appendChild(reportEl);
+			});
+		}
+
+		function deletePost(postId) {
+			posts = posts.filter(p => p.id !== postId);
+			reports = reports.filter(r => r.postId !== postId);
+			updateLocalStorage();
+			showAlert('Post Deleted', 'Post and associated reports removed.');
+			renderReports();
+		}
+
+		function banUser(phone) {
+			const userToBan = users.find(u => u.phone === phone);
+			if (userToBan) {
+				users = users.filter(u => u.phone !== phone);
+				updateLocalStorage();
+				showAlert('User Banned', `${userToBan.name} has been banned and removed from the system.`);
+				renderReports();
+			}
+		}
+
+		function changeAdminPassUI() {
+			const newPass = prompt('Enter the new 12-character Admin Code:');
+			if (newPass && newPass.length === 12) {
+				adminPass = newPass;
+				updateLocalStorage();
+				showAlert('Success', 'Admin Code updated successfully.');
+			} else if (newPass) {
+				showAlert('Error', 'Admin Code must be 12 characters.');
+			}
+		}
+
+		// --- BUSINESS ---
+
+		function updateBalances() {
+			if (user) {
+				const b = user.balances;
+				document.getElementById('bal-usd').innerText = b.USD.toFixed(2);
+				document.getElementById('bal-gbp').innerText = b.GBP.toFixed(2);
+				document.getElementById('bal-eur').innerText = b.EUR.toFixed(2);
+				document.getElementById('bal-etb').innerText = b.ETB.toFixed(2);
+
+				const totalUSD = b.USD + (b.GBP * RATES.GBP / RATES.USD) + (b.EUR * RATES.EUR / RATES.USD);
+				const totalETB = (totalUSD * RATES.USD) + b.ETB;
+				
+				document.getElementById('bal-total').innerText = totalUSD.toFixed(2);
+				document.getElementById('bal-total-etb').innerText = totalETB.toFixed(2);
+			}
+		}
+
+		function preDeposit() {
+			const amt = parseFloat(document.getElementById('dep-amt').value);
+			const cur = document.getElementById('dep-cur').value;
+			
+			if (isNaN(amt) || amt <= 0) {
+				showAlert('Error', 'Please enter a valid amount.');
+				return;
+			}
+			
+			// Mock: Go to step 2 for receipt upload
+			document.getElementById('dep-step-1').classList.add('hidden');
+			document.getElementById('dep-step-2').classList.remove('hidden');
+			pendingAct = { type: 'deposit', amount: amt, currency: cur };
+		}
+
+		function finDeposit(fileUrl) {
+			if (!pendingAct) return;
+
+			user.balances[pendingAct.currency] += pendingAct.amount;
+			updateLocalStorage();
+			updateBalances();
+			showAlert('Deposit Confirmed', `${pendingAct.amount} ${pendingAct.currency} deposited. Awaiting admin approval for verification: ${fileUrl}`);
+
+			// Reset
+			document.getElementById('dep-step-1').classList.remove('hidden');
+			document.getElementById('dep-step-2').classList.add('hidden');
+			pendingAct = null;
+			document.getElementById('dep-amt').value = '';
+		}
+
+		function toggleReceiverInput() {
+			const method = document.getElementById('w-method').value;
+			const input = document.getElementById('w-dest');
+			input.style.display = (method !== 'CBE' && method !== 'Telebirr') ? 'none' : 'block'; // Show for Telebirr/CBE
+		}
+
+		function reqWithdraw() {
+			const cur = document.getElementById('w-cur').value;
+			const amt = parseFloat(document.getElementById('w-amt').value);
+			const method = document.getElementById('w-method').value;
+			const dest = document.getElementById('w-dest').value;
+
+			if (isNaN(amt) || amt <= 0) {
+				showAlert('Error', 'Invalid amount.');
+				return;
+			}
+
+			if (user.balances[cur] < amt) {
+				showAlert('Error', `Insufficient balance in ${cur}.`);
+				return;
+			}
+
+			if ((method === 'CBE' || method === 'Telebirr') && !dest) {
+				showAlert('Error', 'Receiver account/phone is required.');
+				return;
+			}
+
+			user.balances[cur] -= amt;
+			updateLocalStorage();
+			updateBalances();
+			showAlert('Withdrawal Requested', `${amt} ${cur} withdrawal to ${method} (${dest}) requested. Processing...`);
+
+			document.getElementById('w-amt').value = '';
+			document.getElementById('w-dest').value = '';
+		}
+
+		function doIntl() {
+			const item = document.getElementById('intl-item').value;
+			const amt = parseFloat(document.getElementById('intl-amt').value);
+			const costETB = amt * RATES.USD;
+
+			if (isNaN(amt) || amt <= 0) {
+				showAlert('Error', 'Invalid amount.');
+				return;
+			}
+
+			if (user.balances.USD < amt) {
+				showAlert('Error', 'Insufficient USD balance for international purchase.');
+				return;
+			}
+
+			// Mock: Requires receipt upload for confirmation
+			pendingAct = { type: 'intl', item, amount: amt };
+			document.getElementById('intl-list').classList.add('hidden');
+			document.getElementById('file-intl').click();
+		}
+
+		function finIntl(fileUrl) {
+			if (!pendingAct || pendingAct.type !== 'intl') return;
+
+			user.balances.USD -= pendingAct.amount;
+			updateLocalStorage();
+			updateBalances();
+			showAlert('Purchase Requested', `Payment of $${pendingAct.amount} for ${pendingAct.item} requested. Receipt: ${fileUrl}`);
+
+			// Reset
+			document.getElementById('intl-list').classList.remove('hidden');
+			document.getElementById('intl-amt').value = '';
+			pendingAct = null;
+		}
+
+		// --- PREMIUM ---
+
+		function openPrem(type) {
+			if (user.isPremium) {
+				showAlert('Access Granted', `You are Premium. Accessing ${type} content...`);
+				// In a real app, load content here
+			} else {
+				showAlert('Premium Required', `Access to ${type} requires a Premium subscription.`);
+				showSection('prem-pricing');
+			}
+		}
+
+		function pay(amount) {
+			pendingAct = { type: 'pay', amount: amount };
+			showAlert('Payment Method', `Pay ${amount} ETB via Telebirr/CBE and upload receipt.`);
+			document.getElementById('pay-up-area').style.display = 'block';
+		}
+
+		function finPay(fileUrl) {
+			if (!pendingAct || pendingAct.type !== 'pay') return;
+			
+			// Mock: Set premium status upon "receipt upload"
+			user.isPremium = true;
+			updateLocalStorage();
+			showAlert('Premium Activated', `Subscription for ${pendingAct.amount} ETB activated. Thank you! Receipt: ${fileUrl}`);
+
+			// Reset
+			document.getElementById('pay-up-area').style.display = 'none';
+			showSection('view-home');
+			pendingAct = null;
+		}
+
+		// --- FEEDBACK ---
+
+		function giveFb(type) {
+			if (type === 'text') {
+				const text = prompt('Enter your feedback:');
+				if (text) {
+					feedbacks.push({ userId: user.phone, type: 'text', content: text, timestamp: new Date().toLocaleString() });
+					updateLocalStorage();
+					showAlert('Sent', 'Your text feedback has been sent.');
+				}
+			} else if (type === 'live') {
+				// Mock live feedback
+				showAlert('Live Feedback', 'This would normally open a live video stream to record feedback.');
+			}
+		}
+
+		function viewFbs() {
+			const container = document.getElementById('fb-list');
+			container.innerHTML = '';
+			
+			if (feedbacks.length === 0) {
+				container.innerHTML = `<p style="text-align:center; color:#999;">${lang === 'am' ? 'ምንም አስተያየቶች የሉም።' : 'No feedbacks yet.'}</p>`;
+				return;
+			}
+
+			feedbacks.forEach(f => {
+				const fbEl = document.createElement('div');
+				fbEl.className = 'post-card';
+				fbEl.innerHTML = `
+					<div style="font-weight:bold;">${f.userId} (${f.type})</div>
+					<p>${f.content}</p>
+					<small style="color:#666;">${f.timestamp}</small>
+				`;
+				container.appendChild(fbEl);
+			});
+		}
+
+		// --- GROUPS/CHAT ---
+
+		function showUserList(isGroupCreation) {
+			const container = document.getElementById('ul-cont');
+			container.innerHTML = '';
+			
+			document.getElementById('btn-grp-done').style.display = isGroupCreation ? 'block' : 'none';
+			
+			const otherUsers = users.filter(u => u.phone !== user.phone);
+			if (otherUsers.length === 0) {
+				container.innerHTML = `<p style="text-align:center; color:#999;">${lang === 'am' ? 'ሌላ ተጠቃሚ የለም።' : 'No other users found.'}</p>`;
+				return;
+			}
+
+			otherUsers.forEach(u => {
+				const userEl = document.createElement('div');
+				userEl.className = 'user-item';
+				userEl.setAttribute('data-phone', u.phone);
+				userEl.innerHTML = `<img src="${u.pic}" alt="Profile"><div><b>${u.name}</b><br><small>${u.phone}</small></div>`;
+
+				if (isGroupCreation) {
+					userEl.onclick = () => userEl.classList.toggle('bright-blue');
+				} else {
+					userEl.onclick = () => handleChat(u.phone, u.name);
+				}
+				container.appendChild(userEl);
+			});
+			showSection('user-list-sec');
+		}
+
+		function handleGroupCreate() {
+			showUserList(true);
+			showAlert('Select Users', 'Select 5 or more users for the group.');
+		}
+
+		function createGroup() {
+			const selectedUsers = Array.from(document.querySelectorAll('.user-item.bright-blue'))
+										.map(el => el.getAttribute('data-phone'));
+			
+			if (selectedUsers.length < 5) {
+				showAlert('Error', 'You must select at least 5 users.');
+				return;
+			}
+
+			const groupName = prompt('Enter group name:');
+			if (groupName) {
+				const groupId = Date.now().toString();
+				const newGroup = { 
+					id: groupId, 
+					name: groupName, 
+					creator: user.phone, 
+					members: [user.phone, ...selectedUsers], 
+					isPrivate: false 
+				};
+				groups.push(newGroup);
+				updateLocalStorage();
+				showAlert('Success', `Group '${groupName}' created!`);
+				showSection('view-home');
+			}
+		}
+
+		function showMyGroups() {
+			const container = document.getElementById('grp-list');
+			container.innerHTML = '';
+
+			const myGroups = groups.filter(g => g.members.includes(user.phone));
+
+			if (myGroups.length === 0) {
+				container.innerHTML = `<p style="text-align:center; color:#999;">${lang === 'am' ? 'ምንም ግሩፕ የለዎትም።' : 'You are not in any groups.'}</p>`;
+				return;
+			}
+
+			myGroups.forEach(g => {
+				const groupEl = document.createElement('div');
+				groupEl.className = 'user-item';
+				groupEl.innerHTML = `<div><b>${g.name}</b><br><small>Members: ${g.members.length}</small></div>`;
+				groupEl.onclick = () => handleChat(g.id, g.name, true);
+				container.appendChild(groupEl);
+			});
+			showSection('my-groups-sec');
+		}
+
+		function handleChatList() {
+			// In a real app, this would show a list of contacts/chats
+			showUserList(false); // For now, just show user list to start 1:1 chat
+		}
+
+		function handleChat(id, name, isGroup = false) {
+			activeChat = { id, name, isGroup };
+			document.getElementById('t-chat-h').innerText = isGroup ? `Group Chat: ${name}` : `Chat with ${name}`;
+			showSection('chat-sec');
+			loadChatMessages(id);
+		}
+
+		function loadChatMessages(chatId) {
+			const container = document.getElementById('chat-box');
+			container.innerHTML = '';
+			const chatKey = chatId;
+
+			if (!chats[chatKey]) {
+				chats[chatKey] = [];
+			}
+
+			chats[chatKey].forEach(msg => {
+				const msgEl = document.createElement('div');
+				const isMe = msg.sender === user.phone;
+				const senderName = isMe ? 'You' : users.find(u => u.phone === msg.sender)?.name || 'Unknown';
+
+				msgEl.style.textAlign = isMe ? 'right' : 'left';
+				msgEl.style.margin = '5px 0';
+
+				let content;
+				if (msg.type === 'text') {
+					content = `<p style="background:${isMe ? '#e0f7fa' : '#f0f4f8'}; padding:5px; border-radius:5px; display:inline-block; max-width:80%; margin:0;">${msg.content}</p>`;
+				} else if (msg.type === 'image') {
+					content = `<img src="${msg.content}" style="max-width:80%; height:auto; border-radius:5px;">`;
+				}
+				// Add other media types
+
+				msgEl.innerHTML = `<small style="font-size:10px; color:#666;">${senderName}</small>${content}`;
+				container.appendChild(msgEl);
+			});
+			container.scrollTop = container.scrollHeight;
+		}
+
+		function sendChat(type) {
+			if (!activeChat) return;
+			const chatId = activeChat.id;
+			const input = document.getElementById('chat-in');
+			const text = input.value.trim();
+
+			if (type === 'text') {
+				if (!text) return;
+				const newMessage = { sender: user.phone, type: 'text', content: text, timestamp: Date.now() };
+				chats[chatId].push(newMessage);
+				updateLocalStorage();
+				loadChatMessages(chatId);
+				input.value = '';
+			} else {
+				// Mock media upload and send
+				const fileUrl = 'mock_chat_media_url_' + Date.now();
+				const newMessage = { sender: user.phone, type: type, content: fileUrl, timestamp: Date.now() };
+				chats[chatId].push(newMessage);
+				updateLocalStorage();
+				loadChatMessages(chatId);
+			}
+		}
+		
+		// --- LIVE CAMERA ---
+
+		async function openLiveCamera() {
+			if (!user) {
+				showAlert('Access Denied', 'Please Login first.');
+				return;
+			}
+			const video = document.getElementById('live-video-element');
+			try {
+				liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+				video.srcObject = liveStream;
+				video.play();
+			} catch (err) {
+				showAlert('Camera Error', 'Could not access camera/mic: ' + err.message);
+				showSection('view-home');
+			}
+		}
+
+		function stopLive() {
+			if (liveStream) {
+				liveStream.getTracks().forEach(track => track.stop());
+				liveStream = null;
+			}
+			document.getElementById('live-video-element').srcObject = null;
+			showSection('view-home');
+		}
+
+		// --- PROFILE ---
+
+		function updateProfile() {
+			if (user) {
+				document.getElementById('prof-phone').innerText = user.phone;
+				document.getElementById('prof-name-edit').value = user.name;
+			}
+		}
+
+		function saveProfile() {
+			const name = document.getElementById('prof-name-edit').value;
+			const oldPass = document.getElementById('old-pass').value;
+			const newPass = document.getElementById('new-pass').value;
+			const confPass = document.getElementById('conf-pass').value;
+
+			if (!name) {
+				showAlert('Error', 'Name is required.');
+				return;
+			}
+
+			if (newPass || oldPass) {
+				if (oldPass !== user.pass) {
+					showAlert('Error', 'Old password is incorrect.');
+					return;
+				}
+				if (newPass !== confPass) {
+					showAlert('Error', 'New password and confirmation do not match.');
+					return;
+				}
+				if (newPass.length !== 6 || isNaN(newPass)) {
+					showAlert('Error', 'New password must be 6 digits.');
+					return;
+				}
+				user.pass = newPass;
+			}
+			
+			const oldName = user.name;
+			user.name = name;
+
+			// Update users array
+			const userIndex = users.findIndex(u => u.phone === user.phone);
+			if (userIndex !== -1) {
+				users[userIndex] = user;
+			}
+
+			updateLocalStorage();
+			showAlert('Update Success', 'Profile updated successfully!');
+			
+			// Clear fields
+			document.getElementById('old-pass').value = '';
+			document.getElementById('new-pass').value = '';
+			document.getElementById('conf-pass').value = '';
+
+			// If name changed, update display
+			if (oldName !== name) {
+				updateTexts(); // To update 'head-txt' marquee if it uses name
+			}
+		}
+
+		// --- FILE UPLOAD HANDLER ---
+		function promptUpload(target) {
+			uploadTarget = target;
+			let fileInput;
+
+			if (target === 'profile') fileInput = document.getElementById('file-profile');
+			else if (target === 'profile-edit') fileInput = document.getElementById('file-profile-edit');
+			else if (target === 'deposit') fileInput = document.getElementById('file-deposit');
+			else if (target === 'pay') fileInput = document.getElementById('file-pay');
+			else if (target === 'intl') fileInput = document.getElementById('file-intl');
+			else if (target.startsWith('chat-')) fileInput = document.getElementById('file-chat');
+			
+			if (fileInput) {
+				fileInput.click();
+			} else {
+				document.getElementById('universal-file').click();
+			}
+		}
+		
+		document.getElementById('file-profile').addEventListener('change', (e) => handleFileUpload(e, 'profile'));
+		document.getElementById('file-profile-edit').addEventListener('change', (e) => handleFileUpload(e, 'profile-edit'));
+		document.getElementById('file-deposit').addEventListener('change', (e) => handleFileUpload(e, 'deposit'));
+		document.getElementById('file-pay').addEventListener('change', (e) => handleFileUpload(e, 'pay'));
+		document.getElementById('file-intl').addEventListener('change', (e) => handleFileUpload(e, 'intl'));
+		document.getElementById('file-chat').addEventListener('change', (e) => handleFileUpload(e, 'chat'));
+
+
+		function handleFileUpload(event, target) {
+			const file = event.target.files[0];
+			if (!file) return;
+
+			// Mock file-to-URL conversion (in a real app, this would be an actual upload service)
+			const mockFileUrl = 'uploaded_' + target + '_' + Date.now() + '.' + file.name.split('.').pop();
+			
+			if (target === 'profile') {
+				user.pic = mockFileUrl;
+				showAlert('Photo Ready', 'Profile photo selected. Click "Complete Registration" to finish.');
+			} else if (target === 'profile-edit') {
+				user.pic = mockFileUrl;
+				showAlert('Photo Updated', 'Profile photo changed.');
+				updateLocalStorage();
+			} else if (target === 'deposit') {
+				finDeposit(mockFileUrl);
+			} else if (target === 'pay') {
+				finPay(mockFileUrl);
+			} else if (target === 'intl') {
+				finIntl(mockFileUrl);
+			} else if (target === 'chat') {
+				// Determine media type for chat based on mime type
+				const mediaType = file.type.startsWith('image') ? 'image' : file.type.startsWith('video') ? 'video' : file.type.startsWith('audio') ? 'audio' : 'file';
+				sendChat(mediaType); // Send chat with the mock URL
+			}
+			
+			// Clear file input to allow re-uploading the same file
+			event.target.value = '';
+		}
+
+
+		// --- INIT ---
+
+		function initApp() {
+			lang = localStorage.getItem('fg_lang') || 'am';
+			updateTexts();
+
+			if (user) {
+				showSection('view-home');
+				updateDashb();
+				if (user.role === 'admin') {
+					document.getElementById('btn-admin-rep').style.display = 'block';
+				}
+			} else {
+				// Ensure initial section is agreement if not logged in
+				showSection('view-agreement');
+				document.getElementById('welcome-content').style.display = 'block';
+				document.getElementById('auth-section').style.display = 'none';
+			}
+
+			// Preload profile image mocks (optional)
+			const defaultImg = 'default_profile.png';
+			document.querySelectorAll('.header-icon-img').forEach(img => {
+				if (img.src.endsWith('eagle_image.jpg')) {
+					img.src = 'https://picsum.photos/45/45?random=1';
+				} else if (img.src.endsWith('lion_image.jpg')) {
+					img.src = 'https://picsum.photos/45/45?random=2';
+				}
+			});
+			document.querySelectorAll('.lion-full-img').forEach(img => img.src = 'https://picsum.photos/700/200?random=3');
+			document.querySelectorAll('.eagle-dash-img').forEach(img => img.src = 'https://picsum.photos/50/50?random=4');
+		}
+
+		// Set initial language and start the app
+		toggleLanguage(); // Init
+		initApp(); // Start the app
+	</script>
+</body>
+</html>
