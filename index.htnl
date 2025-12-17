@@ -1,0 +1,474 @@
+ሎሎሎ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- FIREBASE COMPAT SDK (ለበተኖች መስራት) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* --- General CSS --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; margin: 0; background-color: #f0f4f8; color: #333; padding-bottom: 90px; }
+        .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+        
+        /* --- NEW HEADER STYLE --- */
+        .top-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #fff; padding: 5px 2px; border-bottom: 3px solid #007bff; 
+            height: 70px; overflow: hidden;
+        }
+        .marquee-container-top { flex: 1; overflow: hidden; white-space: nowrap; margin: 0 5px; }
+        .marquee-text-top { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; color: #007bff; font-weight: bold; font-size: 13px; }
+        
+        /* Footer */
+        .footer-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .bottom-nav { display: flex; height: 55px; width: 100%; }
+        .nav-btn { flex: 1; border: none; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .nav-home { background-color: #28a745; } .nav-live { background-color: #ffc107; color: black; } .nav-profile { background-color: #dc3545; }
+        .bottom-marquee { background: #f0f0f0; color: #28a745; font-weight: bold; overflow: hidden; white-space: nowrap; height: 25px; line-height: 25px; font-size: 12px; }
+        .bottom-marquee span { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        /* Sections */
+        .section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 400px; }
+        .show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+        /* Welcome Split */
+        .split-container { display: flex; justify-content: space-between; gap: 5px; text-align: left; margin-bottom: 5px; }
+        .split-left { width: 48%; color: #007bff; font-size: 10px; line-height: 1.2; padding: 2px; }
+        .split-right { width: 48%; color: #d35400; font-size: 10px; font-weight: bold; line-height: 1.2; border-left: 1px solid #ccc; padding-left: 5px; padding: 2px; }
+        .blue-spacer { height: 10px; background-color: #007bff; margin: 5px 0; border-radius: 5px; }
+        
+        /* --- THE LOGO (ARMA) CSS - PERFECTED --- */
+        /* Used for both big splash and mini header */
+        .brand-area { 
+            display: flex; align-items: center; justify-content: center; 
+            position: relative; 
+        }
+        
+        /* Side Images (Connected) */
+        .side-logo-container {
+            width: 50px; height: 50px; 
+            border-radius: 50%; border: 2px solid #007bff; background: white;
+            z-index: 5; display: flex; align-items: center; justify-content: center;
+        }
+        .side-logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .left-logo { margin-right: -18px; } 
+        .right-logo { margin-left: -18px; }
+
+        /* Center Ring System */
+        .complex-logo { position: relative; width: 100px; height: 100px; z-index: 10; }
+        
+        .ring { 
+            position: absolute; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            /* BOG ELEM (Glowing) - Only rings glow */
+            animation: glowing 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes glowing {
+            0% { box-shadow: 0 0 5px currentColor; filter: brightness(100%); }
+            100% { box-shadow: 0 0 20px currentColor; filter: brightness(150%); }
+        }
+
+        .ring-blue { width: 100px; height: 100px; border: 4px solid #00008b; color: #00008b; z-index: 1; }
+        .ring-red { width: 85px; height: 85px; border: 3px solid red; color: red; z-index: 2; }
+        .ring-yellow { width: 70px; height: 70px; border: 3px solid yellow; color: yellow; z-index: 3; }
+        .ring-green { width: 55px; height: 55px; background: transparent; border: 2px solid green; border-radius: 50%; z-index: 4; }
+
+        .pos-item { position: absolute; width: 12px; height: 12px; object-fit: cover; border-radius: 50%; border: 1px solid white; }
+        .p-n { top: -7px; left: 50%; transform: translateX(-50%); } .p-s { bottom: -7px; left: 50%; transform: translateX(-50%); } 
+        .p-e { right: -7px; top: 50%; transform: translateY(-50%); } .p-w { left: -7px; top: 50%; transform: translateY(-50%); } 
+        .p-ne { top: 12%; right: 12%; } .p-nw { top: 12%; left: 12%; } .p-se { bottom: 12%; right: 12%; } .p-sw { bottom: 12%; left: 12%; }
+        
+        /* The Isolated Lion (NO GLOW TOUCHING) */
+        .center-lion { 
+            position: absolute; 
+            width: 60px; height: 60px; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            z-index: 100; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            border: 3px solid white;
+            background-color: #007bff; /* Blue Background */
+            box-shadow: 0 0 0 5px white; /* Extra spacing */
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #007bff; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        #splash-msg {
+            margin-top: 30px; color: white; font-size: 20px; font-weight: bold;
+            text-align: center; padding: 20px;
+            animation: slideTxt 5s linear infinite; display: none;
+        }
+        @keyframes slideTxt { 0% {transform: translateX(100%);} 100% {transform: translateX(-100%);} }
+
+        /* Dashboard */
+        .dash-layout { display: block; width: 100%; }
+        .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+
+        /* UI */
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; } .btn-yellow { background: #ffc107; color: black; }
+        .btn-small { padding: 10px; font-size: 13px; height: 100%; display: flex; align-items: center; justify-content: center; } 
+        .btn-tiny { padding: 5px; font-size: 10px; margin: 1px; width:auto; }
+        .btn-admin { background: #333; color: white; display: none; }
+        .lang-btn { background: #6c757d; color: white; padding: 4px 8px; font-size: 10px; border-radius: 4px; border:none; cursor: pointer; margin-top: 5px; width: auto; float: right; margin-right: 10px;}
+        
+        .user-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .user-item.bright-blue { background-color: #007bff; color: white; border-radius: 5px; }
+
+        /* Helpers */
+        .banned-text { color: black !important; font-weight: bold; } .open-text { color: #007bff !important; font-weight: bold; } .banned-indicator { border: 2px solid black; background: #eee; }
+        #live-video-element { width: 100%; height: 350px; background: #000; border-radius: 8px; object-fit: cover; }
+        .hidden-input { display: none; } .hidden { display: none; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-overlay[style*="display: flex"] { display: flex !important; }
+        .modal-box { background: white; padding: 20px; width: 85%; border-radius: 10px; text-align: center; max-height: 80vh; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Logo Template (Hidden) */
+        #brand-template { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. SPLASH SCREEN (BLUE BG + LOGO) -->
+    <div id="splash-screen">
+        <div class="brand-area" style="transform: scale(2.0);">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                <img src="lion_image.jpg" class="center-lion">
+            </div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        <div id="splash-msg">እንኳን ደስ አለዎት በተሳካ ሁኔታ ተመዝግበዋል እናመሰግናለን</div>
+    </div>
+
+    <!-- MAIN HEADER: Logo Left/Right + Marquee Center -->
+    <div class="top-header">
+        <!-- Mini Logo Left -->
+        <div class="brand-area" style="transform: scale(0.35); margin:0;">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo"><div class="ring ring-blue"></div><img src="lion_image.jpg" class="center-lion"></div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        
+        <!-- Scrolling Text -->
+        <div class="marquee-container-top">
+            <span class="marquee-text-top">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span>
+        </div>
+
+        <!-- Mini Logo Right -->
+        <div class="brand-area" style="transform: scale(0.35); margin:0;">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo"><div class="ring ring-blue"></div><img src="lion_image.jpg" class="center-lion"></div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+    </div>
+    
+    <button class="lang-btn" onclick="toggleLanguage()">Language</button>
+
+    <div class="container">
+        <!-- MODALS -->
+        <div class="modal-overlay" id="custom-modal"><div class="modal-box"><h3 id="modal-title"></h3><p id="modal-msg"></p><button class="btn-blue" onclick="closeModal()">OK</button></div></div>
+        <div class="modal-overlay" id="pass-modal"><div class="modal-box"><h3 id="pass-title">Password Required</h3><input type="password" id="pass-input" placeholder="Password" style="text-align:center;"><button class="btn-green" onclick="verifyPass()">Confirm</button><button class="btn-red" onclick="document.getElementById('pass-modal').style.display='none'">Cancel</button></div></div>
+        
+        <!-- Admin Modals -->
+        <div class="modal-overlay" id="admin-action-modal"><div class="modal-box"><h3>Admin Verification</h3><input type="password" id="admin-act-pass" placeholder="Admin Code"><button class="btn-green" onclick="runAdminAction()">Verify</button><button class="btn-red" onclick="document.getElementById('admin-action-modal').style.display='none'">Cancel</button></div></div>
+        <div class="modal-overlay" id="admin-chg-modal"><div class="modal-box"><h3>Change Admin Password</h3><input type="password" id="old-adm" placeholder="Old Admin Code"><input type="password" id="new-adm" placeholder="New (abc123456xyz)"><input type="password" id="conf-adm" placeholder="Confirm New"><button class="btn-green" onclick="saveNewAdminPass()">Change</button><button class="btn-red" onclick="document.getElementById('admin-chg-modal').style.display='none'">Cancel</button></div></div>
+        <div class="modal-overlay" id="adm-prem-modal"><div class="modal-box"><h3>Premium Payment Receiver</h3><button class="btn-blue" onclick="alert('PayPal/Intl Payment Gateway Open')">1. International (PayPal)</button><button class="btn-green" onclick="alert('Local Method 1 Gateway Open')">2. Local Bank 1</button><button class="btn-green" onclick="alert('Local Method 2 Gateway Open')">3. Local Bank 2</button><button class="btn-red" onclick="document.getElementById('adm-prem-modal').style.display='none'">Close</button></div></div>
+        <div class="modal-overlay" id="admin-login-modal"><div class="modal-box"><h3>Admin Login</h3><input type="password" id="admin-pass-in" placeholder="Code (abc123456abd)"><button class="btn-green" onclick="adminLogin()">Enter</button><button class="btn-red" onclick="document.getElementById('admin-login-modal').style.display='none'">Cancel</button></div></div>
+        
+        <!-- Receipt Modal -->
+        <div class="modal-overlay" id="receipt-modal"><div class="modal-box"><h3>Payment Receipt</h3><p>Receipt Uploaded Successfully.</p><div id="receipt-actions"><button class="btn-blue" onclick="downloadReceipt()">Save Receipt to Phone</button><button class="btn-green" onclick="closeReceiptModal()">Receive Receipt (OK)</button></div></div></div>
+
+        <!-- 1. AGREEMENT & WELCOME -->
+        <div id="view-agreement" class="section show">
+            <!-- LOGO: CENTER -->
+            <div class="brand-area" style="transform: scale(1.3);">
+                <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                <div class="complex-logo">
+                    <div class="ring ring-blue"><div class="ring ring-red"><img src="lion_image.jpg" class="pos-item p-n"><img src="lion_image.jpg" class="pos-item p-s"><img src="lion_image.jpg" class="pos-item p-e"><img src="lion_image.jpg" class="pos-item p-w"><img src="dove_image.jpg" class="pos-item p-ne"><img src="dove_image.jpg" class="pos-item p-nw"><img src="dove_image.jpg" class="pos-item p-se"><img src="dove_image.jpg" class="pos-item p-sw"><div class="ring ring-yellow"><img src="eagle_image.jpg" class="pos-item p-n"><img src="eagle_image.jpg" class="pos-item p-s"><img src="eagle_image.jpg" class="pos-item p-e"><img src="eagle_image.jpg" class="pos-item p-w"><div class="ring ring-green"></div></div></div></div>
+                    <img src="lion_image.jpg" class="center-lion">
+                </div>
+                <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+            </div>
+
+            <!-- Full Texts -->
+            <div class="split-container">
+                <div class="split-left"><h4 id="t-w-s">እንኳን ደህና መጡ</h4><p id="t-in">ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ሁሌም ትክክለኛ መረጃዎችን ያቀርባል። እውነተኛ መረጃወችን መመልከት እና መጋራት ይችላሉ በተጨማሪም ሌሎች የፓወር ፖይንት የቢዝነስ እና ፒዲኤፍ አገልግሎቶችን ያገኛሉ እናመሰግናለን።</p></div>
+                <div class="split-right"><h4 id="t-p-s">ጥብቅ መመሪያ</h4><p id="t-po">ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው። ፖሊሲያችን ጥሰው ከተገኙ በጥብቅ የሲስተም ቁጥጥራችን እና በጥብቅ ሲስተማችን በራስ ሰር ከአገልግሎታችን ሲስተም ሊያግድወት ይችላል።</p></div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: center;">
+                <button class="btn-green btn-small" onclick="handleAgree()">እስማማለሁ</button>
+                <button class="btn-red btn-small" onclick="showAlert('አልተስማሙም', 'error')">አልስማማም</button>
+            </div>
+            
+            <div id="auth-section" style="display:none;">
+                <p style="color: green; font-weight: bold; margin-top:20px;">አገልግሎታችንን ስለመረጡ እናመሰግናለን!</p>
+                <div style="display:flex; gap:10px; justify-content: center;"><button class="btn-red" onclick="showAuth('signup')">መመዝገቢያ</button><button class="btn-red" onclick="showAuth('login')">መግቢያ</button></div>
+                
+                <div id="form-signup" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <h3 style="color:#dc3545;" id="h-s">ምዝገባ</h3>
+                    <input type="text" id="reg-name" placeholder="Full Name"><input type="text" id="reg-phone" placeholder="Phone (09...)"><input type="email" id="reg-email" placeholder="Email (@gmail.com)"><input type="password" id="reg-pass" placeholder="Password (6 digits)"><button class="btn-green" onclick="preSignup()">Submit</button>
+                    <div id="signup-step-2" style="display:none;"><h3>Photo</h3><button class="btn-blue" onclick="promptUpload('profile')">Upload Photo</button><input type="file" id="file-profile" class="hidden-input"><button class="btn-green" onclick="finalSignup()">Register</button></div>
+                </div>
+
+                <div id="form-login" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <h3 style="color:#dc3545;" id="h-l">መግቢያ</h3><input type="text" id="log-phone" placeholder="Phone"><input type="password" id="log-pass" placeholder="Password"><button class="btn-blue" onclick="doLogin()">Login</button>
+                </div>
+                <div style="height: 60px;"></div>
+            </div>
+        </div>
+
+        <!-- 2. DASHBOARD (Grid) -->
+        <div id="view-home" class="section">
+            <h2 id="t-d" style="margin:10px 0;">ዳሽቦርድ</h2>
+            <button class="btn-green" style="border-radius:0; width:100%;" onclick="toggleList('free')">የነፃ አገልግሎት ማዕከል</button>
+            <div id="list-free" style="display:none; padding:10px;">
+                <div class="service-grid">
+                    <button class="btn-green btn-small" onclick="navTo('view-info')">መረጃ መመልከት</button>
+                    <button class="btn-green btn-small" onclick="navTo('post-info')">መረጃ መለጠፍ</button>
+                    <button class="btn-green btn-small" onclick="handleGroupCreate()">ግሩፕ መፍጠር</button>
+                    <button class="btn-green btn-small" onclick="showMyGroups()">የፈጠሩትን ግሩፕ</button>
+                    <button class="btn-green btn-small" onclick="handleChatList()">ቻት</button>
+                    <button class="btn-green btn-small" onclick="navTo('feedback-sec')">አስተያየት</button>
+                    <button class="btn-green btn-small" onclick="showUserList(false)">ተጠቃሚዎች</button>
+                    <button class="btn-green btn-small" onclick="checkAuth('business-sec')">ቢዝነስ</button>
+                </div>
+                <button class="btn-green btn-small" style="background-color:#333; width:100%; margin-top:10px;" onclick="checkAuth('report-inbox')" id="btn-admin-rep">ሪፖርት (Admin)</button>
+            </div>
+
+            <button class="btn-yellow" style="border-radius:0; margin-top:10px; width:100%;" onclick="toggleList('prem')">የክፍያ ፕሪሚየም አገልግሎት</button>
+            <div id="list-prem" style="display:none; padding:10px;">
+                <div class="service-grid">
+                    <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium Video')">ጥራት ያለው ቪዲዮ</button>
+                    <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium News')">ዜና (High)</button>
+                    <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium Image')">ምስል (High)</button>
+                    <button class="btn-yellow btn-small" onclick="openPrem('ppt')">PowerPoint</button>
+                    <button class="btn-yellow btn-small" onclick="openPrem('pdf')">PDF</button>
+                </div>
+            </div>
+            <button class="btn-red" style="margin-top:20px;" onclick="doLogout()">ውጣ</button>
+        </div>
+
+        <!-- 3. POST & VIEW -->
+        <div id="post-info" class="section">
+            <h3>መረጃ መለጠፍ</h3>
+            <div style="display:flex; justify-content:space-around; margin-bottom:10px;">
+                <button class="btn-blue btn-tiny" onclick="setupPost('text')">Text</button>
+                <button class="btn-blue btn-tiny" onclick="setupPost('image')">Image</button>
+                <button class="btn-blue btn-tiny" onclick="setupPost('video')">Video</button>
+                <button class="btn-blue btn-tiny" onclick="setupPost('audio')">Audio</button>
+            </div>
+            <div id="post-form-area" style="display:none;">
+                <input type="text" id="p-title" placeholder="Title">
+                <textarea id="p-content" style="display:none;"></textarea>
+                <input type="file" id="file-post" class="hidden-input">
+                <button class="btn-green" onclick="submitPost()">Post Now</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+
+        <div id="view-info" class="section">
+            <!-- LOGO TOP -->
+            <div class="brand-area" style="transform: scale(0.6); margin: -20px 0;">
+                <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                <div class="complex-logo"><div class="ring ring-blue"></div><img src="lion_image.jpg" class="center-lion"></div>
+                <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+            </div>
+            
+            <h3 id="t-vh">መረጃ መመልከት</h3>
+            <div style="display:flex; gap:5px;"><button class="btn-blue btn-tiny" onclick="renderPosts('text')">Text</button><button class="btn-blue btn-tiny" onclick="renderPosts('image')">Image</button><button class="btn-blue btn-tiny" onclick="renderPosts('video')">Video</button><button class="btn-blue btn-tiny" onclick="renderPosts('audio')">Audio</button></div>
+            <div id="feed-container" style="margin-top:10px;">Loading...</div>
+            
+            <!-- LOGO BOTTOM -->
+            <div class="brand-area" style="transform: scale(0.6); margin: 20px 0;">
+                <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                <div class="complex-logo"><div class="ring ring-blue"></div><img src="lion_image.jpg" class="center-lion"></div>
+                <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+            </div>
+            
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- OTHER SECTIONS -->
+        <div id="prem-pricing" class="section"><h3>Payment</h3><button class="btn-green" onclick="pay(5)">Daily (5)</button><button class="btn-green" onclick="pay(25)">Weekly (25)</button><button class="btn-green" onclick="pay(30)">Monthly (30)</button><div id="pay-up-area" style="display:none;"><button class="btn-blue" onclick="promptUpload('pay')">Upload Receipt</button><input type="file" id="file-pay" class="hidden-input"><button class="btn-green" onclick="finPay()">Confirm</button></div><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+        <div id="user-list-sec" class="section"><h3>Users</h3><div id="ul-cont"></div><button class="btn-green" id="btn-grp-done" style="display:none;" onclick="createGroup()">Done</button><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+        <div id="my-groups-sec" class="section"><h3>My Groups</h3><div id="grp-list"></div><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+        <div id="chat-sec" class="section"><h3>Chat</h3><div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ddd;"></div><input type="text" id="chat-in" placeholder="Message"><button class="btn-blue" onclick="sendChat()">Send</button><button class="btn-yellow" onclick="promptUpload('chat-aud')">Mic</button><button class="btn-yellow" onclick="promptUpload('chat-vid')">Vid</button><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+        <div id="feedback-sec" class="section"><h3>Feedback</h3><button class="btn-blue" onclick="giveFb('text')">Text</button><button class="btn-yellow" onclick="openLiveCamera()">Live</button><button class="btn-blue" onclick="viewFbs()">View</button><div id="fb-list"></div><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+        <div id="business-sec" class="section"><h3>Business</h3><button class="btn-green" onclick="navTo('deposit-sec')">Deposit</button><button class="btn-blue" onclick="navTo('withdraw-sec')">Withdraw</button><button class="btn-yellow" onclick="navTo('intl-sec')">Intl Purchase</button><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+        <div id="deposit-sec" class="section"><h3>Deposit</h3><input type="number" id="dep-amt"><button class="btn-green" onclick="document.getElementById('dep-step-2').style.display='block'">Submit</button><div id="dep-step-2" style="display:none;"><button class="btn-blue" onclick="promptUpload('deposit')">Upload Receipt</button><input type="file" id="file-deposit" class="hidden-input"></div><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+        <div id="report-inbox" class="section"><h3>Admin Inbox</h3><div id="admin-dynamic-content"></div><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+        <div id="withdraw-sec" class="section"><h3>Withdraw</h3><input type="text" placeholder="Phone/Account"><input type="number" id="w-amt"><button class="btn-blue" onclick="reqWithdraw()">Withdraw</button><button class="btn-red" onclick="goBack()">Back</button></div>
+        <div id="intl-sec" class="section"><h3>Intl Purchase</h3><button class="btn-blue" onclick="document.getElementById('intl-list').style.display='block'">Select</button><div id="intl-list" class="hidden"><button class="btn-blue btn-tiny" onclick="triggerIntlPay()">Services...</button></div><button class="btn-red" onclick="goBack()">Back</button></div>
+    </div>
+
+    <!-- Hidden -->
+    <input type="file" id="comment-file-input" class="hidden-input"><input type="file" id="universal-file" class="hidden-input">
+
+    <div class="footer-wrapper">
+        <div class="bottom-nav"><button class="nav-btn nav-home" onclick="navTab('home')"><i class="fas fa-home"></i> <span>Home</span></button><button class="nav-btn nav-live" onclick="navTab('live')"><i class="fas fa-broadcast-tower"></i> <span>Live</span></button><button class="nav-btn nav-profile" onclick="navTab('profile')"><i class="fas fa-user"></i> <span>Profile</span></button></div>
+        <div class="bottom-marquee"><span>ፋሲል ዌብ አፕ - Fasil Web App (Service Center)</span></div>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIG (COMPAT) ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+          authDomain: "fasil-web-app-3a732.firebaseapp.com",
+          projectId: "fasil-web-app-3a732",
+          storageBucket: "fasil-web-app-3a732.firebasestorage.app",
+          messagingSenderId: "239133072986",
+          appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // --- VARS ---
+        var user = null; var users = []; var posts = []; var groups = [];
+        var activePostType = 'text'; var uploadTarget = ''; var lastReceiptUrl = '';
+        var adminPass = localStorage.getItem('fg_admin_pass') || 'abc123456abc';
+        var lang = 'am'; var hasAgreed = false; 
+
+        // --- SPLASH LOGIC ---
+        window.onload = function() {
+            setTimeout(function() {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(()=>splash.style.display='none', 1000);
+            }, 2000); // 2 Seconds Flash
+        };
+
+        // --- LISTENERS ---
+        db.collection("users").onSnapshot(s => { users=[]; s.forEach(d=>users.push({id:d.id, ...d.data()})); });
+        db.collection("posts").orderBy("id", "desc").onSnapshot(s => { 
+            posts=[]; s.forEach(d=>posts.push({docId:d.id, ...d.data()})); 
+            if(document.getElementById('view-info').classList.contains('show')) renderPosts(activePostType);
+        });
+        db.collection("groups").onSnapshot(s => { groups=[]; s.forEach(d=>groups.push({id:d.id, ...d.data()})); });
+
+        // --- TRANSLATIONS ---
+        const TXT = { 'am':{'head-txt':'እንኳን ደህና መጡ'}, 'en':{'head-txt':'Welcome'} }; 
+        function toggleLanguage(){ }
+
+        // --- NAV & UI ---
+        function showView(id) { 
+            document.querySelectorAll('.section').forEach(e=>e.classList.remove('show')); 
+            document.getElementById(id).classList.add('show'); 
+        }
+        function navTo(id) { showView(id); }
+        function goBack() { if(user) showView('view-home'); else showView('view-agreement'); }
+        function showAlert(m,t) { alert(m); } 
+        function closeModal(){document.getElementById('custom-modal').style.display='none';}
+
+        function navTab(t){
+            if(t==='home'){ if(!hasAgreed) return alert("Agree First"); if(!user) return alert("Login First"); showView('view-home'); }
+            if(t==='live') openLiveCamera();
+            if(t==='profile'){ if(!user) return alert("Login"); showView('view-profile'); }
+        }
+
+        function handleAgree(){ hasAgreed=true; document.getElementById('welcome-content').style.display='none'; document.getElementById('auth-section').style.display='block'; }
+        function showAuth(t){ document.getElementById('form-signup').style.display=t==='signup'?'block':'none'; document.getElementById('form-login').style.display=t==='login'?'block':'none'; }
+
+        // --- AUTH ---
+        function preSignup(){ 
+            const p=document.getElementById('reg-phone').value;
+            db.collection("users").where("phone","==",p).get().then(s=>{ if(!s.empty) alert("Already Registered"); else { document.getElementById('signup-step-1').style.display='none'; document.getElementById('signup-step-2').style.display='block'; } });
+        }
+        function finalSignup(){
+             const n=document.getElementById('reg-name').value; const p=document.getElementById('reg-phone').value; const pw=document.getElementById('reg-pass').value;
+             db.collection("users").add({name:n, phone:p, password:pw, balUSD:0, balETB:0}).then(()=>{ 
+                 // LOGO -> TEXT -> DASHBOARD
+                 const spl = document.getElementById('splash-screen');
+                 const msg = document.getElementById('splash-msg');
+                 msg.style.display='block'; spl.style.display='flex'; spl.style.opacity='1';
+                 setTimeout(()=>{ spl.style.display='none'; showAuth('login'); }, 2000);
+             });
+        }
+        function doLogin(){
+            const p=document.getElementById('log-phone').value; const pw=document.getElementById('log-pass').value;
+            db.collection("users").where("phone","==",p).where("password","==",pw).get().then(s=>{
+                if(!s.empty){ 
+                    user=s.docs[0].data(); user.id=s.docs[0].id;
+                    // LOGO -> DASHBOARD
+                    const spl = document.getElementById('splash-screen');
+                    document.getElementById('splash-msg').style.display='none';
+                    spl.style.display='flex'; spl.style.opacity='1';
+                    setTimeout(()=>{ spl.style.display='none'; document.getElementById('view-agreement').classList.remove('show'); showView('view-home'); }, 1000);
+                } else alert("Invalid");
+            });
+        }
+        function doLogout(){ user=null; location.reload(); }
+        function checkAuth(s){ if(user) navTo(s); else alert("Login"); }
+        function toggleList(t){ const l=document.getElementById('list-'+t); l.style.display=l.style.display==='none'?'block':'none'; }
+
+        // --- UPLOAD ---
+        function promptUpload(t){
+            uploadTarget=t; document.getElementById('file-profile').click();
+            document.getElementById('file-profile').onchange=(e)=>{
+                const r=new FileReader();
+                r.onload=(ev)=>{
+                     if(t==='pay'||t==='deposit') { lastReceiptUrl=ev.target.result; document.getElementById('receipt-modal').style.display='flex'; document.getElementById('rec-step-1').style.display='block'; document.getElementById('rec-step-2').style.display='none'; }
+                     if(t==='post'){ document.getElementById('post-form-area').style.display='block'; }
+                };
+                r.readAsDataURL(e.target.files[0]);
+            }
+        }
+        function showRecStep2(){ document.getElementById('rec-step-1').style.display='none'; document.getElementById('rec-step-2').style.display='block'; }
+        function downloadReceipt(){ const a=document.createElement('a'); a.href=lastReceiptUrl; a.download="Rec.png"; a.click(); }
+        function closeReceiptModal(){ document.getElementById('receipt-modal').style.display='none'; alert("እናመሰግናለን"); if(uploadTarget==='pay') navTo('view-info'); else document.getElementById('pass-modal').style.display='flex'; }
+        
+        // --- POSTS ---
+        function setupPost(t){ activePostType=t; if(t!=='text') promptUpload('post'); else document.getElementById('post-form-area').style.display='block'; }
+        function submitPost(){ 
+            const t=document.getElementById('p-title').value;
+            db.collection("posts").add({id:Date.now(), t, type:activePostType, u:user.name, uid:user.phone})
+            .then(()=>{ alert("Success"); document.getElementById('post-form-area').style.display='none'; navTo('view-info'); });
+        }
+        function renderPosts(t){ document.getElementById('feed-container').innerHTML = posts.filter(p=>p.type===t).map(p=>`<div class="post-card"><b>${p.u}</b>: ${p.t} <button class="btn-red btn-tiny" onclick="delPost('${p.docId}','${p.uid}')">Del</button></div>`).join(''); }
+        function delPost(did, uid) { if(uid===user.phone) db.collection("posts").doc(did).delete(); else alert("Not yours"); }
+
+        // --- FEATURES ---
+        function handleGroupCreate(){ showUserList(true); }
+        function showUserList(sel){ document.getElementById('ul-cont').innerHTML=users.map(u=>`<div class="user-item" onclick="${sel?'this.classList.toggle(\'bright-blue\'); checkGrp()':''}"><b>${u.name}</b></div>`).join(''); document.getElementById('btn-grp-done').style.display=sel?'block':'none'; navTo('user-list-sec'); }
+        function checkGrp(){ if(document.querySelectorAll('.bright-blue').length>=5) document.getElementById('btn-grp-done').style.display='block'; }
+        function createGroup(){ db.collection("groups").add({name:"New Group"}); alert("Created"); goBack(); }
+        function showMyGroups(){ document.getElementById('grp-list').innerHTML=groups.map(g=>`<div>${g.name}</div>`).join(''); navTo('my-groups-sec'); }
+        function handleChatList(){ showUserList(false); }
+        function sendChat(){ document.getElementById('chat-box').innerHTML += `<div>Me: ${document.getElementById('chat-in').value}</div>`; }
+        function openPrem(t){ navTo('prem-pricing'); }
+        function pay(a){ document.getElementById('pay-up-area').style.display='block'; }
+        function finPay(){ alert("Activated"); goBack(); }
+        function preDeposit(){ document.getElementById('dep-step-1').style.display='none'; document.getElementById('dep-step-2').style.display='block'; }
+        function verifyPass(){ if(document.getElementById('pass-input').value===user.password){ document.getElementById('pass-modal').style.display='none'; if(pendingAct) pendingAct(); } else alert("Wrong"); }
+        function triggerIntlPay(){ document.getElementById('pass-modal').style.display='flex'; pendingAct=()=>promptUpload('intl'); }
+        function reqWithdraw(){ if(!document.getElementById('w-amt').value) return alert("Amount?"); document.getElementById('pass-modal').style.display='flex'; pendingAct=()=>{ alert("Success"); navTo('business-sec'); }; }
+        function upBal(){ if(user) { /* Update logic */ } }
+        function openLiveCamera() { showView('view-live'); navigator.mediaDevices.getUserMedia({video:true}).then(s=>{liveStream=s;document.getElementById('live-video-element').srcObject=s;}); }
+        function stopLive() { if(liveStream)liveStream.getTracks().forEach(t=>t.stop()); goBack(); }
+        function saveProfile() { db.collection("users").doc(user.id).update({name: document.getElementById('prof-name-edit').value}); alert("Updated"); }
+        function giveFb(t) { if(t==='live') openLiveCamera(); else alert("Sent"); }
+        function viewFbs(){ document.getElementById('fb-list').innerHTML="Feedbacks"; }
+        function promptAdminAction(a){ document.getElementById('admin-action-modal').style.display='flex'; }
+        function runAdminAction(){ document.getElementById('admin-action-modal').style.display='none'; alert("Access Granted"); }
+
+        toggleLanguage();
+    </script>
+</body>
+</html>
