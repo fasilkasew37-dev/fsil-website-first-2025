@@ -1,0 +1,75 @@
+ሠ<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fasil Web App</title>  <!-- ===== YOUR ORIGINAL CSS (UNCHANGED) ===== -->  <style>
+    /* እዚህ ያለው ዲዛይን አልተቀየረም */
+  </style></head>
+<body>  <!-- ===== YOUR ORIGINAL HTML (UNCHANGED) ===== -->  <form id="form">
+    <input id="input" type="text" placeholder="Enter text" />
+    <button type="submit">Add</button>
+  </form>  <ul id="list"></ul>  <!-- ===== FIREBASE (REAL) + APP LOGIC ===== -->  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      deleteDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // ===== REPLACE WITH YOUR FIREBASE CONFIG =====
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("form");
+    const input = document.getElementById("input");
+    const list = document.getElementById("list");
+
+    // ===== ADD DATA =====
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (input.value.trim() === "") return;
+
+      await addDoc(collection(db, "items"), {
+        text: input.value,
+        created: Date.now()
+      });
+
+      input.value = "";
+      loadData();
+    });
+
+    // ===== LOAD DATA =====
+    async function loadData() {
+      list.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "items"));
+      snapshot.forEach((d) => {
+        const li = document.createElement("li");
+        li.textContent = d.data().text;
+
+        const btn = document.createElement("button");
+        btn.textContent = "X";
+        btn.onclick = async () => {
+          await deleteDoc(doc(db, "items", d.id));
+          loadData();
+        };
+
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    loadData();
+  </script></body>
+</html>
