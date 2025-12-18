@@ -1,0 +1,250 @@
+ጭ<!DOCTYPE html><html lang="am">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ፋሲል ዌብ አፕ</title>  <!-- Font Awesome -->  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />  <style>
+    /* =====================
+       GLOBAL STYLES
+    ====================== */
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f0f4f8;
+      color: #222;
+      padding-bottom: 90px;
+      text-align: center;
+    }
+
+    h1, h2, h3, h4 { margin: 6px 0; }
+
+    .container {
+      max-width: 720px;
+      margin: auto;
+      padding: 8px;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
+      font-weight: bold;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .hidden { display: none; }
+
+    /* =====================
+       COLORS / BUTTONS
+    ====================== */
+    .btn-green { background: #28a745; color: #fff; }
+    .btn-blue  { background: #007bff; color: #fff; }
+    .btn-red   { background: #dc3545; color: #fff; }
+    .btn-yellow{ background: #ffc107; color: #000; }
+
+    .btn-small { padding: 6px; font-size: 13px; }
+
+    /* =====================
+       HEADER
+    ====================== */
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: #fff;
+      border-bottom: 3px solid #007bff;
+    }
+
+    .header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ccc;
+    }
+
+    .marquee {
+      flex: 1;
+      margin: 0 10px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 15s linear infinite;
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* =====================
+       SECTIONS
+    ====================== */
+    .section {
+      display: none;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+      min-height: 350px;
+    }
+
+    .section.show { display: block; }
+
+    /* =====================
+       FOOTER NAV
+    ====================== */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 -2px 8px rgba(0,0,0,.15);
+    }
+
+    .bottom-nav {
+      display: flex;
+      height: 55px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      color: #fff;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* =====================
+       POST CARD
+    ====================== */
+    .post-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .post-card h4 { margin-bottom: 4px; }
+
+  </style></head>
+<body><!-- ================= HEADER ================= --><div class="top-header">
+  <img src="assets/eagle.jpg" class="header-icon" alt="Eagle" />  <div class="marquee">
+    <span>እንኳን ወደ ፋሲል ዌብ አፕ በደህና መጡ</span>
+  </div>  <img src="assets/lion.jpg" class="header-icon" alt="Lion" />
+</div><div class="container">  <!-- ================= AGREEMENT ================= -->  <div id="agreement" class="section show">
+    <h3>እንኳን ደህና መጡ</h3>
+    <p>
+      ይህ ዌብ አፕ ለትክክለኛ መረጃ ማጋራት የተፈጠረ ነው።
+      ሀሰት፣ ጥላቻ እና ፖለቲካ ይከለክላሉ።
+    </p><button class="btn-green" onclick="agree()">እስማማለሁ</button>
+<button class="btn-red" onclick="alert('መቀጠል አይቻልም')">አልስማማም</button>
+
+  </div>  <!-- ================= AUTH ================= -->  <div id="auth" class="section">
+    <h3>መግቢያ / መመዝገቢያ</h3><input id="name" placeholder="ሙሉ ስም" />
+<input id="phone" placeholder="ስልክ" />
+<input id="pass" type="password" placeholder="ፓስዎርድ" />
+
+<button class="btn-blue" onclick="login()">ግባ</button>
+
+  </div>  <!-- ================= DASHBOARD ================= -->  <div id="home" class="section">
+    <h3>ዳሽቦርድ</h3><button class="btn-green" onclick="showSection('post')">መለጠፍ</button>
+<button class="btn-blue" onclick="showSection('feed')">መመልከት</button>
+<button class="btn-red" onclick="logout()">ውጣ</button>
+
+  </div>  <!-- ================= POST ================= -->  <div id="post" class="section">
+    <h3>መረጃ መለጠፍ</h3><input id="postTitle" placeholder="ርዕስ" />
+<textarea id="postBody" placeholder="ዝርዝር"></textarea>
+
+<button class="btn-green" onclick="addPost()">ለጥፍ</button>
+<button class="btn-red btn-small" onclick="showSection('home')">ተመለስ</button>
+
+  </div>  <!-- ================= FEED ================= -->  <div id="feed" class="section">
+    <h3>መረጃዎች</h3>
+    <div id="posts"></div><button class="btn-red btn-small" onclick="showSection('home')">ተመለስ</button>
+
+  </div></div><!-- ================= FOOTER ================= --><div class="footer">
+  <div class="bottom-nav">
+    <div class="nav-btn btn-green" onclick="showSection('home')">
+      <i class="fa fa-home"></i>
+      Home
+    </div>
+    <div class="nav-btn btn-blue" onclick="showSection('feed')">
+      <i class="fa fa-list"></i>
+      Feed
+    </div>
+    <div class="nav-btn btn-red" onclick="logout()">
+      <i class="fa fa-sign-out-alt"></i>
+      Exit
+    </div>
+  </div>
+</div><script>
+  /* ================= BASIC APP LOGIC ================= */
+
+  const posts = [];
+
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('show'));
+    document.getElementById(id).classList.add('show');
+  }
+
+  function agree() {
+    showSection('auth');
+  }
+
+  function login() {
+    if (!phone.value || !pass.value) {
+      alert('መረጃ ያስገቡ');
+      return;
+    }
+    showSection('home');
+  }
+
+  function logout() {
+    showSection('auth');
+  }
+
+  function addPost() {
+    if (!postTitle.value || !postBody.value) return;
+
+    posts.unshift({ title: postTitle.value, body: postBody.value });
+    postTitle.value = '';
+    postBody.value = '';
+
+    renderPosts();
+    showSection('feed');
+  }
+
+  function renderPosts() {
+    postsDiv = document.getElementById('posts');
+    postsDiv.innerHTML = '';
+
+    posts.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'post-card';
+      div.innerHTML = `<h4>${p.title}</h4><p>${p.body}</p>`;
+      postsDiv.appendChild(div);
+    });
+  }
+</script></body>
+</html>
