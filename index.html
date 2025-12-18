@@ -1,0 +1,208 @@
+ወወ<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ፋሲል ዌብ አፕ - Fasil Web App (Real Firebase)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+<style>
+/* ልክ አንተ እንደሰጠኸው ያለ ምንም ለውጥ የተቀመጠ CSS */
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+text-align: center; padding: 0; margin: 0;
+background-color: #f0f4f8; color: #333;
+padding-bottom: 90px;
+}
+.container { max-width: 700px; margin: 0 auto; padding: 5px; }
+.top-header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 5px 10px; border-bottom: 3px solid #007bff; }
+.header-icon-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: top; border: 2px solid #ccc; }
+.marquee-container-top { flex: 1; overflow: hidden; white-space: nowrap; margin: 0 10px; }
+.marquee-text-top { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; color: #007bff; font-weight: bold; font-size: 16px; }
+.footer-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+.bottom-nav { display: flex; height: 55px; width: 100%; }
+.nav-btn { flex: 1; border: none; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+.nav-home { background-color: #28a745; }
+.nav-live { background-color: #ffc107; color: black; }
+.nav-profile { background-color: #dc3545; }
+.bottom-marquee { background: #f0f0f0; color: #28a745; font-weight: bold; overflow: hidden; white-space: nowrap; height: 25px; line-height: 25px; font-size: 12px; }
+.bottom-marquee span { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+.section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 400px; }
+.show { display: block; animation: fadeIn 0.5s; }
+.brand-area { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; padding: 0 5px; }
+.side-logo { width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 3px solid #007bff; padding: 2px; background: white; }
+.complex-logo { position: relative; width: 110px; height: 110px; margin: 0 auto; }
+.ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.ring-blue { width: 110px; height: 110px; border: 4px solid #00008b; z-index: 1; }
+.ring-red { width: 92px; height: 92px; border: 3px solid red; z-index: 2; }
+.pos-item { position: absolute; width: 16px; height: 16px; object-fit: cover; border-radius: 50%; }
+.p-n { top: -8px; left: 50%; transform: translateX(-50%); }
+.p-s { bottom: -8px; left: 50%; transform: translateX(-50%); }
+.p-e { right: -8px; top: 50%; transform: translateY(-50%); }
+.p-w { left: -8px; top: 50%; transform: translateY(-50%); }
+.ring-yellow { width: 70px; height: 70px; border: 3px solid yellow; z-index: 3; }
+.ring-green { width: 52px; height: 52px; background: green; border-radius: 50%; z-index: 4; position: relative; overflow: hidden; }
+.center-lion { position: absolute; width: 50px; height: 50px; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 7; border-radius: 50%; }
+input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+.btn-green { background: #28a745; }
+.btn-blue { background: #007bff; }
+.btn-red { background: #dc3545; }
+.hidden-input { display: none; }
+</style>
+</head>
+<body>
+
+<div class="top-header">
+    <img src="eagle_image.jpg" class="header-icon-img">
+    <div class="marquee-container-top"><span class="marquee-text-top">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+    <img src="lion_image.jpg" class="header-icon-img">
+</div>
+
+<div class="container">
+    <div id="view-agreement" class="section show">
+        <div class="brand-area">
+            <img src="eagle_image.jpg" class="side-logo">
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"><img src="lion_image.jpg" class="center-lion"></div></div></div></div>
+            </div>
+            <img src="dove_image.jpg" class="side-logo">
+        </div>
+        <p>ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው።</p>
+        <button class="btn-green" onclick="navTo('auth-section')">እስማማለሁ</button>
+    </div>
+
+    <div id="auth-section" class="section">
+        <h3>ምዝገባ / መግቢያ</h3>
+        <input type="email" id="email" placeholder="Email (@gmail.com)">
+        <input type="password" id="password" placeholder="Password">
+        <button class="btn-red" onclick="handleSignup()">ይመዝገቡ</button>
+        <button class="btn-blue" onclick="handleLogin()">ይግቡ</button>
+    </div>
+
+    <div id="view-home" class="section">
+        <h2>ዳሽቦርድ</h2>
+        <button class="btn-green" onclick="navTo('post-info')">መረጃ መለጠፍ</button>
+        <button class="btn-blue" onclick="navTo('view-info'); loadPosts();">መረጃ መመልከት</button>
+        <button class="btn-red" onclick="logout()">ውጣ</button>
+    </div>
+
+    <div id="post-info" class="section">
+        <h3>መረጃ መለጠፍ</h3>
+        <input type="text" id="p-title" placeholder="Title">
+        <textarea id="p-content" placeholder="Details..."></textarea>
+        <input type="file" id="file-post">
+        <button class="btn-green" onclick="submitPost()">Post Now</button>
+        <button class="btn-red" onclick="navTo('view-home')">Back</button>
+    </div>
+
+    <div id="view-info" class="section">
+        <h3>መረጃ መመልከት</h3>
+        <div id="feed-container"></div>
+        <button class="btn-red" onclick="navTo('view-home')">Back</button>
+    </div>
+</div>
+
+<div class="footer-wrapper">
+    <div class="bottom-nav">
+        <button class="nav-btn nav-home" onclick="navTo('view-home')">Home</button>
+        <button class="nav-btn nav-profile" onclick="navTo('auth-section')">Profile</button>
+    </div>
+</div>
+
+<script>
+// 1. Firebase Config
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+// 2. Navigation
+function navTo(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('show'));
+    document.getElementById(id).classList.add('show');
+}
+
+// 3. Auth Actions
+async function handleSignup() {
+    const e = document.getElementById('email').value;
+    const p = document.getElementById('password').value;
+    try {
+        await auth.createUserWithEmailAndPassword(e, p);
+        alert("ተመዝግበዋል!");
+    } catch(err) { alert(err.message); }
+}
+
+async function handleLogin() {
+    const e = document.getElementById('email').value;
+    const p = document.getElementById('password').value;
+    try {
+        await auth.signInWithEmailAndPassword(e, p);
+    } catch(err) { alert(err.message); }
+}
+
+function logout() { auth.signOut(); navTo('auth-section'); }
+
+// 4. Real Firebase Data Actions
+async function submitPost() {
+    const user = auth.currentUser;
+    if(!user) return alert("መጀመሪያ ይግቡ!");
+    const title = document.getElementById('p-title').value;
+    const content = document.getElementById('p-content').value;
+    const file = document.getElementById('file-post').files[0];
+    let url = "";
+
+    try {
+        if(file) {
+            const ref = storage.ref(`uploads/${Date.now()}_${file.name}`);
+            await ref.put(file);
+            url = await ref.getDownloadURL();
+        }
+        await db.collection('posts').add({
+            title, content, url,
+            user: user.email,
+            time: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("ተለጥፏል!");
+        navTo('view-home');
+    } catch(err) { alert(err.message); }
+}
+
+function loadPosts() {
+    const cont = document.getElementById('feed-container');
+    db.collection('posts').orderBy('time', 'desc').onSnapshot(snap => {
+        cont.innerHTML = "";
+        snap.forEach(doc => {
+            const data = doc.data();
+            cont.innerHTML += `
+                <div style="border:1px solid #ddd; margin:10px; padding:10px; text-align:left;">
+                    <h4>${data.title}</h4>
+                    <p>${data.content}</p>
+                    ${data.url ? `<img src="${data.url}" width="100%">` : ""}
+                    <small>${data.user}</small>
+                </div>`;
+        });
+    });
+}
+
+auth.onAuthStateChanged(user => {
+    if(user) navTo('view-home');
+});
+</script>
+</body>
+</html>
