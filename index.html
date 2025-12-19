@@ -1,0 +1,424 @@
+መወዘ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fasil Web App - FWA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <style>
+        /* --- Base & Performance --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f4f8; padding-bottom: 80px; overflow-x: hidden; }
+        img { content-visibility: auto; } /* Lazy loading equivalent */
+
+        /* --- Animations --- */
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @keyframes float { 0% { transform: translateY(0px); text-shadow: 0 0 5px #007bff; } 50% { transform: translateY(-10px); text-shadow: 0 0 20px #007bff; } 100% { transform: translateY(0px); text-shadow: 0 0 5px #007bff; } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- Header --- */
+        .top-header { background: white; border-bottom: 2px solid #007bff; padding: 10px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
+        .header-marquee { flex: 1; overflow: hidden; white-space: nowrap; margin: 0 10px; color: #007bff; font-weight: bold; font-size: 14px; }
+        .header-marquee span { display: inline-block; animation: marquee 15s linear infinite; }
+        
+        /* --- Logo Components --- */
+        .main-logo-container { transform: scale(0.8); transition: 0.3s; margin: 5px auto; display: flex; align-items: center; justify-content: center; }
+        .complex-logo { position: relative; width: 100px; height: 100px; }
+        .ring { position: absolute; border-radius: 50%; border: 2px solid transparent; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .ring-1 { width: 100px; height: 100px; border-color: #00008b; }
+        .ring-2 { width: 85px; height: 85px; border-color: red; }
+        .ring-3 { width: 70px; height: 70px; border-color: yellow; }
+        .center-img { width: 50px; height: 50px; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid white; background: #007bff; }
+        .side-img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #007bff; background: white; }
+        
+        /* FWA Identity Logo */
+        .fwa-identity { display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
+        .fwa-grid { display: grid; grid-template-columns: 40px 100px 40px; align-items: center; justify-items: center; }
+        .fwa-text { font-size: 24px; font-weight: 900; color: #007bff; animation: float 3s ease-in-out infinite; letter-spacing: 5px; }
+        .mini-icon { width: 25px; height: 25px; border-radius: 50%; border: 1px solid #007bff; }
+
+        /* --- UI Sections --- */
+        .section { display: none; padding: 15px; animation: fadeIn 0.4s ease; }
+        .show { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        button { border-radius: 8px; border: none; padding: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; margin: 5px 0; color: white; }
+        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; } .btn-yellow { background: #ffc107; color: black; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; }
+
+        /* --- Bottom Nav --- */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 65px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 2000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: none; cursor: pointer; color: white; }
+        .nav-home { background: #28a745; } .nav-live { background: #ffc107; color: black; } .nav-profile { background: #dc3545; }
+
+        /* --- Admin Specific --- */
+        .admin-banner { color: #007bff; font-weight: bold; font-size: 18px; margin: 20px 0; }
+        .status-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+
+        /* --- Business Cards --- */
+        .balance-card { background: #2c3e50; color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: left; }
+        .balance-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #444; }
+
+        /* --- Feed & Posts --- */
+        .post-card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: left; }
+        .post-actions { display: flex; gap: 15px; border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
+        .action-btn { background: none; color: #555; width: auto; padding: 5px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<!-- Status Overlays (Admin Sequence) -->
+<div id="status-overlay" class="status-overlay">
+    <div id="overlay-logo" class="main-logo-container"></div>
+    <div id="overlay-text" class="admin-banner"></div>
+</div>
+
+<!-- Header -->
+<div class="top-header">
+    <div id="mini-logo-header" style="transform: scale(0.4);"></div>
+    <div class="header-marquee"><span id="header-txt">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+    <button onclick="toggleLang()" style="width:auto; padding:5px 10px; font-size:10px; background:#6c757d;">Language</button>
+</div>
+
+<div class="container">
+
+    <!-- 1. POLICY & WELCOME -->
+    <div id="view-policy" class="section show">
+        <div class="main-logo-container" id="brand-top"></div>
+        
+        <div class="fwa-identity">
+            <img src="logo_mini.png" class="mini-icon" style="margin-bottom: 5px;">
+            <div class="fwa-grid">
+                <img src="logo_mini.png" class="mini-icon">
+                <div class="fwa-text">F W A</div>
+                <img src="logo_mini.png" class="mini-icon">
+            </div>
+            <img src="logo_mini.png" class="mini-icon" style="margin-top: 5px;">
+        </div>
+
+        <button class="btn-blue" onclick="showFullPolicy()">ፖሊሲ (Policy)</button>
+        
+        <div id="policy-content" style="display:none; text-align: left; background: #fff; padding: 15px; border-radius: 10px;">
+            <h3 id="p-welcome-t">እንኳን ደህና መጡ</h3>
+            <p id="p-welcome-d">ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። በዚህ መድረክ ጥራት ያላቸውንና እውነተኛ መረጃዎችን ለሁሉም ተደራሽ እናደርጋለን።</p>
+            <hr>
+            <h3 id="p-rule-t">ጥብቅ መመሪያ</h3>
+            <p id="p-rule-d">ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው። ህጉን የማይከተሉ ተጠቃሚዎች ያለ ምንም ማስጠንቀቂያ ይታገዳሉ።</p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-green" onclick="navTo('view-auth')">እስማማለሁ</button>
+                <button class="btn-red" onclick="alert('ይቅርታ፣ ካልተስማሙ መጠቀም አይችሉም።')">አልስማማም</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. AUTH SECTION -->
+    <div id="view-auth" class="section">
+        <h3>ምዝገባ / መግቢያ</h3>
+        <div id="auth-choice">
+            <button class="btn-blue" onclick="toggleAuthForm('signup')">አዲስ ምዝገባ</button>
+            <button class="btn-green" onclick="toggleAuthForm('login')">መግቢያ</button>
+        </div>
+        
+        <div id="form-signup" style="display:none;">
+            <input type="text" id="reg-name" placeholder="ሙሉ ስም">
+            <input type="email" id="reg-email" placeholder="ኢሜል">
+            <input type="tel" id="reg-phone" placeholder="ስልክ ቁጥር">
+            <input type="password" id="reg-pass" placeholder="ባለ 6 አሃዝ ፓስወርድ" maxlength="6">
+            <p>ፕሮፋይል ፎቶ ይምረጡ (ግዴታ):</p>
+            <input type="file" id="reg-photo" accept="image/*">
+            <button class="btn-green" onclick="handleSignup()">ጨርስ</button>
+        </div>
+
+        <div id="form-login" style="display:none;">
+            <input type="tel" id="log-phone" placeholder="ስልክ">
+            <input type="password" id="log-pass" placeholder="ፓስወርድ">
+            <button class="btn-blue" onclick="handleLogin()">ግባ</button>
+        </div>
+    </div>
+
+    <!-- 3. HOME DASHBOARD -->
+    <div id="view-home" class="section">
+        <h2 id="h-dash">ዳሽቦርድ</h2>
+        <button class="btn-green" onclick="toggleGrid('free')">የነፃ አገልግሎት ማዕከል</button>
+        <div id="grid-free" style="display:none; display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn-blue" onclick="navTo('view-posts')">መረጃ መመልከት</button>
+            <button class="btn-blue" onclick="navTo('view-post-create')">መረጃ መለጠፍ</button>
+            <button class="btn-blue" onclick="alert('ግሩፕ መፍጠር...')">ግሩፕ መፍጠር</button>
+            <button class="btn-blue" onclick="navTo('view-feedback')">አስተያየት</button>
+            <button class="btn-red" onclick="startAdminSequence()">Admin Monitor</button>
+        </div>
+
+        <button class="btn-yellow" onclick="navTo('view-premium')">የክፍያ አገልግሎት</button>
+        <button class="btn-blue" onclick="navTo('view-business')">ቢዝነስ ማዕከል</button>
+    </div>
+
+    <!-- 4. POSTING SECTION -->
+    <div id="view-post-create" class="section">
+        <h3>መረጃ ይለጥፉ</h3>
+        <select id="post-type" onchange="updatePostFields()">
+            <option value="text">ፅሁፍ</option>
+            <option value="image">ምስል</option>
+            <option value="video">ቪዲዮ</option>
+            <option value="audio">ድምፅ</option>
+        </select>
+        <input type="text" id="post-title" placeholder="ርዕስ (ግዴታ)">
+        <textarea id="post-desc" placeholder="ዝርዝር ሀሳብ..."></textarea>
+        <div id="file-input-area" style="display:none;">
+            <input type="file" id="post-file">
+        </div>
+        <button class="btn-green" onclick="submitPost()">ፖስት አድርግ</button>
+        <button class="btn-red" onclick="navTo('view-home')">ተመለስ</button>
+    </div>
+
+    <!-- 5. BUSINESS & PAYMENTS -->
+    <div id="view-business" class="section">
+        <h3>የቢዝነስ ማዕከል</h3>
+        <div class="balance-card">
+            <div class="balance-item"><span>USD:</span> <span id="b-usd">$0.00</span></div>
+            <div class="balance-item"><span>ETB:</span> <span id="b-etb">0.00 ETB</span></div>
+        </div>
+        <button class="btn-green" onclick="openDeposit()">ገንዘብ ለማስገባት</button>
+        <button class="btn-red" onclick="openWithdraw()">ገንዘብ ለማውጣት</button>
+        <button class="btn-blue" onclick="openIntlPayment()">Online International Payment</button>
+        <button class="btn-red" onclick="navTo('view-home')">ተመለስ</button>
+    </div>
+
+    <!-- 6. ADMIN MONITOR -->
+    <div id="view-admin" class="section">
+        <h3 class="admin-banner">Admin Dashboard</h3>
+        <button class="btn-blue" onclick="viewReports()">Receive Reports</button>
+        <button class="btn-blue" onclick="alert('Premium Accounts Settings')">Premium User Payments</button>
+        <button class="btn-blue" onclick="monitorUsers()">Monitor User Activity</button>
+        <button class="btn-blue" onclick="changeAdminPass()">Change Admin Password</button>
+        <button class="btn-red" onclick="navTo('view-home')">Logout Admin</button>
+    </div>
+
+    <!-- 7. LIVE SECTION -->
+    <div id="view-live" class="section">
+        <h3>Live Streaming</h3>
+        <div id="live-container" style="background:#000; height:300px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white;">
+            <p>ካሜራ በመፈለግ ላይ...</p>
+        </div>
+        <button class="btn-yellow" onclick="startPerfectLive()">Start Perfect Live</button>
+    </div>
+
+    <!-- 8. PROFILE SECTION -->
+    <div id="view-profile" class="section">
+        <h3>የእርስዎ ፕሮፋይል</h3>
+        <div id="profile-info" style="text-align:center;">
+            <img id="p-img" src="" style="width:100px; height:100px; border-radius:50%; border:3px solid #007bff;">
+            <h4 id="p-name">ስም</h4>
+        </div>
+        <hr>
+        <button class="btn-blue" onclick="showPassChange()">ፓስወርድ ቀይር</button>
+        <div id="pass-change-area" style="display:none;">
+            <input type="password" id="old-p" placeholder="የድሮው ፓስወርድ">
+            <input type="password" id="new-p" placeholder="አዲሱ ፓስወርድ">
+            <input type="password" id="conf-p" placeholder="አረጋግጥ">
+            <button class="btn-green" onclick="updatePassword()">አዘምን</button>
+        </div>
+        <button class="btn-red" onclick="location.reload()">ውጣ (Logout)</button>
+    </div>
+
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+    <button class="nav-item nav-home" onclick="navTo('view-home')"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="nav-item nav-live" onclick="navTo('view-live')"><i class="fas fa-broadcast-tower"></i><span>Live</span></button>
+    <button class="nav-item nav-profile" onclick="checkProfileAuth()"><i class="fas fa-user"></i><span>Profile</span></button>
+</div>
+
+<script>
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+      authDomain: "fasil-web-app-3a732.firebaseapp.com",
+      projectId: "fasil-web-app-3a732",
+      storageBucket: "fasil-web-app-3a732.firebasestorage.app",
+      messagingSenderId: "239133072986",
+      appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let adminPass = "abc123456abc";
+
+    // --- LOGO RENDERER ---
+    function renderLogo(targetId) {
+        const html = `
+            <div class="complex-logo">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="ring ring-3"></div>
+                <img src="lion_image.jpg" class="center-img">
+            </div>`;
+        document.getElementById(targetId).innerHTML = html;
+    }
+
+    window.onload = () => {
+        renderLogo('brand-top');
+        renderLogo('mini-logo-header');
+        renderLogo('overlay-logo');
+    };
+
+    // --- NAVIGATION ---
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('show'));
+        document.getElementById(id).classList.add('show');
+        window.scrollTo(0,0);
+    }
+
+    function toggleAuthForm(type) {
+        document.getElementById('auth-choice').style.display = 'none';
+        document.getElementById('form-signup').style.display = type === 'signup' ? 'block' : 'none';
+        document.getElementById('form-login').style.display = type === 'login' ? 'block' : 'none';
+    }
+
+    function showFullPolicy() {
+        document.getElementById('policy-content').style.display = 'block';
+    }
+
+    // --- AUTH LOGIC ---
+    async function handleSignup() {
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const phone = document.getElementById('reg-phone').value;
+        const pass = document.getElementById('reg-pass').value;
+        const photo = document.getElementById('reg-photo').files[0];
+
+        if(!name || !email || !phone || !pass || !photo) return alert("እባክዎ ሁሉንም መረጃዎች ይሙሉ (ፎቶን ጨምሮ)።");
+        if(pass.length !== 6) return alert("ፓስወርድ የግድ 6 አሃዝ መሆን አለበት።");
+
+        // Check duplicate
+        const check = await db.collection("users").where("phone", "==", phone).get();
+        if(!check.empty) return alert("ይህ ስልክ ቁጥር ቀድሞ ተመዝግቧል።");
+
+        db.collection("users").add({
+            name, email, phone, pass, 
+            balanceETB: 0, balanceUSD: 0, 
+            regDate: new Date().toISOString(),
+            isPremium: false
+        }).then(() => {
+            alert("በተሳካ ሁኔታ ተመዝግበዋል!");
+            toggleAuthForm('login');
+        });
+    }
+
+    async function handleLogin() {
+        const phone = document.getElementById('log-phone').value;
+        const pass = document.getElementById('log-pass').value;
+        const snap = await db.collection("users").where("phone", "==", phone).where("pass", "==", pass).get();
+        
+        if(!snap.empty) {
+            currentUser = { id: snap.docs[0].id, ...snap.docs[0].data() };
+            navTo('view-home');
+            updateUI();
+        } else {
+            alert("ስልክ ወይም ፓስወርድ ስህተት ነው።");
+        }
+    }
+
+    function updateUI() {
+        if(currentUser) {
+            document.getElementById('p-name').innerText = currentUser.name;
+            document.getElementById('b-etb').innerText = currentUser.balanceETB + " ETB";
+            document.getElementById('b-usd').innerText = "$" + currentUser.balanceUSD;
+        }
+    }
+
+    // --- ADMIN SEQUENCE ---
+    function startAdminSequence() {
+        const p = prompt("መጀመሪያ የራስዎን ፓስወርድ ያስገቡ፦");
+        if(p === currentUser.pass) {
+            const overlay = document.getElementById('status-overlay');
+            const overlayTxt = document.getElementById('overlay-text');
+            overlay.style.display = 'flex';
+            overlayTxt.innerText = "";
+            
+            setTimeout(() => {
+                overlayTxt.innerText = "ይህ ለአድሚን ብቻ የተፈቀደ ነው";
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    const ap = prompt("አድሚን ፓስወርድ ያስገቡ፦");
+                    if(ap === adminPass) navTo('view-admin');
+                    else alert("የአድሚን ፓስወርድ ስህተት!");
+                }, 2000);
+            }, 1000);
+        }
+    }
+
+    // --- POSTING LOGIC ---
+    function updatePostFields() {
+        const type = document.getElementById('post-type').value;
+        document.getElementById('file-input-area').style.display = type === 'text' ? 'none' : 'block';
+    }
+
+    async function submitPost() {
+        const title = document.getElementById('post-title').value;
+        const desc = document.getElementById('post-desc').value;
+        const type = document.getElementById('post-type').value;
+
+        if(!title) return alert("እባክዎ ርዕስ ያስገቡ።");
+        
+        // Policy Check
+        const forbidden = ["ፖለቲካ", "ጥላቻ", "politics", "hate"];
+        if(forbidden.some(word => title.includes(word) || desc.includes(word))) {
+            return alert("ይህ ከፖሊሲያችን ውጭ ነው!");
+        }
+
+        await db.collection("posts").add({
+            title, desc, type,
+            userId: currentUser.id,
+            userName: currentUser.name,
+            likes: 0,
+            reports: 0,
+            date: new Date().toISOString()
+        });
+
+        alert("Success!");
+        document.getElementById('post-title').value = "";
+        document.getElementById('post-desc').value = "";
+        navTo('view-home');
+    }
+
+    // --- BUSINESS LOGIC ---
+    function openDeposit() {
+        const amount = prompt("ማስገባት የሚፈልጉትን መጠን በ ETB ብቻ ይፃፉ፦");
+        if(amount) {
+            const curr = prompt("ወደ ምን ይለወጥ? (USD, EUR, GBP, ETB)");
+            alert("ደረሰኝ ፎቶ ያስገቡ");
+            // Logic to add balance after receipt verification
+            alert("ሳክሰስ! መጠኑ ከሚዛንዎ ላይ ይታያል።");
+        }
+    }
+
+    async function checkProfileAuth() {
+        if(!currentUser) return navTo('view-auth');
+        const p = prompt("ደህንነትዎን ለማረጋገጥ ፓስወርድ ያስገቡ፦");
+        if(p === currentUser.pass) navTo('view-profile');
+    }
+
+    function toggleLang() {
+        const txt = document.getElementById('header-txt');
+        if(txt.innerText.includes("Welcome")) {
+            txt.innerText = "እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!";
+        } else {
+            txt.innerText = "Welcome to Fasil Web App Service Center!";
+        }
+    }
+
+    // --- LIVE SIMULATION ---
+    function startPerfectLive() {
+        alert("የቀጥታ ስርጭት በመጀመር ላይ... (Real-time Perfect Live)");
+        document.getElementById('live-container').innerHTML = "<div style='color:red; font-weight:bold; border:2px solid red; padding:10px;'>LIVE STREAMING ACTIVE</div>";
+    }
+
+</script>
+</body>
+</html>
