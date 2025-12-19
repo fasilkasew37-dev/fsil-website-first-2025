@@ -1,0 +1,402 @@
+ወ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fasil Web App</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* ያንተ ኦሪጅናል ስታይል */
+        body { font-family: sans-serif; margin: 0; padding: 0; background: #f0f2f5; }
+        .container { max-width: 500px; margin: auto; padding: 20px; background: white; min-height: 100vh; position: relative; }
+        
+        /* SPLASH SCREEN */
+        #splash-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: #0056b3; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.5s; color: white; }
+        
+        /* LOGO DESIGN (ያንተ ኦሪጅናል) */
+        .brand-area { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .complex-logo { position: relative; width: 100px; height: 100px; }
+        .ring { border-radius: 50%; border: 3px solid transparent; position: absolute; top:0; left:0; right:0; bottom:0; }
+        .ring-blue { border-top-color: blue; animation: spin 2s linear infinite; }
+        .ring-red { border-right-color: red; padding: 5px; }
+        .ring-yellow { border-bottom-color: yellow; padding: 5px; }
+        .ring-green { border-left-color: green; padding: 5px; }
+        .center-lion { width: 60px; height: 60px; border-radius: 50%; position: absolute; top: 20px; left: 20px; }
+        .side-logo-img { width: 40px; height: 40px; border-radius: 50%; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Sections */
+        .section { display: none; }
+        .section.show { display: block; }
+
+        /* Buttons (ያንተ ቀለሞች) */
+        .btn-green { background: #28a745; color: white; border: none; padding: 10px; margin: 5px 0; width: 100%; border-radius: 5px; cursor: pointer; }
+        .btn-blue { background: #007bff; color: white; border: none; padding: 10px; margin: 5px 0; width: 100%; border-radius: 5px; cursor: pointer; }
+        .btn-red { background: #dc3545; color: white; border: none; padding: 10px; margin: 5px 0; width: 100%; border-radius: 5px; cursor: pointer; }
+        .btn-yellow { background: #ffc107; color: black; border: none; padding: 10px; margin: 5px 0; width: 100%; border-radius: 5px; cursor: pointer; }
+        .btn-small { width: auto; padding: 5px 15px; }
+
+        /* Header & Marquee */
+        .top-header { background: white; border-bottom: 1px solid #ddd; padding: 10px; display: flex; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .marquee-container-top { flex: 1; overflow: hidden; white-space: nowrap; }
+        .marquee-text-top { display: inline-block; animation: scroll 15s linear infinite; color: red; font-weight: bold; }
+        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+        /* Grids */
+        .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        /* Modal Overlay */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: white; padding: 20px; border-radius: 10px; width: 85%; text-align: center; }
+
+        /* Custom UI */
+        #chat-box, #feed-container, #admin-dynamic-content { border: 1px solid #ddd; height: 250px; overflow-y: auto; padding: 10px; margin-bottom: 10px; background: #f9f9f9; }
+        .post-card { border: 1px solid #eee; padding: 10px; margin-bottom: 8px; background: white; border-radius: 5px; }
+        .hidden-input { display: none; }
+        
+        /* Footer */
+        .footer-wrapper { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; border-top: 1px solid #ddd; }
+        .bottom-nav { display: flex; justify-content: space-around; padding: 10px 0; }
+        .nav-btn { border: none; background: none; text-align: center; color: #555; }
+    </style>
+</head>
+<body>
+
+<!-- 1. SPLASH SCREEN (BLUE BG) - ያንተ አርማ እዚህ ይታያል -->
+<div id="splash-screen">
+    <div class="brand-area" style="transform: scale(1.5);">
+        <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img" onerror="this.src='https://via.placeholder.com/40'"></div>
+        <div class="complex-logo">
+            <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+            <img src="lion_image.jpg" class="center-lion" onerror="this.src='https://via.placeholder.com/60'">
+        </div>
+        <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img" onerror="this.src='https://via.placeholder.com/40'"></div>
+    </div>
+    <div id="splash-msg" style="margin-top:20px; font-weight: bold;">እንኳን ደስ አለዎት በተሳካ ሁኔታ ተመዝግበዋል እናመሰግናለን</div>
+</div>
+
+<!-- Header -->
+<div class="top-header">
+    <div class="brand-area" style="transform: scale(0.4);">
+        <div class="complex-logo"><div class="ring ring-blue"></div><img src="lion_image.jpg" class="center-lion"></div>
+    </div>
+    <div class="marquee-container-top"><span class="marquee-text-top" id="head-txt">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+    <button class="btn-small btn-blue" onclick="toggleLanguage()">Language</button>
+</div>
+
+<div class="container">
+    <!-- MODALS -->
+    <div class="modal-overlay" id="admin-login-modal">
+        <div class="modal-box">
+            <h3>Admin Login</h3>
+            <input type="password" id="admin-pass-in" placeholder="Admin Code" style="width:80%; padding:10px;">
+            <button class="btn-green" onclick="adminLogin()">Enter</button>
+            <button class="btn-red" onclick="closeModal('admin-login-modal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- 1. VIEW: AGREEMENT / WELCOME -->
+    <div id="view-agreement" class="section show">
+        <!-- Main Logo on Entry -->
+        <div class="brand-area" style="margin: 20px 0;">
+            <div class="side-logo-container"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                <img src="lion_image.jpg" class="center-lion">
+            </div>
+            <div class="side-logo-container"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+
+        <div id="welcome-content" style="text-align: center;">
+            <h4 id="t-w-s">እንኳን ደህና መጡ</h4>
+            <p id="t-in">ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው።</p>
+            <h4 id="t-p-s">ጥብቅ መመሪያ</h4>
+            <p id="t-po">ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው።</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-green btn-small" onclick="handleAgree()">እስማማለሁ</button>
+                <button class="btn-red btn-small" onclick="alert('ይቅርታ መቀጠል አይችሉም')">አልስማማም</button>
+            </div>
+        </div>
+
+        <div id="auth-section" style="display:none;">
+            <div style="display:flex; gap:10px;">
+                <button class="btn-red" onclick="showAuth('signup')">መመዝገቢያ</button>
+                <button class="btn-blue" onclick="showAuth('login')">መግቢያ</button>
+            </div>
+            <!-- Signup Form -->
+            <div id="form-signup" style="display:none; margin-top:15px; border:1px solid #ddd; padding:10px;">
+                <div id="signup-step-1">
+                    <h3>ምዝገባ</h3>
+                    <input type="text" id="reg-name" placeholder="ሙሉ ስም" style="width:90%; padding:8px; margin-bottom:5px;">
+                    <input type="text" id="reg-phone" placeholder="ስልክ 09..." style="width:90%; padding:8px; margin-bottom:5px;">
+                    <input type="password" id="reg-pass" placeholder="የይለፍ ቃል" style="width:90%; padding:8px; margin-bottom:5px;">
+                    <button class="btn-green" onclick="preSignup()">ቀጥል</button>
+                </div>
+                <div id="signup-step-2" style="display:none;">
+                    <h3>ፎቶ ይጫኑ</h3>
+                    <button class="btn-blue" onclick="document.getElementById('universal-file').click()">ምረጥ</button>
+                    <button class="btn-green" onclick="finalSignup()">ጨርስ</button>
+                </div>
+            </div>
+            <!-- Login Form -->
+            <div id="form-login" style="display:none; margin-top:15px; border:1px solid #ddd; padding:10px;">
+                <h3>መግቢያ</h3>
+                <input type="text" id="log-phone" placeholder="Phone" style="width:90%; padding:8px; margin-bottom:5px;">
+                <input type="password" id="log-pass" placeholder="Password" style="width:90%; padding:8px; margin-bottom:5px;">
+                <button class="btn-blue" onclick="doLogin()">ግባ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DASHBOARD -->
+    <div id="view-home" class="section">
+        <h2>ዳሽቦርድ</h2>
+        <button class="btn-green" onclick="toggleList('free')">የነፃ አገልግሎት ማዕከል</button>
+        <div id="list-free" style="display:none; padding:10px; border:1px solid #eee;">
+            <div class="service-grid">
+                <button class="btn-green btn-small" onclick="navTo('view-info')">መረጃ መመልከት</button>
+                <button class="btn-green btn-small" onclick="navTo('post-info')">መረጃ መለጠፍ</button>
+                <button class="btn-green btn-small" onclick="handleGroupCreate()">ግሩፕ መፍጠር</button>
+                <button class="btn-green btn-small" onclick="showMyGroups()">የፈጠሩትን ግሩፕ</button>
+                <button class="btn-green btn-small" onclick="handleChatList()">ቻት</button>
+                <button class="btn-green btn-small" onclick="navTo('feedback-sec')">አስተያየት</button>
+                <button class="btn-green btn-small" onclick="showUserList(false)">ተጠቃሚዎች</button>
+                <button class="btn-green btn-small" onclick="navTo('business-sec')">ቢዝነስ</button>
+            </div>
+            <button class="btn-green btn-small" style="background:#333; width:100%; margin-top:10px;" onclick="document.getElementById('admin-login-modal').style.display='flex'">ሪፖርት (Admin)</button>
+        </div>
+        <button class="btn-yellow" onclick="toggleList('prem')">የክፍያ ፕሪሚየም አገልግሎት</button>
+        <div id="list-prem" style="display:none; padding:10px; border:1px solid #eee;">
+            <div class="service-grid">
+                <button class="btn-yellow btn-small">Premium Video</button>
+                <button class="btn-yellow btn-small">PowerPoint</button>
+            </div>
+        </div>
+        <button class="btn-red" onclick="doLogout()">ውጣ</button>
+    </div>
+
+    <!-- 3. POST & VIEW -->
+    <div id="post-info" class="section">
+        <h3>መረጃ መለጠፍ</h3>
+        <input type="text" id="p-title" placeholder="ርዕስ" style="width:90%; padding:8px;">
+        <textarea id="p-content" placeholder="ዝርዝር..." style="width:90%; height:100px; padding:8px; margin-top:5px;"></textarea>
+        <button class="btn-green" onclick="submitPost()">አሁን ልጥፍ</button>
+        <button class="btn-red btn-small" onclick="goBack()">ተመለስ</button>
+    </div>
+
+    <div id="view-info" class="section">
+        <h3>መረጃዎች</h3>
+        <div id="feed-container">መረጃ በመጫን ላይ...</div>
+        <button class="btn-red btn-small" onclick="goBack()">ተመለስ</button>
+    </div>
+
+    <!-- CHAT -->
+    <div id="chat-sec" class="section">
+        <h3>ቻት ማዕከል</h3>
+        <div id="chat-box"></div>
+        <div style="display:flex;">
+            <input type="text" id="chat-in" placeholder="መልእክት..." style="flex:1; padding:8px;">
+            <button class="btn-blue" onclick="sendChat()" style="width:60px; margin:0;">ላክ</button>
+        </div>
+        <button class="btn-red btn-small" onclick="goBack()" style="margin-top:10px;">ተመለስ</button>
+    </div>
+
+    <!-- GROUPS -->
+    <div id="user-list-sec" class="section">
+        <h3>ተጠቃሚዎች</h3>
+        <div id="ul-cont"></div>
+        <button class="btn-green" id="btn-grp-done" style="display:none;" onclick="createGroup()">ግሩፕ ፍጠር</button>
+        <button class="btn-red btn-small" onclick="goBack()">ተመለስ</button>
+    </div>
+    <div id="my-groups-sec" class="section">
+        <h3>የፈጠሩትን ግሩፕ</h3>
+        <div id="grp-list"></div>
+        <button class="btn-red btn-small" onclick="goBack()">ተመለስ</button>
+    </div>
+
+    <!-- FEEDBACK & ADMIN -->
+    <div id="feedback-sec" class="section">
+        <h3>አስተያየት</h3>
+        <button class="btn-blue" onclick="giveFb()">አስተያየት ስጥ</button>
+        <div id="fb-list" style="margin-top:10px;"></div>
+        <button class="btn-red btn-small" onclick="goBack()">ተመለስ</button>
+    </div>
+
+    <div id="report-inbox" class="section">
+        <h3>Admin Inbox</h3>
+        <div id="admin-dynamic-content"></div>
+        <button class="btn-red btn-small" onclick="goBack()">ተመለስ</button>
+    </div>
+</div>
+
+<input type="file" id="universal-file" class="hidden-input">
+
+<div class="footer-wrapper">
+    <div class="bottom-nav">
+        <button class="nav-btn" onclick="navTab('home')"><i class="fas fa-home"></i><br>Home</button>
+        <button class="nav-btn" onclick="alert('በቅርብ ቀን...')"><i class="fas fa-broadcast-tower"></i><br>Live</button>
+        <button class="nav-btn" onclick="alert('Profile')"><i class="fas fa-user"></i><br>Profile</button>
+    </div>
+    <div style="background:#333; color:white; text-align:center; font-size:10px; padding:2px;">ፋሲል ዌብ አፕ - Fasil Web App</div>
+</div>
+
+<script>
+    // --- FIREBASE CONFIG (ያንተ ቁልፍ) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+      authDomain: "fasil-web-app-3a732.firebaseapp.com",
+      projectId: "fasil-web-app-3a732",
+      storageBucket: "fasil-web-app-3a732.firebasestorage.app",
+      messagingSenderId: "239133072986",
+      appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let user = null; let users = []; let posts = []; let selectedUsers = [];
+
+    // SPLASH SCREEN HIDE
+    window.onload = () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 500);
+        }, 2500);
+        fetchData();
+    };
+
+    function fetchData() {
+        db.collection("users").onSnapshot(s => { users = []; s.forEach(d => users.push({id:d.id, ...d.data()})); });
+        db.collection("posts").orderBy("id", "desc").onSnapshot(s => {
+            posts = []; s.forEach(d => posts.push(d.data()));
+            renderPosts();
+        });
+    }
+
+    // AUTH FUNCTIONS
+    function handleAgree() {
+        document.getElementById('welcome-content').style.display = 'none';
+        document.getElementById('auth-section').style.display = 'block';
+    }
+    function showAuth(t) {
+        document.getElementById('form-signup').style.display = (t === 'signup' ? 'block' : 'none');
+        document.getElementById('form-login').style.display = (t === 'login' ? 'block' : 'none');
+    }
+    function preSignup() {
+        document.getElementById('signup-step-1').style.display = 'none';
+        document.getElementById('signup-step-2').style.display = 'block';
+    }
+    function finalSignup() {
+        const n = document.getElementById('reg-name').value;
+        const p = document.getElementById('reg-phone').value;
+        const pw = document.getElementById('reg-pass').value;
+        db.collection("users").add({ name: n, phone: p, password: pw }).then(() => {
+            alert("ተመዝግበዋል!"); showAuth('login');
+        });
+    }
+    function doLogin() {
+        const p = document.getElementById('log-phone').value;
+        const pw = document.getElementById('log-pass').value;
+        db.collection("users").where("phone", "==", p).where("password", "==", pw).get().then(s => {
+            if (!s.empty) {
+                user = s.docs[0].data();
+                showView('view-home');
+            } else alert("ስህተት!");
+        });
+    }
+    function doLogout() { user = null; location.reload(); }
+
+    // NAVIGATION
+    function showView(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('show'));
+        document.getElementById(id).classList.add('show');
+    }
+    function navTo(id) { showView(id); }
+    function goBack() { user ? showView('view-home') : showView('view-agreement'); }
+    function navTab(t) { if(user) showView('view-home'); }
+    function toggleList(id) { 
+        const el = document.getElementById('list-' + id);
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // POSTS
+    function submitPost() {
+        const t = document.getElementById('p-title').value;
+        const c = document.getElementById('p-content').value;
+        db.collection("posts").add({ id: Date.now(), t, c, u: user.name }).then(() => {
+            alert("ተለጥፏል!"); goBack();
+        });
+    }
+    function renderPosts() {
+        const cont = document.getElementById('feed-container');
+        if(posts.length === 0) { cont.innerHTML = "ምንም መረጃ የለም።"; return; }
+        cont.innerHTML = posts.map(p => `<div class="post-card"><b>${p.t}</b><br>${p.c}<br><small>በ: ${p.u}</small></div>`).join('');
+    }
+
+    // CHAT
+    function handleChatList() {
+        showView('chat-sec');
+        db.collection("public_chats").orderBy("time", "asc").onSnapshot(s => {
+            const box = document.getElementById('chat-box');
+            box.innerHTML = s.docs.map(d => `<div><b>${d.data().u}:</b> ${d.data().m}</div>`).join('');
+            box.scrollTop = box.scrollHeight;
+        });
+    }
+    function sendChat() {
+        const m = document.getElementById('chat-in').value;
+        if(m) db.collection("public_chats").add({ u: user.name, m, time: Date.now() });
+        document.getElementById('chat-in').value = "";
+    }
+
+    // GROUPS
+    function handleGroupCreate() {
+        selectedUsers = [];
+        const cont = document.getElementById('ul-cont');
+        cont.innerHTML = users.map(u => `<div class="user-item" id="u-${u.phone}" onclick="selU('${u.phone}')" style="padding:10px; border-bottom:1px solid #eee;">${u.name}</div>`).join('');
+        document.getElementById('btn-grp-done').style.display = 'block';
+        showView('user-list-sec');
+    }
+    function selU(p) {
+        const el = document.getElementById('u-'+p);
+        if(selectedUsers.includes(p)) {
+            selectedUsers = selectedUsers.filter(i => i !== p);
+            el.style.background = "none";
+        } else {
+            selectedUsers.push(p);
+            el.style.background = "#d1e7ff";
+        }
+    }
+    function createGroup() {
+        const gn = prompt("የግሩፕ ስም:");
+        if(gn) db.collection("groups").add({ name: gn, members: selectedUsers, admin: user.phone }).then(() => { alert("ተፈጥሯል!"); goBack(); });
+    }
+    function showMyGroups() {
+        showView('my-groups-sec');
+        db.collection("groups").get().then(s => {
+            document.getElementById('grp-list').innerHTML = s.docs.map(d => `<div class="post-card">${d.data().name}</div>`).join('');
+        });
+    }
+
+    // ADMIN
+    function adminLogin() {
+        if(document.getElementById('admin-pass-in').value === "admin123") {
+            closeModal('admin-login-modal');
+            showView('report-inbox');
+            db.collection("feedback").get().then(s => {
+                document.getElementById('admin-dynamic-content').innerHTML = s.docs.map(d => `<p>${d.data().u}: ${d.data().m}</p>`).join('');
+            });
+        } else alert("የተሳሳተ ኮድ!");
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function giveFb() {
+        const m = prompt("አስተያየት:");
+        if(m) db.collection("feedback").add({ u: user.name, m, time: Date.now() }).then(() => alert("አመሰግናለን!"));
+    }
+
+</script>
+</body>
+</html>
