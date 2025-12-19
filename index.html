@@ -1,0 +1,292 @@
+መ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- FIREBASE SDK (COMPAT VERSION) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* --- General CSS (Unchanged as requested) --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; margin: 0; background-color: #f0f4f8; color: #333; padding-bottom: 90px; }
+        .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+        
+        .top-header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 5px 10px; border-bottom: 3px solid #007bff; }
+        .header-icon-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc; }
+        .marquee-container-top { flex: 1; overflow: hidden; white-space: nowrap; margin: 0 10px; }
+        .marquee-text-top { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; color: #007bff; font-weight: bold; font-size: 16px; }
+        
+        .footer-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .bottom-nav { display: flex; height: 55px; width: 100%; }
+        .nav-btn { flex: 1; border: none; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .nav-home { background-color: #28a745; } .nav-live { background-color: #ffc107; color: black; } .nav-profile { background-color: #dc3545; }
+        .bottom-marquee { background: #f0f0f0; color: #28a745; font-weight: bold; overflow: hidden; white-space: nowrap; height: 25px; line-height: 25px; font-size: 12px; }
+        .bottom-marquee span { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        .section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 400px; }
+        .show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+        .split-container { display: flex; justify-content: space-between; gap: 10px; text-align: left; margin-top: 10px; }
+        .split-left { width: 48%; color: #007bff; font-size: 11px; line-height: 1.4; padding: 5px; }
+        .split-right { width: 48%; color: #d35400; font-size: 11px; font-weight: bold; line-height: 1.4; border-left: 1px solid #ccc; padding-left: 10px; padding: 5px; }
+        .blue-spacer { height: 10px; background-color: #007bff; margin: 5px 0; border-radius: 5px; }
+        
+        #t-in, #t-po { white-space: normal; overflow: visible; }
+
+        .brand-area { display: flex; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 20px; position: relative; transform: scale(1.0); }
+        .side-logo-container { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #007bff; background: white; z-index: 5; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0, 123, 255, 0.6); }
+        .side-logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .left-logo { margin-right: -20px; } .right-logo { margin-left: -20px; }
+        .complex-logo { position: relative; width: 130px; height: 130px; z-index: 10; }
+        .ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: glowing 1.5s infinite alternate ease-in-out; }
+        @keyframes glowing { 0% { box-shadow: 0 0 5px currentColor; filter: brightness(100%); } 100% { box-shadow: 0 0 20px currentColor; filter: brightness(150%); } }
+        .ring-blue { width: 130px; height: 130px; border: 4px solid #00008b; color: #00008b; z-index: 1; }
+        .ring-red { width: 110px; height: 110px; border: 3px solid red; color: red; z-index: 2; }
+        .ring-yellow { width: 90px; height: 90px; border: 3px solid yellow; color: yellow; z-index: 3; }
+        .ring-green { width: 70px; height: 70px; background: transparent; border: 2px solid green; border-radius: 50%; z-index: 4; }
+        .pos-item { position: absolute; width: 16px; height: 16px; object-fit: cover; border-radius: 50%; border: 1px solid white; }
+        .p-n { top: -8px; left: 50%; transform: translateX(-50%); } .p-s { bottom: -8px; left: 50%; transform: translateX(-50%); } 
+        .p-e { right: -8px; top: 50%; transform: translateY(-50%); } .p-w { left: -8px; top: 50%; transform: translateY(-50%); } 
+        .p-ne { top: 12%; right: 12%; } .p-nw { top: 12%; left: 12%; } .p-se { bottom: 12%; right: 12%; } .p-sw { bottom: 12%; left: 12%; }
+        .center-lion { position: absolute; width: 70px; height: 70px; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; object-fit: cover; border-radius: 50%; border: 2px solid white; background-color: #007bff; }
+
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #007bff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #splash-msg { margin-top: 30px; color: white; font-size: 22px; font-weight: bold; text-align: center; padding: 20px; animation: slideTxt 5s linear infinite; display: none; }
+        @keyframes slideTxt { 0% {transform: translateX(100%);} 100% {transform: translateX(-100%);} }
+
+        .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; } .btn-yellow { background: #ffc107; color: black; }
+        .btn-small { padding: 15px; font-size: 14px; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; }
+        
+        .user-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .user-item img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .user-item.bright-blue { background-color: #007bff; color: white; border-radius: 5px; }
+
+        .mini-logo-wrapper { transform: scale(0.35); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; }
+        .modal-box { background: white; padding: 20px; width: 85%; border-radius: 10px; text-align: center; }
+        .hidden-input { display: none; } .hidden { display: none; }
+        .post-card { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="brand-area" style="transform: scale(1.5);">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                <img src="lion_image.jpg" class="center-lion">
+            </div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        <div id="splash-msg">እንኳን ደስ አለዎት በተሳካ ሁኔታ ተመዝግበዋል እናመሰግናለን</div>
+    </div>
+
+    <!-- Header -->
+    <div class="top-header">
+        <div class="mini-logo-wrapper">
+            <div class="brand-area">
+                <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                <div class="complex-logo"><div class="ring ring-blue"></div><img src="lion_image.jpg" class="center-lion"></div>
+                <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+            </div>
+        </div>
+        <div class="marquee-container-top"><span class="marquee-text-top" id="head-txt">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+        <button class="lang-btn" style="background:#6c757d; color:white; border:none; padding:5px; font-size:10px; border-radius:4px;" onclick="toggleLanguage()" id="lang-btn-txt">Language</button>
+    </div>
+
+    <div class="container">
+        <!-- Universal Modals -->
+        <div class="modal-overlay" id="custom-modal"><div class="modal-box"><h3 id="modal-title"></h3><p id="modal-msg"></p><button class="btn-blue" onclick="closeModal()">OK</button></div></div>
+        <div class="modal-overlay" id="pass-modal"><div class="modal-box"><h3 id="pass-title">Password Required</h3><input type="password" id="pass-input" placeholder="Password"><button class="btn-green" onclick="verifyPass()">Confirm</button><button class="btn-red" onclick="closeModal()">Cancel</button></div></div>
+
+        <!-- 1. VIEW: WELCOME -->
+        <div id="view-agreement" class="section show">
+            <div class="brand-area" id="main-brand-logo">
+                <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                <div class="complex-logo">
+                    <div class="ring ring-blue"><div class="ring ring-red"><img src="lion_image.jpg" class="pos-item p-n"><img src="lion_image.jpg" class="pos-item p-s"><img src="lion_image.jpg" class="pos-item p-e"><img src="lion_image.jpg" class="pos-item p-w"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                    <img src="lion_image.jpg" class="center-lion">
+                </div>
+                <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+            </div>
+            <div id="welcome-content">
+                <div class="split-container">
+                    <div class="split-left"><h4 id="t-w-s">እንኳን ደህና መጡ</h4><p id="t-in">ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ሁሌም ትክክለኛ መረጃዎችን ያቀርባል። እውነተኛ መረጃወችን መመልከት እና መጋራት ይችላሉ በተጨማሪም ሌሎች የፓወር ፖይንት የቢዝነስ እና ፒዲኤፍ አገልግሎቶችን ያገኛሉ እናመሰግናለን።</p></div>
+                    <div class="split-right"><h4 id="t-p-s">ጥብቅ መመሪያ</h4><p id="t-po">ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው። ፖሊሲያችን ጥሰው ከተገኙ በጥብቅ የሲስተም ቁጥጥራችን እና በጥብቅ ሲስተማችን በራስ ሰር ከአገልግሎታችን ሲስተም ሊያግድወት ይችላል።</p></div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: center;"><button class="btn-green btn-small" onclick="handleAgree()" id="btn-agree-txt">እስማማለሁ</button><button class="btn-red btn-small" onclick="alert('አልተስማሙም')" id="btn-disagree-txt">አልስማማም</button></div>
+            </div>
+            <div id="auth-section" class="hidden">
+                <div style="display:flex; gap:10px;"><button class="btn-red" onclick="showAuth('signup')" id="btn-signup-nav">መመዝገቢያ</button><button class="btn-red" onclick="showAuth('login')" id="btn-login-nav">መግቢያ</button></div>
+                <div id="form-signup" class="hidden" style="margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <div id="signup-step-1">
+                        <input type="text" id="reg-name" placeholder="Full Name">
+                        <input type="text" id="reg-phone" placeholder="Phone (09...)">
+                        <input type="email" id="reg-email" placeholder="Email">
+                        <input type="password" id="reg-pass" placeholder="Password (6 digits)">
+                        <button class="btn-green" onclick="preSignup()">Next</button>
+                    </div>
+                    <div id="signup-step-2" class="hidden">
+                        <button class="btn-blue" onclick="document.getElementById('file-profile').click()">Upload Photo</button>
+                        <input type="file" id="file-profile" class="hidden-input" accept="image/*">
+                        <button class="btn-green" onclick="finalSignup()">Register</button>
+                    </div>
+                </div>
+                <div id="form-login" class="hidden" style="margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <input type="text" id="log-phone" placeholder="Phone"><input type="password" id="log-pass" placeholder="Password"><button class="btn-blue" onclick="doLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DASHBOARD -->
+        <div id="view-home" class="section">
+            <h2 id="t-dash">ዳሽቦርድ</h2>
+            <div class="service-grid">
+                <button class="btn-green btn-small" onclick="navTo('view-info')" id="btn-v-info">መረጃ መመልከት</button>
+                <button class="btn-green btn-small" onclick="navTo('post-info')" id="btn-p-info">መረጃ መለጠፍ</button>
+                <button class="btn-green btn-small" onclick="alert('Coming soon...')" id="btn-v-group">ግሩፕ መፍጠር</button>
+                <button class="btn-green btn-small" onclick="alert('Coming soon...')" id="btn-v-mygroup">የፈጠሩትን ግሩፕ</button>
+                <button class="btn-green btn-small" onclick="alert('Coming soon...')" id="btn-v-chat">ቻት</button>
+                <button class="btn-green btn-small" onclick="alert('Coming soon...')" id="btn-v-fb">አስተያየት</button>
+                <button class="btn-green btn-small" onclick="alert('Coming soon...')" id="btn-v-users">ተጠቃሚዎች</button>
+                <button class="btn-green btn-small" onclick="navTo('business-sec')" id="btn-v-biz">ቢዝነስ</button>
+            </div>
+            <button class="btn-red" style="margin-top:20px;" onclick="location.reload()" id="btn-logout">ውጣ</button>
+        </div>
+
+        <!-- 3. POST & VIEW -->
+        <div id="post-info" class="section">
+            <h3 id="t-post-h">መረጃ መለጠፍ</h3>
+            <div style="display:flex; overflow-x:auto; gap:5px; padding:10px 0;">
+                <button class="btn-blue btn-tiny" onclick="setPostType('text')">በፅሁፍ</button>
+                <button class="btn-blue btn-tiny" onclick="setPostType('image')">በምስል</button>
+                <button class="btn-blue btn-tiny" onclick="setPostType('audio')">በድምፅ</button>
+                <button class="btn-blue btn-tiny" onclick="setPostType('video')">በቪዲዮ</button>
+            </div>
+            <div id="post-form-area" class="hidden">
+                <input type="text" id="p-title" placeholder="Title">
+                <textarea id="p-content" placeholder="Details (for text only)" class="hidden"></textarea>
+                <button class="btn-yellow hidden" id="btn-file-p" onclick="document.getElementById('file-post').click()">ፋይል ምረጥ</button>
+                <input type="file" id="file-post" class="hidden-input">
+                <button class="btn-green" onclick="submitPost()">Post</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+        
+        <div id="view-info" class="section">
+            <h3 id="t-view-h">መረጃ መመልከት</h3>
+            <div style="display:flex; overflow-x:auto; gap:5px; padding:10px 0;">
+                <button class="btn-blue btn-tiny" onclick="renderPosts('text')">በፅሁፍ</button>
+                <button class="btn-blue btn-tiny" onclick="renderPosts('image')">በምስል</button>
+                <button class="btn-blue btn-tiny" onclick="renderPosts('audio')">በድምፅ</button>
+                <button class="btn-blue btn-tiny" onclick="renderPosts('video')">በቪዲዮ</button>
+            </div>
+            <div id="feed-container">መረጃ የለም</div>
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+
+        <div id="business-sec" class="section"><h3>Business</h3><button class="btn-red btn-small" onclick="goBack()">Back</button></div>
+    </div>
+
+    <div class="footer-wrapper">
+        <div class="bottom-nav">
+            <button class="nav-btn nav-home" onclick="navTab('home')"><i class="fas fa-home"></i><span>Home</span></button>
+            <button class="nav-btn nav-live" onclick="navTab('live')"><i class="fas fa-broadcast-tower"></i><span>Live</span></button>
+            <button class="nav-btn nav-profile" onclick="navTab('profile')"><i class="fas fa-user"></i><span>Profile</span></button>
+        </div>
+        <div class="bottom-marquee"><span>ፋሲል ዌብ አፕ - Fasil Web App (Service Center)</span></div>
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0", authDomain: "fasil-web-app-3a732.firebaseapp.com", projectId: "fasil-web-app-3a732", storageBucket: "fasil-web-app-3a732.firebasestorage.app", messagingSenderId: "239133072986", appId: "1:239133072986:web:0dcbd768e1e916b9b64263" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let user = null; let lang = 'am'; let postType = 'text';
+
+        window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.display='none'; }, 2500); };
+
+        const TXT = {
+            'am': { 'head-txt': 'እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!', 'lang-btn-txt': 'English', 't-w-s': 'እንኳን ደህና መጡ', 'btn-agree-txt': 'እስማማለሁ', 'btn-disagree-txt': 'አልስማማም', 't-dash': 'ዳሽቦርድ', 'btn-v-info': 'መረጃ መመልከት', 'btn-p-info': 'መረጃ መለጠፍ' },
+            'en': { 'head-txt': 'Welcome to Fasil Web App Service Center!', 'lang-btn-txt': 'አማርኛ', 't-w-s': 'Welcome', 'btn-agree-txt': 'I Agree', 'btn-disagree-txt': 'Disagree', 't-dash': 'Dashboard', 'btn-v-info': 'View Information', 'btn-p-info': 'Post Information' }
+        };
+
+        function toggleLanguage() {
+            lang = lang === 'am' ? 'en' : 'am';
+            document.getElementById('lang-btn-txt').innerText = TXT[lang]['lang-btn-txt'];
+            document.getElementById('head-txt').innerText = TXT[lang]['head-txt'];
+            document.getElementById('t-w-s').innerText = TXT[lang]['t-w-s'];
+            document.getElementById('btn-agree-txt').innerText = TXT[lang]['btn-agree-txt'];
+            document.getElementById('btn-disagree-txt').innerText = TXT[lang]['btn-disagree-txt'];
+            if(document.getElementById('t-dash')) document.getElementById('t-dash').innerText = TXT[lang]['t-dash'];
+            if(document.getElementById('btn-v-info')) document.getElementById('btn-v-info').innerText = TXT[lang]['btn-v-info'];
+            if(document.getElementById('btn-p-info')) document.getElementById('btn-p-info').innerText = TXT[lang]['btn-p-info'];
+        }
+
+        function showView(id) { document.querySelectorAll('.section').forEach(s => s.classList.remove('show')); document.getElementById(id).classList.add('show'); }
+        function navTo(id) { showView(id); }
+        function goBack() { showView(user ? 'view-home' : 'view-agreement'); }
+        function navTab(t) { if(!user) return alert("Login First"); if(t==='home') showView('view-home'); }
+
+        function handleAgree() { document.getElementById('welcome-content').classList.add('hidden'); document.getElementById('auth-section').classList.remove('hidden'); }
+        function showAuth(t) { document.getElementById('form-signup').className = t==='signup' ? '' : 'hidden'; document.getElementById('form-login').className = t==='login' ? '' : 'hidden'; }
+
+        async function preSignup() {
+            const ph = document.getElementById('reg-phone').value;
+            const em = document.getElementById('reg-email').value;
+            if(document.getElementById('reg-pass').value.length !== 6) return alert("Password must be 6 digits");
+            const snapP = await db.collection("users").where("phone","==",ph).get();
+            const snapE = await db.collection("users").where("email","==",em).get();
+            if(!snapP.empty || !snapE.empty) return alert("Phone or Email already exists!");
+            document.getElementById('signup-step-1').classList.add('hidden'); document.getElementById('signup-step-2').classList.remove('hidden');
+        }
+
+        function finalSignup() {
+            const n = document.getElementById('reg-name').value;
+            db.collection("users").add({name:n, phone:document.getElementById('reg-phone').value, email:document.getElementById('reg-email').value, password:document.getElementById('reg-pass').value}).then(() => {
+                alert("Success!"); showAuth('login');
+            });
+        }
+
+        function doLogin() {
+            const ph = document.getElementById('log-phone').value; const pw = document.getElementById('log-pass').value;
+            db.collection("users").where("phone","==",ph).where("password","==",pw).get().then(s => {
+                if(!s.empty) { user = s.docs[0].data(); showView('view-home'); } else alert("Error");
+            });
+        }
+
+        function setPostType(t) {
+            postType = t; document.getElementById('post-form-area').classList.remove('hidden');
+            document.getElementById('p-content').className = t === 'text' ? '' : 'hidden';
+            document.getElementById('btn-file-p').className = t === 'text' ? 'hidden' : 'btn-yellow';
+        }
+
+        function submitPost() {
+            db.collection("posts").add({title: document.getElementById('p-title').value, type: postType, user: user.name, date: Date.now()}).then(() => {
+                alert("Posted!"); navTo('view-info');
+            });
+        }
+
+        function renderPosts(t) {
+            const cont = document.getElementById('feed-container'); cont.innerHTML = 'Loading...';
+            db.collection("posts").where("type","==",t).orderBy("date","desc").get().then(s => {
+                cont.innerHTML = '';
+                s.forEach(d => { cont.innerHTML += `<div class="post-card"><b>${d.data().user}</b><br>${d.data().title}</div>`; });
+            });
+        }
+
+        function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+    </script>
+</body>
+</html>
