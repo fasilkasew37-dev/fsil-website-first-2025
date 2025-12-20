@@ -1,0 +1,291 @@
+መረ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- FIREBASE SDK (COMPAT VERSION) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+    /* --- General CSS (Unchanged - AS REQUESTED) --- */
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; margin: 0; background-color: #f0f4f8; color: #333; padding-bottom: 90px; }
+    .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+    
+    .top-header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 5px 10px; border-bottom: 3px solid #007bff; }
+    .marquee-container-top { flex: 1; overflow: hidden; white-space: nowrap; margin: 0 10px; }
+    .marquee-text-top { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; color: #007bff; font-weight: bold; font-size: 16px; }
+    
+    .footer-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+    .bottom-nav { display: flex; height: 55px; width: 100%; }
+    .nav-btn { flex: 1; border: none; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+    .nav-home { background-color: #28a745; } .nav-live { background-color: #ffc107; color: black; } .nav-profile { background-color: #dc3545; }
+    .bottom-marquee { background: #f0f0f0; color: #28a745; font-weight: bold; overflow: hidden; white-space: nowrap; height: 25px; line-height: 25px; font-size: 12px; }
+    .bottom-marquee span { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; }
+    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+    .section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 400px; }
+    .show { display: block; animation: fadeIn 0.5s; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+    .split-container { display: flex; justify-content: space-between; gap: 10px; text-align: left; margin-top: 10px; }
+    .split-left { width: 48%; color: #007bff; font-size: 11px; line-height: 1.4; padding: 5px; }
+    .split-right { width: 48%; color: #d35400; font-size: 11px; font-weight: bold; line-height: 1.4; border-left: 1px solid #ccc; padding-left: 10px; padding: 5px; }
+
+    /* --- LOGO CSS --- */
+    .brand-area { display: flex; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 20px; position: relative; transform: scale(1.0); }
+    .side-logo-container { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #007bff; background: white; z-index: 5; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0, 123, 255, 0.6); }
+    .side-logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .left-logo { margin-right: -20px; } .right-logo { margin-left: -20px; }
+    .complex-logo { position: relative; width: 130px; height: 130px; z-index: 10; }
+    .ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: glowing 1.5s infinite alternate ease-in-out; }
+    @keyframes glowing { 0% { box-shadow: 0 0 5px currentColor; filter: brightness(100%); } 100% { box-shadow: 0 0 20px currentColor; filter: brightness(150%); } }
+    .ring-blue { width: 130px; height: 130px; border: 4px solid #00008b; color: #00008b; z-index: 1; }
+    .ring-red { width: 110px; height: 110px; border: 3px solid red; color: red; z-index: 2; }
+    .ring-yellow { width: 90px; height: 90px; border: 3px solid yellow; color: yellow; z-index: 3; }
+    .ring-green { width: 70px; height: 70px; background: transparent; border: 2px solid green; border-radius: 50%; z-index: 4; }
+    .center-lion { position: absolute; width: 70px; height: 70px; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; object-fit: cover; border-radius: 50%; border: 2px solid white; background-color: #007bff; }
+
+    /* FWA Identity (Added) */
+    .fwa-identity { font-size: 26px; font-weight: 900; color: #007bff; animation: float 3s infinite; margin: 10px 0; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
+    input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+    .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; } .btn-yellow { background: #ffc107; color: black; }
+    .btn-small { padding: 15px; font-size: 14px; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; }
+    
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; }
+    .modal-box { background: white; padding: 20px; width: 85%; border-radius: 10px; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="top-header">
+    <div class="header-logo-side" style="display: flex; flex-direction: column; align-items: center;">
+        <div class="brand-area" style="transform: scale(0.35); margin: 0; width: 60px;">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo"><div class="ring ring-blue"></div><img src="lion_image.jpg" class="center-lion"></div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        <button class="lang-btn" style="background:#6c757d; color:white; border:none; padding:2px 5px; font-size:9px; border-radius:4px;" onclick="toggleLanguage()">Language</button>
+    </div>
+    <div class="marquee-container-top"><span class="marquee-text-top" id="head-msg">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+</div>
+
+<div class="container">
+
+    <!-- 1. POLICY & WELCOME (MODIFIED AS REQUESTED) -->
+    <div id="view-agreement" class="section show">
+        <div class="brand-area">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                <img src="lion_image.jpg" class="center-lion">
+            </div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        
+        <div class="fwa-identity">F W A</div>
+
+        <button class="btn-blue" onclick="document.getElementById('policy-content').style.display='block'">ፖሊሲ (Policy)</button>
+
+        <div id="policy-content" style="display:none;">
+            <div class="split-container">
+                <div class="split-left"><h4>እንኳን ደህና መጡ</h4><p>ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ጥራት ያላቸውንና እውነተኛ መረጃዎችን ለሁሉም ተደራሽ እናደርጋለን።</p></div>
+                <div class="split-right"><h4>ጥብቅ መመሪያ</h4><p>ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው። ህጉን የማይከተሉ ተጠቃሚዎች ያለ ምንም ማስጠንቀቂያ ይታገዳሉ።</p></div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                <button class="btn-green btn-small" onclick="handleAgree()">እስማማለሁ</button>
+                <button class="btn-red btn-small" onclick="alert('ይቅርታ፣ ሳይስማሙ መጠቀም አይችሉም።')">አልስማማም</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. AUTH VIEW -->
+    <div id="view-auth" class="section">
+        <h3>ይመዝገቡ ወይም ይግቡ</h3>
+        <div style="display:flex; gap:10px;"><button class="btn-red" onclick="showAuth('signup')">መመዝገቢያ</button><button class="btn-red" onclick="showAuth('login')">መግቢያ</button></div>
+        <div id="form-signup" style="display:none; margin-top:10px;">
+            <input type="text" id="reg-name" placeholder="ሙሉ ስም"><input type="email" id="reg-email" placeholder="ኢሜል"><input type="tel" id="reg-phone" placeholder="ስልክ ቁጥር"><input type="password" id="reg-pass" placeholder="ባለ 6 አሃዝ ፓስወርድ" maxlength="6">
+            <p>ፕሮፋይል ፎቶ (ግዴታ):</p><input type="file" id="reg-file" accept="image/*"><button class="btn-green" onclick="handleSignup()">Register</button>
+        </div>
+        <div id="form-login" style="display:none; margin-top:10px;"><input type="tel" id="log-phone" placeholder="Phone"><input type="password" id="log-pass" placeholder="Password"><button class="btn-blue" onclick="doLogin()">Login</button></div>
+    </div>
+
+    <!-- 3. DASHBOARD -->
+    <div id="view-home" class="section">
+        <h2>ዳሽቦርድ</h2>
+        <button class="btn-green" onclick="toggleList('free')">የነፃ አገልግሎት ማዕከል</button>
+        <div id="list-free" style="display:none;" class="service-grid">
+            <button class="btn-green btn-small" onclick="navTo('view-info')">መረጃ መመልከት</button>
+            <button class="btn-green btn-small" onclick="navTo('post-info')">መረጃ መለጠፍ</button>
+            <button class="btn-green btn-small" onclick="alert('ግሩፕ መፍጠር...')">ግሩፕ መፍጠር</button>
+            <button class="btn-green btn-small" onclick="alert('አስተያየት...')">አስተያየት</button>
+            <button class="btn-red btn-small" onclick="startAdminFlow()">Admin Monitor</button>
+        </div>
+        <button class="btn-yellow" style="margin-top:10px;" onclick="navTo('view-premium')">የክፍያ አገልግሎት</button>
+        <button class="btn-blue" style="margin-top:10px;" onclick="navTo('business-sec')">ቢዝነስ ማዕከል</button>
+        <button class="btn-red" style="margin-top:20px;" onclick="location.reload()">ውጣ</button>
+    </div>
+
+    <!-- 4. POST INFO (Categorized) -->
+    <div id="post-info" class="section">
+        <h3>መረጃ መለጠፍ</h3>
+        <select id="p-type" onchange="togglePostInput()">
+            <option value="text">ፅሁፍ</option><option value="image">ምስል</option><option value="video">ቪዲዮ</option><option value="audio">ድምፅ</option>
+        </select>
+        <input type="text" id="p-tit" placeholder="ርዕስ (ግዴታ)">
+        <textarea id="p-desc" placeholder="ዝርዝር ሀሳብ (ለፅሁፍ)"></textarea>
+        <div id="p-file-box" style="display:none;"><input type="file" id="p-file"></div>
+        <button class="btn-green" onclick="submitPost()">Post</button>
+        <button class="btn-red btn-small" onclick="navTo('view-home')">Back</button>
+    </div>
+
+    <!-- 5. VIEW INFO (Categorized) -->
+    <div id="view-info" class="section">
+        <h3>መረጃ መመልከት</h3>
+        <div style="display:flex; gap:5px; margin-bottom:10px;">
+            <button class="btn-blue btn-small" style="font-size:10px;">ፅሁፍ</button><button class="btn-blue btn-small" style="font-size:10px;">ምስል</button><button class="btn-blue btn-small" style="font-size:10px;">ቪዲዮ</button><button class="btn-blue btn-small" style="font-size:10px;">ድምፅ</button>
+        </div>
+        <div id="post-feed" style="text-align:left;">ምንም መረጃ የለም</div>
+        <button class="btn-red btn-small" onclick="navTo('view-home')">Back</button>
+    </div>
+
+    <!-- 6. PREMIUM/BUSINESS (Fixed White Screen) -->
+    <div id="view-premium" class="section">
+        <h3>የክፍያ አገልግሎት</h3>
+        <select id="prem-p"><option value="5">ዕለታዊ - 5 ETB</option><option value="25">ሳምንታዊ - 25 ETB</option><option value="100">ዓመታዊ - 100 ETB</option></select>
+        <button class="btn-blue">በሲቢኢ ይክፈሉ</button><button class="btn-blue">በቴሌብር ይክፈሉ</button>
+        <p>ደረሰኝ ፎቶ ያስገቡ፦</p><input type="file">
+        <button class="btn-green" onclick="alert('ሳክሰስ!')">ሳብሚት</button>
+        <button class="btn-red" onclick="navTo('view-home')">Back</button>
+    </div>
+
+    <!-- ADMIN MODAL -->
+    <div id="admin-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div id="admin-logo-placeholder"></div>
+            <h3 id="admin-status" style="color:#007bff;"></h3>
+            <div id="admin-pass-box" style="display:none;"><input type="password" id="admin-pw" placeholder="Admin Password"><button class="btn-green" onclick="checkAdminPass()">ግባ</button></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer-wrapper">
+    <div class="bottom-nav">
+        <button class="nav-btn nav-home" onclick="handleNavTab('view-home')"><i class="fas fa-home"></i><span>Home</span></button>
+        <button class="nav-btn nav-live" onclick="handleNavTab('view-live')"><i class="fas fa-broadcast-tower"></i><span>Live</span></button>
+        <button class="nav-btn nav-profile" onclick="handleNavTab('view-profile')"><i class="fas fa-user"></i><span>Profile</span></button>
+    </div>
+    <div class="bottom-marquee"><span>ፋሲል ዌብ አፕ - Fasil Web App (Service Center)</span></div>
+</div>
+
+<script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+      authDomain: "fasil-web-app-3a732.firebaseapp.com",
+      projectId: "fasil-web-app-3a732",
+      storageBucket: "fasil-web-app-3a732.firebasestorage.app",
+      messagingSenderId: "239133072986",
+      appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let hasAgreed = false;
+
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('show'));
+        const el = document.getElementById(id);
+        if(el) el.classList.add('show');
+    }
+
+    function handleAgree() { hasAgreed = true; navTo('view-auth'); }
+    function handleNavTab(id) {
+        if(!hasAgreed) return alert("እባክዎ መጀመሪያ ፖሊሲያችንን ይስማሙ።");
+        if(!currentUser) return alert("እባክዎ መጀመሪያ ይግቡ ወይም ይመዝገቡ።");
+        navTo(id);
+    }
+
+    function showAuth(t) {
+        document.getElementById('form-signup').style.display = t==='signup'?'block':'none';
+        document.getElementById('form-login').style.display = t==='login'?'block':'none';
+    }
+
+    async function handleSignup() {
+        const n = document.getElementById('reg-name').value;
+        const p = document.getElementById('reg-phone').value;
+        const pw = document.getElementById('reg-pass').value;
+        const f = document.getElementById('reg-file').files[0];
+        if(!n || !p || !pw || !f) return alert("እባክዎ ፎቶን ጨምሮ ሁሉንም ይሙሉ።");
+        if(pw.length !== 6) return alert("ፓስወርድ 6 አሃዝ መሆን አለበት።");
+        const snap = await db.collection("users").where("phone","==",p).get();
+        if(!snap.empty) return alert("ይህ ስልክ ተመዝግቧል።");
+        await db.collection("users").add({ name: n, phone: p, pass: pw });
+        alert("በተሳካ ሁኔታ ተመዝግበዋል!"); showAuth('login');
+    }
+
+    async function doLogin() {
+        const p = document.getElementById('log-phone').value;
+        const pw = document.getElementById('log-pass').value;
+        const snap = await db.collection("users").where("phone","==",p).where("pass","==",pw).get();
+        if(!snap.empty) { currentUser = snap.docs[0].data(); navTo('view-home'); }
+        else alert("ስህተት!");
+    }
+
+    function toggleList(id) {
+        const list = document.getElementById('list-'+id);
+        list.style.display = list.style.display==='none'?'grid':'none';
+    }
+
+    function togglePostInput() {
+        const type = document.getElementById('p-type').value;
+        document.getElementById('p-file-box').style.display = type==='text'?'none':'block';
+    }
+
+    function submitPost() {
+        const t = document.getElementById('p-tit').value;
+        const desc = document.getElementById('p-desc').value;
+        if(!t) return alert("እባክዎ ርዕስ ያስገቡ።");
+        if(t.includes("ፖለቲካ") || desc.includes("ፖለቲካ")) return alert("ይህ ከፖሊሲያችን ውጭ ነው!");
+        alert("Success! Posted."); navTo('view-home');
+    }
+
+    function startAdminFlow() {
+        const p = prompt("የራስዎን ፓስወርድ ያስገቡ፦");
+        if(p === currentUser.pass) {
+            const modal = document.getElementById('admin-modal');
+            modal.style.display = 'flex';
+            document.getElementById('admin-logo-placeholder').innerHTML = document.querySelector('.brand-area').innerHTML;
+            setTimeout(() => {
+                document.getElementById('admin-status').innerText = "ይህ ለአድሚን ብቻ የተፈቀደ ነው";
+                setTimeout(() => {
+                    document.getElementById('admin-status').innerText = "";
+                    document.getElementById('admin-pass-box').style.display = 'block';
+                }, 2000);
+            }, 1000);
+        }
+    }
+
+    function checkAdminPass() {
+        if(document.getElementById('admin-pw').value === "abc123456abc") alert("Admin Dashboard Access!");
+        else alert("ስህተት!");
+    }
+
+    function toggleLanguage() {
+        const msg = document.getElementById('head-msg');
+        msg.innerText = msg.innerText.includes("Welcome") ? "እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!" : "Welcome to Fasil Web App Service Center!";
+    }
+</script>
+</body>
+</html>
