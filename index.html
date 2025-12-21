@@ -1,0 +1,140 @@
+መ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* ያንተ ኦሪጅናል ስታይል (አልተቀየረም) */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; margin: 0; background-color: #f0f4f8; color: #333; padding-bottom: 90px; }
+        .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+        .top-header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 5px 10px; border-bottom: 3px solid #007bff; }
+        .marquee-container-top { flex: 1; overflow: hidden; white-space: nowrap; margin: 0 10px; }
+        .marquee-text-top { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; color: #007bff; font-weight: bold; font-size: 16px; }
+        .footer-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .bottom-nav { display: flex; height: 55px; width: 100%; }
+        .nav-btn { flex: 1; border: none; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .nav-home { background-color: #28a745; } .nav-live { background-color: #ffc107; color: black; } .nav-profile { background-color: #dc3545; }
+        .bottom-marquee { background: #f0f0f0; color: #28a745; font-weight: bold; overflow: hidden; white-space: nowrap; height: 25px; line-height: 25px; font-size: 12px; }
+        .bottom-marquee span { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        .section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 400px; }
+        .show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+        /* አዲሱ ብራንዲንግ Splash Screen ስታይል */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #007bff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .fwa-brand-box { background: #00008b; padding: 10px 40px; border-radius: 5px; margin-top: 20px; width: 180px; text-align: center; overflow: hidden; }
+        .fwa-moving-text { font-size: 32px; font-weight: bold; white-space: nowrap; display: inline-block; animation: moveFWA 4s linear infinite; }
+        .f-green { color: #28a745; } .w-yellow { color: #ffc107; } .a-red { color: #dc3545; }
+        @keyframes moveFWA { 0% { transform: translateX(120%); } 100% { transform: translateX(-120%); } }
+
+        /* ኦሪጅናል Logo ስታይል (አልተቀየረም) */
+        .brand-area { display: flex; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 20px; position: relative; }
+        .side-logo-container { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #007bff; background: white; z-index: 5; display: flex; align-items: center; justify-content: center; }
+        .side-logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .left-logo { margin-right: -20px; } .right-logo { margin-left: -20px; }
+        .complex-logo { position: relative; width: 130px; height: 130px; z-index: 10; }
+        .ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: glowing 1.5s infinite alternate ease-in-out; }
+        .ring-blue { width: 130px; height: 130px; border: 4px solid #00008b; color: #00008b; }
+        .ring-red { width: 110px; height: 110px; border: 3px solid red; color: red; }
+        .ring-yellow { width: 90px; height: 90px; border: 3px solid yellow; color: yellow; }
+        .ring-green { width: 70px; height: 70px; border: 2px solid green; }
+        .center-lion { position: absolute; width: 70px; height: 70px; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; border-radius: 50%; }
+
+        /* የቀሩት ኦሪጅናል CSS... */
+        .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <div class="brand-area" style="transform: scale(1.5);">
+        <div class="side-logo-container left-logo"></div> <div class="complex-logo">
+            <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+        </div>
+        <div class="side-logo-container right-logo"></div> </div>
+    <div class="fwa-brand-box">
+        <div class="fwa-moving-text">
+            <span class="f-green">F</span><span class="w-yellow">W</span><span class="a-red">A</span>
+        </div>
+    </div>
+</div>
+
+<div class="top-header">
+    <div class="marquee-container-top"><span class="marquee-text-top">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+</div>
+
+<div class="container">
+    <div id="view-agreement" class="section show">
+        <div class="brand-area">
+            <div class="side-logo-container left-logo"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+            </div>
+            <div class="side-logo-container right-logo"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; text-align: left;">
+            <div style="width: 48%;"><h4>እንኳን ደህና መጡ</h4><p>ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው።</p></div>
+            <div style="width: 48%; border-left: 1px solid #ccc; padding-left: 10px;"><h4>ጥብቅ መመሪያ</h4><p>ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው።</p></div>
+        </div>
+        <button class="btn-green" onclick="handleAgree()">እስማማለሁ</button>
+        
+        <div id="auth-section" style="display:none;">
+            <button class="btn-red" onclick="showAuth('signup')">መመዝገቢያ</button>
+            <button class="btn-red" onclick="showAuth('login')">መግቢያ</button>
+            <div id="form-signup" style="display:none;"><input type="text" id="reg-name" placeholder="Full Name"><button class="btn-green" onclick="finalSignup()">Register</button></div>
+        </div>
+    </div>
+
+    <div id="view-home" class="section">
+        <h2>ዳሽቦርድ</h2>
+        <button class="btn-green" onclick="toggleList('free')">የነፃ አገልግሎት ማዕከል</button>
+        <div id="list-free" style="display:none;" class="service-grid">
+            <button class="btn-green btn-small">መረጃ መመልከት</button>
+            <button class="btn-green btn-small">መረጃ መለጠፍ</button>
+            <button class="btn-green btn-small">ግሩፕ መፍጠር</button>
+            <button class="btn-green btn-small">ቻት</button>
+            <button class="btn-green btn-small">ቢዝነስ</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-wrapper">
+    <div class="bottom-nav">
+        <button class="nav-btn nav-home"><i class="fas fa-home"></i><span>Home</span></button>
+        <button class="nav-btn nav-live"><i class="fas fa-broadcast-tower"></i><span>Live</span></button>
+        <button class="nav-btn nav-profile"><i class="fas fa-user"></i><span>Profile</span></button>
+    </div>
+</div>
+
+<script>
+    // FIREBASE (Preserved)
+    const firebaseConfig = {
+        apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+        authDomain: "fasil-web-app-3a732.firebaseapp.com",
+        projectId: "fasil-web-app-3a732",
+        storageBucket: "fasil-web-app-3a732.firebasestorage.app",
+        messagingSenderId: "239133072986",
+        appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    window.onload = () => {
+        setTimeout(() => { document.getElementById('splash-screen').style.display='none'; }, 4000);
+    };
+
+    function handleAgree() { document.getElementById('auth-section').style.display='block'; }
+    function showAuth(t) { document.getElementById('form-signup').style.display=t==='signup'?'block':'none'; }
+    function toggleList(id) { const el = document.getElementById('list-'+id); el.style.display = el.style.display==='none'?'grid':'none'; }
+    function finalSignup() { document.getElementById('view-home').classList.add('show'); document.getElementById('view-agreement').classList.remove('show'); }
+</script>
+</body>
+</html>
