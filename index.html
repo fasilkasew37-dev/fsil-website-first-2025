@@ -1,0 +1,125 @@
+ከከ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - FWA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* ያንተ ኦሪጅናል ስታይል */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; margin: 0; background-color: #f0f4f8; color: #333; padding-bottom: 90px; }
+        .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+        
+        /* አዲሱ የFWA ብራንዲንግ ስታይል */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #007bff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .fwa-branding { background: #00008b; padding: 15px 40px; border-radius: 8px; margin-top: 20px; overflow: hidden; width: 200px; border: 2px solid white; }
+        .fwa-text { font-size: 35px; font-weight: bold; white-space: nowrap; display: inline-block; animation: moveFWA 3s linear infinite; }
+        .f-green { color: #28a745; } .w-yellow { color: #ffc107; } .a-red { color: #dc3545; }
+        @keyframes moveFWA { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* ያንተ ውስብስብ አርማ (Complex Logo) */
+        .brand-area { display: flex; align-items: center; justify-content: center; position: relative; }
+        .complex-logo { position: relative; width: 130px; height: 130px; }
+        .ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .ring-blue { width: 130px; height: 130px; border: 4px solid #00008b; }
+        .ring-red { width: 110px; height: 110px; border: 3px solid red; }
+        .ring-yellow { width: 90px; height: 90px; border: 3px solid yellow; }
+        .ring-green { width: 70px; height: 70px; border: 2px solid green; }
+
+        /* ያንተ ኦሪጅናል ፖሊሲ አቀማመጥ */
+        .split-container { display: flex; justify-content: space-between; gap: 10px; text-align: left; margin-top: 15px; }
+        .split-left { width: 48%; color: #007bff; font-size: 12px; }
+        .split-right { width: 48%; color: #d35400; font-size: 12px; border-left: 1px solid #ccc; padding-left: 10px; }
+
+        .section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .show { display: block; }
+        button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <div class="brand-area">
+        <div class="complex-logo">
+            <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+        </div>
+    </div>
+    <div class="fwa-branding">
+        <div class="fwa-text">
+            <span class="f-green">F</span><span class="w-yellow">W</span><span class="a-red">A</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div id="view-agreement" class="section show">
+        <div class="brand-area">
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+            </div>
+        </div>
+        
+        <div class="split-container">
+            <div class="split-left"><h3>እንኳን ደህና መጡ</h3><p>ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው።</p></div>
+            <div class="split-right"><h3>ጥብቅ መመሪያ</h3><p>ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው።</p></div>
+        </div>
+        <button style="background:#28a745;" onclick="handleAgree()">እስማማለሁ</button>
+        
+        <div id="auth-section" style="display:none; margin-top:20px;">
+            <button style="background:#dc3545;" onclick="showAuth('signup')">መመዝገቢያ</button>
+            <button style="background:#dc3545;" onclick="showAuth('login')">መግቢያ</button>
+            <div id="auth-form" style="display:none;">
+                <input type="text" id="u-phone" placeholder="Phone" style="width:100%; padding:10px; margin:5px 0;">
+                <input type="password" id="u-pass" placeholder="Password" style="width:100%; padding:10px; margin:5px 0;">
+                <button style="background:#007bff;" onclick="processAuth()">ቀጥል</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-home" class="section">
+        <h2>እንኳን ደህና መጡ!</h2>
+        <p>የፋሲል ዌብ አፕ አገልግሎቶችን መጠቀም ይችላሉ።</p>
+    </div>
+</div>
+
+<script>
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+        authDomain: "fasil-web-app-3a732.firebaseapp.com",
+        projectId: "fasil-web-app-3a732",
+        storageBucket: "fasil-web-app-3a732.firebasestorage.app",
+        messagingSenderId: "239133072986",
+        appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let mode = 'login';
+
+    window.onload = () => {
+        setTimeout(() => { document.getElementById('splash-screen').style.display='none'; }, 3000);
+    };
+
+    function handleAgree() { document.getElementById('auth-section').style.display='block'; }
+    function showAuth(m) { mode = m; document.getElementById('auth-form').style.display='block'; }
+
+    function processAuth() {
+        const ph = document.getElementById('u-phone').value;
+        const pw = document.getElementById('u-pass').value;
+        if(mode === 'signup') {
+            db.collection("users").add({ phone: ph, password: pw }).then(() => alert("ተመዝግበዋል!"));
+        } else {
+            db.collection("users").where("phone","==",ph).where("password","==",pw).get().then(snap => {
+                if(!snap.empty) {
+                    document.getElementById('view-agreement').classList.remove('show');
+                    document.getElementById('view-home').classList.add('show');
+                } else alert("ስህተት!");
+            });
+        }
+    }
+</script>
+</body>
+</html>
