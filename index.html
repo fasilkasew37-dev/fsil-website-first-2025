@@ -1,0 +1,143 @@
+ሀ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - FWA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* --- General CSS (As per your design) --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 0; margin: 0; background-color: #f0f4f8; color: #333; padding-bottom: 90px; }
+        .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+        
+        /* Splash Screen & Branding */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #007bff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .fwa-brand-container { margin-top: 20px; background: #00008b; padding: 10px 30px; border-radius: 5px; overflow: hidden; width: 150px; }
+        .fwa-text { font-size: 28px; font-weight: bold; display: inline-block; white-space: nowrap; animation: moveFWA 3s linear infinite; }
+        .f-green { color: #28a745; } .w-yellow { color: #ffc107; } .a-red { color: #dc3545; }
+        @keyframes moveFWA { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* Complex Logo CSS (Preserved) */
+        .brand-area { display: flex; align-items: center; justify-content: center; position: relative; }
+        .complex-logo { position: relative; width: 130px; height: 130px; z-index: 10; }
+        .ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: glowing 1.5s infinite alternate ease-in-out; }
+        .ring-blue { width: 130px; height: 130px; border: 4px solid #00008b; color: #00008b; }
+        .ring-red { width: 110px; height: 110px; border: 3px solid red; color: red; }
+        .ring-yellow { width: 90px; height: 90px; border: 3px solid yellow; color: yellow; }
+        .ring-green { width: 70px; height: 70px; border: 2px solid green; }
+        @keyframes glowing { 0% { box-shadow: 0 0 5px currentColor; } 100% { box-shadow: 0 0 20px currentColor; } }
+
+        /* Standard Sections */
+        .section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 400px; }
+        .show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+        /* Buttons & Grid */
+        .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
+        button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; }
+        
+        .footer-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .bottom-nav { display: flex; height: 55px; }
+        .nav-btn { flex: 1; border: none; font-weight: bold; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <div class="brand-area" style="transform: scale(1.5);">
+        <div class="complex-logo">
+            <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+            </div>
+    </div>
+    <div class="fwa-brand-container">
+        <div class="fwa-text">
+            <span class="f-green">F</span><span class="w-yellow">W</span><span class="a-red">A</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div id="view-agreement" class="section show">
+        <h3>እንኳን ደህና መጡ ወደ ፋሲል ዌብ አፕ</h3>
+        <p>ጥብቅ መመሪያ፡ ጥላቻ እና ሀሰተኛ መረጃ ማቅረብ የተከለከለ ነው።</p>
+        <div id="auth-buttons">
+            <button class="btn-blue" onclick="showAuth('login')">መግቢያ (Login)</button>
+            <button class="btn-green" onclick="showAuth('signup')">መመዝገቢያ (Signup)</button>
+        </div>
+        <div id="auth-form" style="display:none; margin-top:20px;">
+            <input type="text" id="user-phone" placeholder="ስልክ ቁጥር">
+            <input type="password" id="user-pass" placeholder="የይለፍ ቃል">
+            <button class="btn-blue" id="auth-action-btn" onclick="processAuth()">ቀጥል</button>
+        </div>
+    </div>
+
+    <div id="view-home" class="section">
+        <h2>የአገልግሎት ማዕከል</h2>
+        <div class="service-grid">
+            <button class="btn-blue" onclick="navTo('chat-view')">ቻት (Chat)</button>
+            <button class="btn-green" onclick="navTo('business-sec')">ቢዝነስ (Business)</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-wrapper">
+    <div class="bottom-nav">
+        <button class="nav-btn" style="background:#28a745;" onclick="navTo('view-home')"><i class="fas fa-home"></i> Home</button>
+        <button class="nav-btn" style="background:#ffc107; color:black;"><i class="fas fa-broadcast-tower"></i> Live</button>
+        <button class="nav-btn" style="background:#dc3545;" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Exit</button>
+    </div>
+</div>
+
+<script>
+    // --- FIREBASE SETUP ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+        authDomain: "fasil-web-app-3a732.firebaseapp.com",
+        projectId: "fasil-web-app-3a732",
+        storageBucket: "fasil-web-app-3a732.firebasestorage.app",
+        messagingSenderId: "239133072986",
+        appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let authMode = 'login';
+
+    window.onload = () => {
+        setTimeout(() => { document.getElementById('splash-screen').style.fadeOut; 
+        document.getElementById('splash-screen').style.display='none'; }, 4000);
+    };
+
+    function showAuth(mode) {
+        authMode = mode;
+        document.getElementById('auth-buttons').style.display = 'none';
+        document.getElementById('auth-form').style.display = 'block';
+        document.getElementById('auth-action-btn').innerText = mode === 'login' ? 'ግባ' : 'ተመዝገብ';
+    }
+
+    function navTo(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('show'));
+        document.getElementById(id).classList.add('show');
+    }
+
+    // --- YOUR CORE LOGIC INTEGRATED ---
+    function processAuth() {
+        const ph = document.getElementById('user-phone').value;
+        const pw = document.getElementById('user-pass').value;
+        if(authMode === 'signup') {
+            db.collection("users").add({ phone: ph, password: pw, regDate: Date.now() })
+            .then(() => { alert("ተመዝግበዋል!"); location.reload(); });
+        } else {
+            db.collection("users").where("phone","==",ph).where("password","==",pw).get()
+            .then(snap => {
+                if(!snap.empty) navTo('view-home');
+                else alert("የተሳሳተ መረጃ!");
+            });
+        }
+    }
+</script>
+</body>
+</html>
