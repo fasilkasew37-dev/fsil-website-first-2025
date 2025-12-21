@@ -1,0 +1,185 @@
+ከደ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App (Firebase Enhanced)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* [ALL YOUR CSS HERE - SAME AS BEFORE] */
+    </style>
+</head>
+<body>
+    <!-- [ALL YOUR HTML HERE - SAME AS BEFORE] -->
+
+    <!-- 🔥 ENHANCED FIREBASE SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CORRECT Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+            authDomain: "fasil-web-app-3a732.firebaseapp.com",
+            projectId: "fasil-web-app-3a732",
+            storageBucket: "fasil-web-app-3a732.appspot.com", // ✅ CORRECTED
+            messagingSenderId: "239133072986",
+            appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        console.log("🔥 Firebase Online Mode Activated!");
+        
+        // Make Firebase functions available globally
+        window.firebaseTools = {
+            db: db,
+            savePost: async function(postData) {
+                try {
+                    const docRef = await addDoc(collection(db, "posts"), {
+                        ...postData,
+                        timestamp: new Date()
+                    });
+                    console.log("Post saved to Firebase:", docRef.id);
+                    return true;
+                } catch (error) {
+                    console.error("Error saving post:", error);
+                    return false;
+                }
+            },
+            
+            getPosts: async function() {
+                try {
+                    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+                    const querySnapshot = await getDocs(q);
+                    const posts = [];
+                    querySnapshot.forEach((doc) => {
+                        posts.push({ id: doc.id, ...doc.data() });
+                    });
+                    return posts;
+                } catch (error) {
+                    console.error("Error getting posts:", error);
+                    return [];
+                }
+            },
+            
+            saveUser: async function(userData) {
+                try {
+                    const docRef = await addDoc(collection(db, "users"), {
+                        ...userData,
+                        createdAt: new Date()
+                    });
+                    console.log("User saved to Firebase:", userData.phone);
+                    return true;
+                } catch (error) {
+                    console.error("Error saving user:", error);
+                    return false;
+                }
+            },
+            
+            // Real-time updates for posts
+            setupRealtimePosts: function(callback) {
+                const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+                return onSnapshot(q, (snapshot) => {
+                    const posts = [];
+                    snapshot.forEach((doc) => {
+                        posts.push({ id: doc.id, ...doc.data() });
+                    });
+                    callback(posts);
+                });
+            }
+        };
+        
+        // Test Firebase connection
+        async function testFirebase() {
+            try {
+                const testRef = collection(db, "test");
+                await addDoc(testRef, { test: "connection", time: new Date() });
+                console.log("✅ Firebase Connection Successful!");
+                return true;
+            } catch (error) {
+                console.error("❌ Firebase Connection Failed:", error);
+                return false;
+            }
+        }
+        
+        // Run connection test
+        testFirebase().then(success => {
+            if(success) {
+                alert("🔥 ፋየርቤዝ ኦንላይን ሞድ ተነሳ! አሁን ሁሉም ውሂብ በኦንላይን ይቀመጣል!");
+            }
+        });
+    </script>
+
+    <script>
+        // --- YOUR MAIN APP CODE HERE ---
+        // Keep all your existing JavaScript code
+        // Only add Firebase integration where needed
+        
+        // Example: Modified submitPost function
+        async function submitPost() {
+            // ... your existing validation code ...
+            
+            const postData = {
+                t: document.getElementById('p-title').value,
+                c: document.getElementById('p-content').value,
+                type: activePostType,
+                u: user.name,
+                uid: user.phone,
+                photo: user.photo,
+                likes: 0,
+                follows: 0,
+                isHidden: false,
+                comments: []
+            };
+            
+            // Save to Firebase
+            if(window.firebaseTools) {
+                const saved = await window.firebaseTools.savePost(postData);
+                if(saved) {
+                    showAlert("✅ ፖስት በፋየርቤዝ ላይ ተሰቀለ!", "success");
+                } else {
+                    // Fallback to local storage
+                    posts.unshift({id:Date.now(), ...postData});
+                    localStorage.setItem('fg_posts', JSON.stringify(posts));
+                    showAlert("⚠️ በሎካል ስቶሬጅ ተሰቀለ (ኦፍላይን)", "warning");
+                }
+            }
+            
+            // ... rest of your code ...
+        }
+        
+        // Example: Modified renderPosts function
+        async function renderPosts(type) {
+            // Try to get posts from Firebase first
+            if(window.firebaseTools) {
+                const firebasePosts = await window.firebaseTools.getPosts();
+                if(firebasePosts.length > 0) {
+                    posts = firebasePosts;
+                    showAlert("🔥 ፖስቶች ከፋየርቤዝ ተጭነዋል!", "success");
+                }
+            }
+            
+            // ... rest of your rendering code ...
+        }
+        
+        // Initialize Firebase real-time updates
+        document.addEventListener('DOMContentLoaded', function() {
+            if(window.firebaseTools) {
+                // Setup real-time post updates
+                window.firebaseTools.setupRealtimePosts((updatedPosts) => {
+                    posts = updatedPosts;
+                    // Update UI if we're on the posts view
+                    if(document.getElementById('view-info').classList.contains('show')) {
+                        renderPosts(activePostType);
+                    }
+                });
+            }
+        });
+        
+        // ... rest of your existing code ...
+    </script>
+</body>
+</html>
