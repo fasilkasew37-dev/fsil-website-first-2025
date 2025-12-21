@@ -1,0 +1,1455 @@
+ሀለ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* --- General CSS --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center; padding: 0; margin: 0;
+            background-color: #f0f4f8; color: #333;
+            padding-bottom: 90px;
+        }
+        .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+
+        /* --- ARMA 1 & FWA BRAND STYLING --- */
+        .arma1-full-wrapper {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .fwa-brand-text {
+            background-color: #007bff; padding: 8px 20px; border-radius: 8px;
+            font-size: 28px; font-weight: bold; display: flex; gap: 8px;
+            margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .f-green { color: #28a745; } .w-yellow { color: #ffc107; } .a-red { color: #dc3545; }
+
+        .cross-layout {
+            display: grid; grid-template-areas: ". top ." "left center right" ". bottom .";
+            gap: 15px; align-items: center; justify-items: center;
+        }
+        .arma-img { width: 55px; height: 55px; border-radius: 50%; border: 3px solid #007bff; background: white; object-fit: cover; }
+        .center-main { width: 90px; height: 90px; border: 4px solid #007bff; }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #007bff; z-index: 9999; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        /* Forms & Sections */
+        .section { display: none; background: white; padding: 20px; border-radius: 12px; margin-top: 15px; }
+        .show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        
+        input { width: 100%; padding: 12px; margin: 12px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn-blue { background: #007bff; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <div class="arma1-full-wrapper" style="transform: scale(1.3);">
+        <div class="fwa-brand-text"><span class="f-green">F</span><span class="w-yellow">W</span><span class="a-red">A</span></div>
+        <div class="cross-layout">
+            <img src="lion_image.jpg" class="arma-img" style="grid-area: top;">
+            <img src="eagle_image.jpg" class="arma-img" style="grid-area: left;">
+            <img src="lion_image.jpg" class="arma-img center-main" style="grid-area: center;">
+            <img src="dove_image.jpg" class="arma-img" style="grid-area: right;">
+            <img src="lion_image.jpg" class="arma-img" style="grid-area: bottom;">
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div id="view-login" class="section show">
+        <div class="arma1-full-wrapper" style="transform: scale(0.7);">
+            <div class="fwa-brand-text"><span class="f-green">F</span><span class="w-yellow">W</span><span class="a-red">A</span></div>
+        </div>
+        <h3 style="color: #007bff;">እንኳን ተመለሱ</h3>
+        <p>ለመግባት ሚስጥር ቃልዎን (Password) ብቻ ያስገቡ</p>
+        <input type="password" id="login-pass" placeholder="Password">
+        <button class="btn-blue" onclick="handleLogin()">ግባ</button>
+    </div>
+    <style>
+        .ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        
+        /* Blue Outer */
+        .ring-blue { width: 110px; height: 110px; border: 4px solid #00008b; background: transparent; z-index: 1; }
+        
+        /* Red Ring */
+        .ring-red { width: 92px; height: 92px; border: 3px solid red; z-index: 2; }
+        
+        /* Items on Red/Yellow Ring */
+        .pos-item { position: absolute; width: 16px; height: 16px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255,255,255,0.7); }
+        .p-n { top: -8px; left: 50%; transform: translateX(-50%); } 
+        .p-s { bottom: -8px; left: 50%; transform: translateX(-50%); } 
+        .p-e { right: -8px; top: 50%; transform: translateY(-50%); } 
+        .p-w { left: -8px; top: 50%; transform: translateY(-50%); } 
+        .p-ne { top: 12%; right: 12%; } .p-nw { top: 12%; left: 12%; }
+        .p-se { bottom: 12%; right: 12%; } .p-sw { bottom: 12%; left: 12%; }
+
+        /* Yellow Ring */
+        .ring-yellow { width: 70px; height: 70px; border: 3px solid yellow; z-index: 3; }
+        
+        /* Green Ring */
+        .ring-green { width: 52px; height: 52px; background: green; border-radius: 50%; z-index: 4; position: relative; overflow: hidden; }
+        
+        /* Flashing Light Behind Dove */
+        .flash-light { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, white, #007bff); opacity: 0.5; animation: flash 1s infinite alternate; z-index: 5; }
+        @keyframes flash { from { opacity: 0.3; } to { opacity: 0.8; } }
+        
+        .center-dove { position: absolute; width: 40px; height: 40px; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 6; opacity: 0.6; }
+        
+        /* Central Lion (BIGGER & CLEAR) */
+        .center-lion { 
+            position: absolute; 
+            width: 50px; height: 50px; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            z-index: 7; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            border: 1px solid white; 
+        }
+
+        /* Dashboard & Layout Styles */
+        .lion-full-img { width: 100%; height: auto; max-height: 200px; object-fit: contain; margin-top: 10px; border-radius: 8px; }
+        .eagle-dash-img { width: 50px; height: 50px; object-fit: cover; border-radius: 50%; vertical-align: middle; margin-right: 10px; }
+        .dash-layout { display: flex; gap: 10px; align-items: flex-start; }
+        .dash-left { width: 60%; text-align: left; } .dash-right { width: 40%; }
+        
+        /* UI Elements Unchanged */
+        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; } .btn-yellow { background: #ffc107; color: black; }
+        .btn-small { padding: 8px; font-size: 12px; margin: 2px 0; }
+        .btn-admin { background: #333; color: white; display: none; }
+        .lang-btn { background: #6c757d; color: white; padding: 4px 8px; font-size: 10px; border-radius: 4px; border:none; cursor: pointer; margin-top: 2px;}
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; }
+    </style>
+    <style>
+        .modal-box { background: white; padding: 20px; width: 85%; border-radius: 10px; text-align: center; max-height: 80vh; overflow-y: auto; }
+
+        /* Post Card */
+        .post-card { border: 1px solid #eee; background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: left; }
+        .post-header { display: flex; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+        .post-header img { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .post-actions { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; flex-wrap: wrap; }
+        .action-icon { background: none; border: none; color: #007bff; font-size: 12px; cursor: pointer; padding: 5px; margin: 0; width: auto; display: inline-flex; align-items: center; gap: 3px; }
+        
+        .user-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .user-item img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .user-item.bright-blue { background-color: #007bff; color: white; border-radius: 5px; }
+        
+        #live-video-element { width: 100%; height: 350px; background: #000; border-radius: 8px; object-fit: cover; }
+        .hidden-input { display: none; }
+        .hidden { display: none; }
+        
+        /* Admin Indicators */
+        .banned-text { color: black !important; font-weight: bold; }
+        .open-text { color: #007bff !important; font-weight: bold; }
+        .banned-indicator { border: 2px solid black; background: #eee; }
+    </style>
+</head>
+<body>
+
+    <div class="top-header">
+        <img src="eagle_image.jpg" class="header-icon-img" alt="Eagle">
+        <div class="marquee-container-top"><span class="marquee-text-top" id="head-txt">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+        <div style="text-align: right; display: flex; flex-direction: column; align-items: center;">
+            <img src="lion_image.jpg" class="header-icon-img" alt="Lion">
+            <button class="lang-btn" onclick="toggleLanguage()" id="lang-btn-txt">Language</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="modal-overlay" id="custom-modal"><div class="modal-box"><h3 id="modal-title"></h3><p id="modal-msg"></p><button class="btn-blue" onclick="closeModal()">OK</button></div></div>
+        
+        <div class="modal-overlay" id="pass-modal"><div class="modal-box"><h3 id="pass-title">Password Required</h3><input type="password" id="pass-input" placeholder="Password" style="text-align:center;"><button class="btn-green" onclick="verifyPass()">Confirm</button><button class="btn-red" onclick="document.getElementById('pass-modal').style.display='none'">Cancel</button></div></div>
+
+        <div class="modal-overlay" id="admin-action-modal"><div class="modal-box"><h3>Admin Verification</h3><input type="password" id="admin-act-pass" placeholder="Admin Code"><button class="btn-green" onclick="runAdminAction()">Verify</button><button class="btn-red" onclick="document.getElementById('admin-action-modal').style.display='none'">Cancel</button></div></div>
+
+        <div class="modal-overlay" id="admin-chg-modal"><div class="modal-box"><h3>Change Admin Password</h3>
+            <input type="password" id="old-adm" placeholder="Old Admin Code">
+            <input type="password" id="new-adm" placeholder="New (abc123456xyz)">
+            <input type="password" id="conf-adm" placeholder="Confirm New">
+            <button class="btn-green" onclick="saveNewAdminPass()">Change</button>
+            <button class="btn-red" onclick="document.getElementById('admin-chg-modal').style.display='none'">Cancel</button>
+        </div></div>
+        <div class="modal-overlay" id="adm-prem-modal"><div class="modal-box"><h3>Premium Payment Receiver</h3>
+            <button class="btn-blue" onclick="handlePaymentChoice('PayPal')">1. International (PayPal)</button>
+            <button class="btn-green" onclick="handlePaymentChoice('Local Bank 1')">2. Local Bank 1</button>
+            <button class="btn-green" onclick="handlePaymentChoice('Local Bank 2')">3. Local Bank 2</button>
+            <button class="btn-red" onclick="document.getElementById('adm-prem-modal').style.display='none'">Close</button>
+        </div></div>
+
+        <div class="modal-overlay" id="comment-type-modal"><div class="modal-box"><h3 id="t-com-act">Action</h3>
+            <button class="btn-blue" onclick="openComSub('give')">Give Comment</button>
+            <button class="btn-blue" onclick="openComSub('view')">View Comments</button>
+            <button class="btn-red" onclick="document.getElementById('comment-type-modal').style.display='none'">Cancel</button>
+        </div></div>
+
+        <div class="modal-overlay" id="comment-media-modal"><div class="modal-box"><h3 id="t-com-media">Select Type</h3>
+            <button class="btn-blue" onclick="processComment('text')">Text</button>
+            <button class="btn-blue" onclick="processComment('image')">Image</button>
+            <button class="btn-blue" onclick="processComment('video')">Video</button>
+            <button class="btn-blue" onclick="processComment('audio')">Voice</button>
+            <button class="btn-red" onclick="document.getElementById('comment-media-modal').style.display='none'">Cancel</button>
+        </div></div>
+
+        <div class="modal-overlay" id="view-comments-list-modal"><div class="modal-box"><h3>Comments</h3><div id="comments-display-area" style="text-align:left; max-height:300px; overflow-y:auto;"></div><button class="btn-red" onclick="document.getElementById('view-comments-list-modal').style.display='none'">Close</button></div></div>
+
+        <div class="modal-overlay" id="share-modal"><div class="modal-box"><h3>Share To</h3>
+            <button class="btn-blue" onclick="shareTo('telegram')">Telegram</button>
+            <button class="btn-blue" onclick="shareTo('facebook')">Facebook</button>
+            <button class="btn-blue" onclick="shareTo('tiktok')">TikTok</button>
+            <button class="btn-blue" onclick="shareTo('youtube')">YouTube</button>
+            <button class="btn-red" onclick="closeShare()">Close</button>
+        </div></div>
+
+        <div class="modal-overlay" id="admin-login-modal"><div class="modal-box"><h3>Admin Login</h3><input type="password" id="admin-pass-in" placeholder="Code (abc123456abd)"><button class="btn-green" onclick="adminLogin()">Enter</button><button class="btn-red" onclick="document.getElementById('admin-login-modal').style.display='none'">Cancel</button></div></div>
+
+        <div class="modal-overlay" id="receipt-modal"><div class="modal-box"><h3>Payment Receipt</h3>
+            <p>Receipt Uploaded Successfully.</p>
+            <div id="receipt-actions">
+                <button class="btn-blue" onclick="downloadReceipt()">Save Receipt to Phone</button>
+                <button class="btn-green" onclick="closeReceiptModal()">Receive Receipt (OK)</button>
+            </div>
+        </div></div>
+
+        <div id="view-agreement" class="section show">
+            <div id="welcome-content">
+                <div class="split-container">
+                    <div class="split-left">
+                        <h4 id="t-w-s">እንኳን ደህና መጡ</h4>
+                        <p id="t-in">ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ሁሌም ትክክለኛ መረጃዎችን ያቀርባል።</p>
+                    </div>
+                    <div class="split-right">
+                        <h4 id="t-p-s">ጥብቅ መመሪያ</h4>
+                        <p id="t-po">ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው።</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 5px; justify-content: center;">
+                    <button class="btn-green btn-tiny" onclick="handleAgree()" id="btn-agree">እስማማለሁ</button>
+                    <button class="btn-red btn-tiny" onclick="showAlert('አልተስማሙም', 'error')" id="btn-disagree">አልስማማም</button>
+                </div>
+                <div class="blue-spacer"></div>
+                
+                <div class="brand-area">
+                    <img src="eagle_image.jpg" class="side-logo" alt="Eagle">
+                    
+                    <div class="complex-logo">
+                        <div class="ring ring-blue">
+                             <div class="ring ring-red">
+                                 <img src="lion_image.jpg" class="pos-item p-n" alt="L">
+                                 <img src="lion_image.jpg" class="pos-item p-s" alt="L">
+                                 <img src="lion_image.jpg" class="pos-item p-e" alt="L">
+                                 <img src="lion_image.jpg" class="pos-item p-w" alt="L">
+                                 <img src="dove_image.jpg" class="pos-item p-ne" alt="D">
+                                 <img src="dove_image.jpg" class="pos-item p-nw" alt="D">
+                                 <img src="dove_image.jpg" class="pos-item p-se" alt="D">
+                                 <img src="dove_image.jpg" class="pos-item p-sw" alt="D">
+                                 
+                                 <div class="ring ring-yellow">
+                                     <img src="eagle_image.jpg" class="pos-item p-n" alt="E">
+                                     <img src="eagle_image.jpg" class="pos-item p-s" alt="E">
+                                     <img src="eagle_image.jpg" class="pos-item p-e" alt="E">
+                                     <img src="eagle_image.jpg" class="pos-item p-w" alt="E">
+                                     
+                                     <div class="ring ring-green">
+                                         <div class="flash-light"></div>
+                                         <img src="dove_image.jpg" class="center-dove" alt="Dove">
+                                         <img src="lion_image.jpg" class="center-lion" alt="Center Lion">
+                                     </div>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                    
+                    <img src="dove_image.jpg" class="side-logo" alt="Dove">
+                </div>
+
+            </div>
+            <div id="auth-section" style="display:none;">
+                <p style="color: green; font-weight: bold; font-size: 14px;" id="t-thx">አገልግሎታችንን ስለመረጡ እናመሰግናለን! አዲስ ከሆኑ ይመዝገቡ፣ ካለዎት ይግቡ።</p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-red" onclick="showAuth('signup')" id="btn-sh-s">መመዝገቢያ</button>
+                    <button class="btn-red" onclick="showAuth('login')" id="btn-sh-l">መግቢያ</button>
+                </div>
+                <div id="form-signup" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <div id="signup-step-1">
+                        <h3 style="color:#dc3545;" id="h-s">ምዝገባ (አዲስ ብቻ)</h3>
+                        <input type="text" id="reg-name" placeholder="Full Name">
+                        <input type="text" id="reg-phone" placeholder="Phone (09... 10 digits)">
+                        <input type="email" id="reg-email" placeholder="Email (@gmail.com only)">
+                        <input type="password" id="reg-pass" placeholder="Password (6 digits)">
+                        <button class="btn-green" onclick="preSignup()">Submit</button>
+                    </div>
+                    <div id="signup-step-2" style="display:none;">
+                        <h3>Upload Profile Photo</h3>
+                        <button class="btn-blue" onclick="promptUpload('profile')">Upload Photo</button>
+                        <input type="file" id="file-profile" class="hidden-input" accept="image/*">
+                        <button class="btn-green" onclick="finalSignup()">Complete Registration</button>
+                    </div>
+                </div>
+
+                <div id="form-login" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <h3 style="color:#dc3545;" id="h-l">መግቢያ (ነባር)</h3>
+                    <input type="text" id="log-phone" placeholder="Phone">
+                    <input type="password" id="log-pass" placeholder="Password">
+                    <button class="btn-blue" onclick="doLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-home" class="section">
+            <div style="display:flex; align-items:center; border-bottom:1px solid #ddd; padding-bottom:5px;">
+                <img src="eagle_image.jpg" class="eagle-dash-img"><h2 id="t-d" style="margin:0;">ዳሽቦርድ</h2>
+            </div>
+            <div class="dash-layout" style="margin-top:10px;">
+                <div class="dash-left">
+                    <button class="btn-green" style="border-radius: 0;" id="btn-fc" onclick="toggleList('free')">የነፃ አገልግሎት ማዕከል</button>
+                    <div id="list-free" style="display:none; padding-left: 10px;">
+                        <button class="btn-green btn-small" onclick="navTo('view-info')" id="btn-lv">መረጃ መመልከት</button>
+                        <button class="btn-green btn-small" onclick="navTo('post-info')" id="btn-lp">መረጃ መለጠፍ</button>
+                        <button class="btn-green btn-small" onclick="handleGroupCreate()" id="btn-lg">ግሩፕ መፍጠር</button>
+                        <button class="btn-green btn-small" onclick="showMyGroups()" id="btn-lmg">የፈጠሩትን ግሩፕ ለመመልከት</button>
+                        <button class="btn-green btn-small" onclick="handleChatList()" id="btn-lc">ቻት</button>
+                        <button class="btn-green btn-small" onclick="navTo('feedback-sec')" id="btn-lf">ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት እና ለመመልከት</button>
+                        <button class="btn-green btn-small" onclick="showUserList(false)" id="btn-lu">ተጠቃሚዎች</button>
+                        <button class="btn-green btn-small" onclick="checkAuth('business-sec')" id="btn-lb">ቢዝনেস</button>
+                        <button class="btn-green btn-small" style="background-color:#333;" onclick="checkAuth('report-inbox')" id="btn-admin-rep">ሪፖርት መቀበያ (Admin)</button>
+                    </div>
+                    <button class="btn-yellow" style="border-radius: 0; margin-top: 10px;" id="btn-pc" onclick="toggleList('prem')">የክፍያ ፕሪሚየም አገልግሎት</button>
+                    <div id="list-prem" style="display:none; padding-left: 10px;">
+                    <button class="btn-yellow btn-small" onclick="navTo('view-info')">ጥራት ያለው ቪዲዮ</button>
+                        <button class="btn-yellow btn-small" onclick="navTo('view-info')">ዜና (High Quality)</button>
+                        <button class="btn-yellow btn-small" onclick="navTo('view-info')">ምስል (High Quality)</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('ppt')" id="btn-pp">PowerPoint</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('pdf')" id="btn-ppdf">PDF</button>
+                    </div>
+                </div>
+                <div class="dash-right"><img src="lion_image.jpg" class="lion-full-img"></div>
+            </div>
+            <button class="btn-red" style="margin-top:20px;" onclick="doLogout()" id="btn-out">ውጣ</button>
+        </div>
+
+        <div id="post-info" class="section">
+            <h3 id="t-ph">መረጃ መለጠፍ</h3>
+            <div id="post-type-select">
+                <button class="btn-blue" onclick="setupPost('text')" id="btn-pt">📝 Text</button>
+                <button class="btn-blue" onclick="setupPost('image')" id="btn-pi">📷 Image</button>
+                <button class="btn-blue" onclick="setupPost('video')" id="btn-pv">🎥 Video</button>
+                <button class="btn-blue" onclick="setupPost('audio')" id="btn-pa">🎙️ Audio</button>
+            </div>
+            <div id="post-form-area" style="display:none; border-top:1px solid #ccc; margin-top:10px; padding-top:10px;">
+                <p id="post-instr" style="color:blue; font-size:12px;"></p>
+                <div style="display:flex; gap:5px;">
+                     <input type="text" id="p-title" placeholder="Title (Required)">
+                     <button class="btn-red btn-tiny" onclick="clearPostForm()">አፅዳ (Clear)</button>
+                </div>
+                <textarea id="p-content" placeholder="Details (Text Only)..." style="display:none;"></textarea>
+                <input type="file" id="file-post" class="hidden-input">
+                <button class="btn-green" onclick="submitPost()" id="btn-pnow">Post Now</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk1">Back</button>
+        </div>
+
+        <div id="view-info" class="section">
+            <h3 id="t-vh">መረጃ መመልከት</h3>
+            <div style="display:flex; gap:5px;">
+                <button class="btn-blue btn-small" onclick="renderPosts('text')" id="btn-vt">Text</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('image')" id="btn-vi">Image</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('video')" id="btn-vv">Video</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('audio')" id="btn-va">Audio</button>
+            </div>
+            <div id="feed-container" style="margin-top:10px;"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk2">Back</button>
+        </div>
+
+        <div id="report-inbox" class="section">
+            <h3>ሪፖርት መቀበያ (Admin)</h3>
+            <div style="margin-bottom:10px; display:flex; flex-direction:column; gap:5px;">
+                <button class="btn-blue btn-small" onclick="promptAdminAction('changePass')">1. Change Admin Pass</button>
+                <button class="btn-blue btn-small" onclick="promptAdminAction('userStats')">2. User Activity Monitor</button>
+                <button class="btn-green btn-small" onclick="promptAdminAction('premPay')">3. Premium Payment Receiver</button>
+                <button class="btn-red btn-small" onclick="promptAdminAction('viewRep')">4. Receive Reports (Ban/Unban)</button>
+            </div>
+            <div id="admin-dynamic-content" style="text-align:left; margin-top:10px;"></div>
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+
+        <div id="business-sec" class="section">
+            <h3 id="t-bh">ቢዝነስ ማዕከል</h3>
+            <div style="background:#f9f9f9; padding:10px; border:1px solid #ddd;">
+                <p>USD: <b id="bal-usd">0.00</b> | GBP: <b id="bal-gbp" style="color:red;">0.00</b> | EUR: <b id="bal-eur" style="color:blue;">0.00</b></p>
+                <p>ETB: <b id="bal-etb" style="color:green;">0.00</b></p>
+                <hr>
+                <p style="color:green; font-weight:bold;">Total (USD): <span id="bal-total">0.00</span></p>
+                <p style="color:red; font-weight:bold;">Total (ETB): <span id="bal-total-etb">0.00</span></p>
+            </div>
+            <button class="btn-green" onclick="navTo('deposit-sec')" id="btn-bd">Deposit</button>
+            <button class="btn-blue" onclick="navTo('withdraw-sec')" id="btn-bw">Withdraw</button>
+            <button class="btn-yellow" onclick="navTo('intl-sec')" id="btn-bi">International Purchase</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk3">Back</button>
+        </div>
+
+        <div id="deposit-sec" class="section">
+            <h3 id="t-dep-h">Deposit</h3>
+            <div id="dep-step-1">
+                <input type="number" id="dep-amt" placeholder="Amount (ETB)">
+                <select id="dep-cur">
+                    <option value="ETB">ETB</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                    <option value="EUR">EUR</option>
+                </select>
+                <button class="btn-green" onclick="preDeposit()">Submit</button>
+            </div>
+            <div id="dep-step-2" style="display:none;">
+                <button class="btn-blue" onclick="promptUpload('deposit')">Upload Receipt</button>
+                <input type="file" id="file-deposit" class="hidden-input" accept="image/*">
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk4">Back</button>
+        </div>
+
+        <div id="withdraw-sec" class="section">
+            <h3 id="t-with-h">Withdraw</h3>
+            <select id="w-cur">
+                <option value="USD">From USD</option>
+                <option value="GBP">From GBP</option>
+                <option value="EUR">From EUR</option>
+                <option value="ETB">From ETB</option>
+            </select>
+            <select id="w-method" onchange="toggleReceiverInput()">
+                <option value="Telebirr">Telebirr</option>
+                <option value="CBE">CBE</option>
+                <option value="PayPal">PayPal</option>
+            </select>
+            <input type="text" id="w-dest" placeholder="Phone/Account" style="display:none; margin-bottom: 2px; font-size: 13px;">
+            <input type="number" id="w-amt" placeholder="Amount">
+            
+            <button class="btn-compact btn-blue" onclick="reqWithdraw()" id="btn-sub-with">Withdraw</button>
+            <button class="btn-compact btn-red" onclick="goBack()" id="btn-bk5">Back</button>
+        </div>
+
+        <div id="intl-sec" class="section">
+            <h3 id="t-intl-h">International Purchase</h3>
+            <button class="btn-blue" onclick="document.getElementById('intl-list').style.display='block'">ምረጥ (Select)</button>
+            <div id="intl-list" style="display:none; margin-top:10px;">
+                <p>Select Service to Pay:</p>
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('ChatGPT')">1. ChatGPT</button> 
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Amazon')">2. Amazon</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Hosting')">3. Hosting</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Domain')">4. Domain</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Netflix')">5. Netflix</button>
+                </div>
+                <input type="file" id="file-intl" class="hidden-input">
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk6">Back</button>
+        </div>
+
+        <div id="prem-pricing" class="section">
+            <h3 id="t-pay-h">Payment</h3>
+            <button class="btn-green" onclick="pay(5)">Daily (5 ETB)</button>
+            <button class="btn-green" onclick="pay(25)">Weekly (25 ETB)</button>
+            <button class="btn-green" onclick="pay(30)">Monthly (30 ETB)</button>
+            <div id="pay-up-area" style="display:none;">
+                <button class="btn-blue" onclick="promptUpload('pay')">Upload Receipt</button>
+                <input type="file" id="file-pay" class="hidden-input" accept="image/*">
+                <button class="btn-green" onclick="finPay()">Confirm</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk7">Back</button>
+        </div>
+
+        <div id="feedback-sec" class="section">
+            <h3 id="t-fh">Feedback</h3>
+            <p id="t-fb-sub">ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት</p>
+            <button class="btn-blue" onclick="giveFb('text')" id="btn-fb-txt">Text</button>
+            <button class="btn-yellow" onclick="openLiveCamera()" id="btn-fb-live">Live</button>
+            <hr>
+            <button class="btn-blue" onclick="viewFbs()" id="btn-view-fb">View Feedbacks</button>
+            <div id="fb-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk8">Back</button>
+        </div>
+
+        <div id="chat-sec" class="section">
+            <h3 id="t-chat-h">Chat</h3>
+            <div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ddd; margin-bottom:5px; background: #fff;"></div>
+            <input type="text" id="chat-in" placeholder="Message">
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <button class="btn-blue btn-small" onclick="sendChat('text')">Send</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-img')">📷</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-vid')">🎥</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-aud')">🎙️</button>
+                <button class="btn-red btn-small" onclick="openLiveCamera()">🔴</button>
+            </div>
+            <input type="file" id="file-chat" class="hidden-input">
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk9">Back</button>
+        </div>
+
+        <div id="user-list-sec" class="section">
+            <h3 id="t-users-h">Users</h3>
+            <div id="ul-cont"></div>
+            <button class="btn-green" id="btn-grp-done" style="display:none;" onclick="createGroup()">Done (5+)</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk10">Back</button>
+        </div>
+
+        <div id="my-groups-sec" class="section">
+            <h3 id="t-mygrp-h">My Groups</h3>
+            <div id="grp-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk11">Back</button>
+        </div>
+
+        <div id="view-live" class="section">
+            <h2 id="t-live">ቀጥታ ስርጭት (Live)</h2>
+            <video id="live-video-element" autoplay playsinline></video>
+            <button class="btn-red" onclick="stopLive()">Stop Live</button>
+        </div>
+        <div id="view-profile" class="section">
+            <h2 id="t-prof">የግል ማዕከል</h2>
+            <div style="text-align:left;">
+                <p>Phone: <b id="prof-phone"></b> (Disabled)</p>
+                <h4 id="t-edit-prof">Edit Profile</h4>
+                <input type="text" id="prof-name-edit" placeholder="Name">
+                <input type="password" id="old-pass" placeholder="Old Password">
+                <input type="password" id="new-pass" placeholder="New Password">
+                <input type="password" id="conf-pass" placeholder="Confirm Password">
+                <button class="btn-blue" onclick="promptUpload('profile-edit')" id="btn-chg-pic">Change Photo</button>
+                <input type="file" id="file-profile-edit" class="hidden-input" accept="image/*">
+                <button class="btn-green" onclick="saveProfile()" id="btn-up-prof">Update</button>
+            </div>
+            <button class="btn-red" style="margin-top:10px;" onclick="doLogout()" id="btn-prof-out">Logout</button>
+        </div>
+
+    </div>
+
+    <input type="file" id="comment-file-input" class="hidden-input">
+    <input type="file" id="universal-file" class="hidden-input">
+
+    <div class="footer-wrapper">
+        <div class="bottom-nav">
+            <button class="nav-btn nav-home" onclick="navTab('home')"><i class="fas fa-home"></i> <span id="nav-h">Home</span></button>
+            <button class="nav-btn nav-live" onclick="navTab('live')"><i class="fas fa-broadcast-tower"></i> <span id="nav-l">Live</span></button>
+            <button class="nav-btn nav-profile" onclick="navTab('profile')"><i class="fas fa-user"></i> <span id="nav-p">Profile</span></button>
+        </div>
+        <div class="bottom-marquee">
+            <span>ፋሲል ዌብ አፕ - Fasil Web App (Service Center)</span>
+        </div>
+    </div>
+
+    <script>
+        // --- REAL-TIME DATA FROM FIREBASE (LocalStorage Removed) ---
+        let user = null; 
+        let users = [];
+        let posts = [];
+        let groups = [];
+        let chats = {};
+        let feedbacks = [];
+        let reports = [];
+        let adminPass = 'abc123456abc'; // Will be synced from Firestore
+        
+        let lang = 'am';
+        let hasAgreed = false;
+        let viewHistory = [];
+        let activePostType = 'text';
+        let activeChat = null;
+        let activeCommentPostId = null;
+        let pendingAct = null;
+        let uploadTarget = '';
+        let liveStream = null;
+        let comMode = 'view'; 
+        let pendingAdminAction = null; 
+        let lastReceiptUrl = '';
+
+        const RATES = {USD:120, GBP:150, EUR:130};
+
+        // --- TRANSLATIONS (Strict 100%) ---
+        const TXT = {
+            'am': {
+                'head-txt':'እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!', 'lang-btn-txt':'እንግሊዝኛ (English)',
+                't-w-s':'እንኳን ደህና መጡ', 't-in':'ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ሁሌም ትክክለኛ መረጃዎችን ያቀርባል። እውነተኛ መረጃወችን መመልከት እና መጋራት ይችላሉ በተጨማሪም ሌሎች የፓወር ፖይንት የቢዝነስ እና ፒዲኤፍ አገልግሎቶችን ያገኛሉ እናመሰግናለን።',
+                't-p-s':'ጥብቅ መመሪያ', 't-po':'ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው። ፖሊሲያችን ጥሰው ከተገኙ በጥብቅ የሲስተም ቁጥጥራችን እና በጥብቅ ሲስተማችን በራስ ሰር ከአገልግሎታችን ሲስተም ሊያግድወት ይችላል።',
+                'btn-agree':'እስማማለሁ', 'btn-disagree':'አልስማማም',
+                't-thx':'አገልግሎታችንን ስለመረጡ እናመሰግናለን! አዲስ ከሆኑ ይመዝገቡ፣ ካለዎት ይግቡ።',
+                'btn-sh-s':'መመዝገቢያ', 'btn-sh-l':'መግቢያ', 'h-s':'ምዝገባ', 'h-l':'መግቢያ',
+                't-d':'ዳሽቦርድ', 'btn-fc':'የነፃ አገልግሎት ማዕከል', 'btn-pc':'የክፍያ ፕሪሚየም አገልግሎት', 'btn-out':'ውጣ', 
+                'btn-lv':'መረጃ መመልከት', 'btn-lp':'መረጃ መለጠፍ', 'btn-lg':'ግሩፕ መፍጠር', 'btn-lmg':'የፈጠሩትን ግሩፕ',
+                'btn-lc':'ቻት', 'btn-lf':'ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት እና ለመመልከት', 'btn-lu':'ተጠቃሚዎች', 'btn-lb':'ቢዝነስ', 'btn-admin-rep':'ሪፖርት መቀበያ (Admin)',
+                'btn-pv':'ጥራት ቪዲዮ', 'btn-pn':'ዜና', 'btn-pp':'PowerPoint', 'btn-ppdf':'PDF',
+                't-ph':'መረጃ መለጠፍ', 't-vh':'መረጃ መመልከት', 't-bh':'ቢዝነስ ማዕከል', 't-dep-h':'ገንዘብ ማስገባት',
+                't-with-h':'ገንዘብ ማውጣት', 't-intl-h':'ዓለም አቀፍ ግዢ', 't-pay-h':'ክፍያ', 't-fb-h':'አስተያየት',
+                't-chat-h':'ቻት', 't-users-h':'ተጠቃሚዎች', 't-mygrp-h':'ግሩፖች', 't-live':'ቀጥታ ስርጭት', 't-prof':'የግል ማዕከል',
+                'nav-h':'ዋና', 'nav-l':'ላይቭ', 'nav-p':'ፕሮፋይል', 'btn-back-1':'ተመለስ', 'btn-select':'ምረጥ',
+                'btn-p-txt':'📝 ፅሁፍ', 'btn-p-img':'📷 ምስል', 'btn-p-vid':'🎥 ቪዲዮ', 'btn-p-aud':'🎙️ ድምፅ',
+                'btn-v-txt':'ፅሁፍ', 'btn-v-img':'ምስል', 'btn-v-vid':'ቪዲዮ', 'btn-v-aud':'ድምፅ',
+                'btn-post-now':'ለጥፍ', 'btn-dep':'ገንዘብ አስገባ', 'btn-with':'ገንዘብ አውጣ', 'btn-intl':'አለም አቀፍ ግዢ',
+                't-edit-prof':'ፕሮፋይል መቀየር', 'btn-chg-pic':'ፎቶ ቀይር', 'btn-up-prof':'አዘምን (Update)', 'btn-prof-out':'ውጣ',
+                't-fb-sub':'ለአድሚን (Text / Live)', 'btn-fb-txt':'በፅሁፍ', 'btn-fb-live':'ላይቭ', 'btn-view-fb':'አስተያየት ይመልከቱ',
+                't-choose-com':'ኮመንት አይነት ይምረጡ', 't-post-instr':'አባክዎ መረጃውን ይፃፉ', 't-com-act':'አማራጭ', 't-com-media':'አይነት ይምረጡ'
+            },
+            'en': {
+                'head-txt':'Welcome to Fasil Web App Service Center!', 'lang-btn-txt':'Amharic (አማርኛ)',
+                't-w-s':'Welcome', 't-in':'Fasil Web App is a reliable digital sharing platform. You can share real information and access PPT/PDF services.',
+                't-p-s':'Strict Policy', 't-po':'Political conflict, hatred, racism, and fake news are strictly prohibited. Violators will be automatically banned by our AI system.',
+                'btn-agree':'I Agree', 'btn-disagree':'Disagree',
+                't-thx':'Thank you! Register or Login.', 'btn-sh-s':'Signup', 'btn-sh-l':'Login', 'h-s':'Register', 'h-l':'Login',
+                't-d':'Dashboard', 'btn-fc':'Free Services', 'btn-pc':'Premium Services', 'btn-out':'Logout',
+                'btn-lv':'View Info', 'btn-lp':'Post Info', 'btn-lg':'Create Group', 'btn-lmg':'My Groups',
+                'btn-lc':'Chat', 'btn-lf':'Feedback to Creator', 'btn-lu':'Users', 'btn-lb':'Business', 'btn-admin-rep':'Report Inbox',
+                'btn-pv':'HD Video', 'btn-pn':'News', 'btn-pp':'PPT', 'btn-ppdf':'PDF',
+                't-ph':'Post Info', 't-vh':'View Info', 't-bh':'Business Center', 't-dep-h':'Deposit',
+                't-with-h':'Withdraw', 't-intl-h':'Intl Purchase', 't-pay-h':'Payment', 't-fb-h':'Feedback',
+                't-chat-h':'Chat', 't-users-h':'Users', 't-mygrp-h':'My Groups', 't-live':'Live Stream', 't-prof':'Profile',
+                'nav-h':'Home', 'nav-l':'Live', 'nav-p':'Profile', 'btn-back-1':'Back', 'btn-select':'Select',
+                'btn-p-txt':'📝 Text', 'btn-p-img':'📷 Image', 'btn-p-vid':'🎥 Video', 'btn-p-aud':'🎙️ Audio',
+                'btn-v-txt':'Text', 'btn-v-img':'Image', 'btn-v-vid':'Video', 'btn-v-aud':'Audio',
+                'btn-post-now':'Post', 'btn-dep':'Deposit', 'btn-with':'Withdraw', 'btn-intl':'Intl Purchase',
+                't-edit-prof':'Edit Profile', 'btn-chg-pic':'Change Photo', 'btn-up-prof':'Update', 'btn-prof-out':'Logout',
+                't-fb-sub':'To Admin (Text / Live)', 'btn-fb-txt':'Text', 'btn-fb-live':'Live', 'btn-view-fb':'View Feedbacks',
+                't-choose-com':'Choose Comment Type', 't-post-instr':'Please enter content details', 't-com-act':'Action', 't-com-media':'Select Type'
+            }
+        };
+
+        // Function to update language across the app
+        function updateLanguage() {
+            const currentTxt = TXT[lang];
+            for (let id in currentTxt) {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = currentTxt[id];
+                    } else {
+                        el.innerText = currentTxt[id];
+                    }
+                }
+            }
+            // Update Lang Switcher button text specifically
+            const langBtn = document.getElementById('btn-lang');
+            if(langBtn) langBtn.innerText = currentTxt['lang-btn-txt'];
+        }
+        // --- CORE FUNCTIONS (Firebase Ready) ---
+        function toggleLanguage() {
+            lang = lang === 'am' ? 'en' : 'am';
+            updateLanguage(); // Uses the function from Part 11
+        }
+
+        function showView(id) {
+            document.querySelectorAll('.section').forEach(e => e.classList.remove('show'));
+            const target = document.getElementById(id);
+            if (target) target.classList.add('show');
+        }
+
+        function navTo(id) {
+            const current = document.querySelector('.section.show');
+            if (current && current.id !== 'view-home') viewHistory.push(current.id);
+            showView(id);
+            if (id === 'business-sec') upBal(); // Sync balances from Firebase
+        }
+
+        function goBack() {
+            if (viewHistory.length > 0) showView(viewHistory.pop());
+            else {
+                if (user) showView('view-home'); else showView('view-agreement');
+            }
+        }
+
+        function showAlert(m, t) {
+            const modalTitle = document.getElementById('modal-title');
+            const modalMsg = document.getElementById('modal-msg');
+            if (modalTitle && modalMsg) {
+                modalTitle.innerText = t === 'error' ? '❌ Error' : '✅ Success';
+                modalMsg.innerText = m;
+                document.getElementById('custom-modal').style.display = 'flex';
+            }
+        }
+
+        function closeModal() { document.getElementById('custom-modal').style.display = 'none'; }
+
+        // --- NAV TABS PROTECT (NO WHITE SCREEN) ---
+        function navTab(t) {
+            if (!hasAgreed) return showAlert(lang === 'am' ? 'እባክዎ መጀመሪያ ፖሊሲውን ይስማሙ' : 'Please agree to policy', "error");
+            
+            // Check Firebase User Session
+            if (!user) return showAlert(lang === 'am' ? 'እባክዎ ይግቡ/ይመዝገቡ' : 'Please Login/Register', "error");
+
+            if (t === 'home') {
+                showView('view-home');
+            } else if (t === 'live') {
+                openLiveCamera();
+            } else if (t === 'profile') {
+                showView('view-profile');
+                document.getElementById('prof-phone').innerText = user.phone;
+                document.getElementById('prof-name-edit').value = user.name;
+            }
+        }
+
+        // --- AUTH & AGREEMENT ---
+        function handleAgree() { 
+            hasAgreed = true; 
+            document.getElementById('welcome-content').style.display = 'none'; 
+            document.getElementById('auth-section').style.display = 'block'; 
+        }
+
+        function showAuth(t) { 
+            document.getElementById('form-signup').style.display = t === 'signup' ? 'block' : 'none'; 
+            document.getElementById('form-login').style.display = t === 'login' ? 'block' : 'none'; 
+        }
+
+        // --- RECEIPT & FILE HANDLING (Firebase Storage Integration) ---
+        async function triggerReceiptModal(url) {
+            lastReceiptUrl = url;
+            const modal = document.getElementById('receipt-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function downloadReceipt() {
+            if (!lastReceiptUrl) return;
+            const a = document.createElement('a');
+            a.href = lastReceiptUrl;
+            a.download = "Fasil-Receipt.png";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            alert(lang === 'am' ? "በስልክዎ ላይ ተቀምጧል!" : "Saved to Phone!");
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').style.display = 'none';
+            showAlert(lang === 'am' ? "እናመሰግናለን" : "Thank you", "success");
+            
+            // Post-upload Navigation Logic
+            if (uploadTarget === 'intl') navTo('view-home');
+            else if (uploadTarget === 'deposit' || uploadTarget === 'pay') {
+                document.getElementById('pass-modal').style.display = 'flex'; 
+            }
+        }
+        // --- UPLOAD PROMPT & FILE HANDLING ---
+        function promptUpload(target) {
+            uploadTarget = target;
+            alert(lang === 'am' ? 'ፋይል ይምረጡ' : 'Select File');
+            let i = document.getElementById('file-profile');
+            if(target === 'post') i = document.getElementById('file-post');
+            if(target === 'deposit') i = document.getElementById('file-deposit');
+            if(target === 'intl') i = document.getElementById('file-intl');
+            if(target === 'pay') i = document.getElementById('file-pay');
+            if(target.startsWith('chat')) i = document.getElementById('file-chat');
+            if(target === 'profile-edit') i = document.getElementById('file-profile-edit');
+            if(target === 'comment') i = document.getElementById('comment-file-input');
+            
+            i.click();
+            i.onchange = async () => { 
+                if (!i.files[0]) return;
+                showAlert(lang === 'am' ? 'ተመርጧል' : 'Selected', "success");
+                
+                // Handle Receipt Flow for Money related uploads
+                if(target === 'deposit' || target === 'intl' || target === 'pay') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) { triggerReceiptModal(e.target.result); }
+                    reader.readAsDataURL(i.files[0]);
+                    return; 
+                }
+
+                if(target === 'post') { 
+                    document.getElementById('post-form-area').style.display = 'block'; 
+                    document.getElementById('post-type-select').style.display = 'none';
+                }
+                
+                if(target === 'comment') {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        // In Part 15, we will replace this with actual Firebase storage link
+                        saveComment(activeCommentPostId, activePostType, e.target.result); 
+                    }
+                    reader.readAsDataURL(i.files[0]);
+                }
+            };
+        }
+
+        // --- AUTH LOGIC (FIREBASE INTEGRATED) ---
+        async function preSignup() {
+            const p = document.getElementById('reg-phone').value; 
+            const e = document.getElementById('reg-email').value;
+            
+            if(!p.match(/^09\d{8}$/)) return showAlert(lang === 'am' ? "ስልክ በ 09 መጀመር አለበት (10 ዲጂት)" : "Phone must start with 09 (10 digits)", "error");
+            if(!e.endsWith("@gmail.com")) return showAlert("Email must be @gmail.com", "error");
+            
+            // Real-time Firebase Duplicate Check
+            const userRef = db.collection("users").where("phone", "==", p);
+            const snapshot = await userRef.get();
+            if(!snapshot.empty) {
+                return showAlert(lang === 'am' ? 'ይህ ስልክ ተመዝግቧል' : 'Already Registered', "error");
+            }
+
+            document.getElementById('signup-step-1').style.display = 'none';
+            document.getElementById('signup-step-2').style.display = 'block';
+        }
+
+        async function finalSignup() {
+            const n = document.getElementById('reg-name').value; 
+            const p = document.getElementById('reg-phone').value; 
+            const e = document.getElementById('reg-email').value; 
+            const pw = document.getElementById('reg-pass').value; 
+            const f = document.getElementById('file-profile').files[0];
+            
+            if(!f) return showAlert("Photo required", "error");
+            
+            // Upload Profile Pic to Storage
+            const storageRef = storage.ref(`profiles/${p}`);
+            await storageRef.put(f);
+            const photoURL = await storageRef.getDownloadURL();
+
+            // Save to Firestore
+            await db.collection("users").doc(p).set({
+                name: n, phone: p, email: e, password: pw,
+                balUSD: 0, balGBP: 0, balEUR: 0, balETB: 0,
+                photo: photoURL, regDate: Date.now(), status: 'active'
+            });
+
+            showAlert(lang === 'am' ? "ተመዝግበዋል!" : "Registered!", "success"); 
+            showAuth('login');
+        }
+
+        async function doLogin() {
+            const p = document.getElementById('log-phone').value; 
+            const pw = document.getElementById('log-pass').value;
+            
+            const userDoc = await db.collection("users").doc(p).get();
+            
+            if(userDoc.exists && userDoc.data().password === pw) { 
+                user = userDoc.data();
+                if(user.status === 'banned') return showAlert("Account Banned!", "error");
+                
+                // Show Admin Button if user is Admin
+                if(user.name === 'Admin' || user.name === 'Fasil') {
+                    document.getElementById('btn-admin-rep').style.display = 'block';
+                }
+                
+                navTo('view-home');
+            } else {
+                showAlert(lang === 'am' ? "ስልክ ወይም ፓስወርድ ስህተት ነው" : "Wrong Phone or Password", "error");
+            }
+        }
+        // --- LOGOUT & AUTH CHECKS ---
+        function doLogout() { 
+            user = null; 
+            // In a real Firebase app, you would also call auth.signOut()
+            location.reload(); 
+        }
+        
+        function checkAuth(sec) { 
+            if(!user) return showAlert("Login First", "error");
+            pendingAct = () => navTo(sec);
+            document.getElementById('pass-modal').style.display = 'flex';
+        }
+
+        // --- DASHBOARD UI ---
+        function toggleList(t) { 
+            const l = document.getElementById('list-' + t); 
+            if(l) l.style.display = l.style.display === 'none' ? 'block' : 'none'; 
+        }
+
+        // --- POSTS LOGIC (FIREBASE INTEGRATED) ---
+        function clearPostForm() {
+            document.getElementById('p-title').value = '';
+            document.getElementById('p-content').value = '';
+            document.getElementById('file-post').value = '';
+        }
+
+        function setupPost(t) { 
+            activePostType = t; 
+            if(t !== 'text') {
+                let i = document.getElementById('file-post');
+                if(t === 'image') i.accept = 'image/*'; 
+                if(t === 'video') i.accept = 'video/*'; 
+                if(t === 'audio') i.accept = 'audio/*';
+                promptUpload('post');
+            } else {
+                document.getElementById('post-form-area').style.display = 'block'; 
+                document.getElementById('post-type-select').style.display = 'none';
+                document.getElementById('p-content').style.display = 'block'; 
+                document.getElementById('post-instr').textContent = "Title + Content Required";
+            }
+            if(t !== 'text') { 
+                document.getElementById('p-content').style.display = 'none'; 
+                document.getElementById('post-instr').textContent = "Title Required (No Details)"; 
+            }
+        }
+
+        async function submitPost() {
+            const t = document.getElementById('p-title').value; 
+            const c = document.getElementById('p-content').value;
+            if(!t) return showAlert("Title required", "error");
+            if(activePostType === 'text' && !c) return showAlert("Content required", "error");
+            
+            // Policy Filter
+            const forbidden = ['politics', 'hate', 'war', 'racism', 'ፖለቲካ', 'ዘረኝነት', 'ጦርነት'];
+            if(forbidden.some(w => (t + ' ' + c).toLowerCase().includes(w))) {
+                return showAlert("ከፖሊሲያችን ውጭ ነው መለጠፍ አይቻልም", "error");
+            }
+
+            let mediaURL = null;
+            if(activePostType !== 'text') {
+                const f = document.getElementById('file-post').files[0];
+                if(f) {
+                    const storageRef = storage.ref(`posts/${Date.now()}_${f.name}`);
+                    await storageRef.put(f);
+                    mediaURL = await storageRef.getDownloadURL();
+                }
+            }
+
+            // Save to Firestore
+            await db.collection("posts").add({
+                title: t,
+                content: c,
+                mediaURL: mediaURL,
+                type: activePostType,
+                userName: user.name,
+                userPhone: user.phone,
+                userPhoto: user.photo || '',
+                likes: 0,
+                follows: 0,
+                isHidden: false,
+                comments: [],
+                createdAt: Date.now()
+            });
+
+            showAlert(lang === 'am' ? 'ተሳክቷል' : 'Success', "success"); 
+            clearPostForm();
+            document.getElementById('post-form-area').style.display = 'none'; 
+            document.getElementById('post-type-select').style.display = 'block';
+            renderPosts(activePostType); 
+            navTo('view-info');
+        }
+
+        async function renderPosts(type) {
+            const container = document.getElementById('feed-container'); 
+            container.innerHTML = '<p>Loading...</p>';
+            
+            // Real-time fetch from Firestore
+            db.collection("posts")
+              .where("type", "==", type)
+              .where("isHidden", "==", false)
+              .orderBy("createdAt", "desc")
+              .onSnapshot((snapshot) => {
+                container.innerHTML = '';
+                if(snapshot.empty) container.innerHTML = 'Empty';
+                
+                snapshot.forEach(doc => {
+                    const p = doc.data();
+                    let mediaHTML = '';
+                    if(p.mediaURL) { 
+                        if(p.type === 'image') mediaHTML = `<img src="${p.mediaURL}" width="100%" style="border-radius:5px; margin-top:5px;">`; 
+                        else if(p.type === 'video') mediaHTML = `<video src="${p.mediaURL}" controls playsinline width="100%" style="border-radius:5px; margin-top:5px;"></video>`; 
+                        else if(p.type === 'audio') mediaHTML = `<audio src="${p.mediaURL}" controls style="width:100%; margin-top:5px;"></audio>`; 
+                    }
+
+                    container.innerHTML += `
+                        <div class="post-card" style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:8px; background:#fff;">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                                <img src="${p.userPhoto || 'default-avatar.png'}" width="30" height="30" style="border-radius:50%;">
+                                <b style="font-size:13px;">${p.userName}</b>
+                            </div>
+                            <h4 style="margin:5px 0;">${p.title}</h4>
+                            ${p.content ? `<p style="font-size:14px;">${p.content}</p>` : ''}
+                            ${mediaHTML}
+                            <div style="margin-top:10px; display:flex; gap:15px; font-size:12px; color:#555;">
+                                <span onclick="likePost('${doc.id}')" style="cursor:pointer;">❤️ ${p.likes || 0}</span>
+                                <span onclick="navToComments('${doc.id}')" style="cursor:pointer;">💬 ${p.comments ? p.comments.length : 0}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+        // --- POST ACTIONS (Firebase Integrated) ---
+        async function tryDelete(docId, postOwnerPhone) { 
+            if(postOwnerPhone === user.phone) { 
+                if(confirm(lang === 'am' ? 'እርግጠኛ ነዎት መደለል ይፈልጋሉ?' : 'Are you sure you want to delete?')) {
+                    await db.collection("posts").doc(docId).delete();
+                    showAlert('Deleted', 'success');
+                }
+            } else {
+                showAlert(lang === 'am' ? 'የእርስዎ አይደለም የሰዎችን መደለት አይችሉም' : 'Not yours', 'error'); 
+            }
+        }
+        
+        async function likePost(docId) { 
+            const postRef = db.collection("posts").doc(docId);
+            await postRef.update({
+                likes: firebase.firestore.FieldValue.increment(1)
+            });
+        }
+
+        async function followUser(docId) { 
+            const postRef = db.collection("posts").doc(docId);
+            await postRef.update({
+                follows: firebase.firestore.FieldValue.increment(1)
+            });
+        }
+
+        // --- SHARING SYSTEM ---
+        function sharePost() { document.getElementById('share-modal').style.display = 'flex'; }
+        function closeShare() { document.getElementById('share-modal').style.display = 'none'; }
+        
+        function shareTo(platform) {
+            const txt = encodeURIComponent("Check this post on Fasil Web App!");
+            const appUrl = encodeURIComponent(window.location.href);
+            let url = "";
+            if(platform === 'telegram') url = `https://telegram.me/share/url?url=${appUrl}&text=${txt}`;
+            if(platform === 'facebook') url = `https://www.facebook.com/sharer/sharer.php?u=${appUrl}`;
+            if(platform === 'tiktok') url = `https://www.tiktok.com/`;
+            if(platform === 'youtube') url = `https://www.youtube.com/`;
+            
+            window.open(url, '_blank');
+            closeShare();
+        }
+        
+        // --- COMMENT SYSTEM ---
+        function openComModal(id) { 
+            activeCommentPostId = id; 
+            document.getElementById('comment-type-modal').style.display = 'flex'; 
+        }
+
+        function openComSub(mode) { 
+            comMode = mode; 
+            document.getElementById('comment-type-modal').style.display = 'none'; 
+            document.getElementById('comment-media-modal').style.display = 'flex';
+        }
+
+        async function processComment(type) {
+            document.getElementById('comment-media-modal').style.display = 'none';
+            if(comMode === 'give') {
+                if(type === 'text') {
+                    const txt = prompt(lang === 'am' ? "አስተያየትዎን ይፃፉ:" : "Comment:"); 
+                    if(!txt) return showAlert("Empty", "error");
+                    saveComment(activeCommentPostId, type, txt);
+                } else {
+                    activePostType = type; 
+                    const inp = document.getElementById('comment-file-input');
+                    inp.accept = type + '/*';
+                    inp.click();
+                    // Onchange handler in promptUpload will call saveComment
+                }
+            } else {
+                // View Comments Logic
+                viewComments(activeCommentPostId, type);
+            }
+        }
+
+        async function saveComment(postId, type, content) {
+            let finalContent = content;
+            
+            // If it's a file (Base64/File object), upload to Firebase Storage
+            if(type !== 'text') {
+                const file = document.getElementById('comment-file-input').files[0];
+                if(file) {
+                    const storageRef = storage.ref(`comments/${Date.now()}_${file.name}`);
+                    await storageRef.put(file);
+                    finalContent = await storageRef.getDownloadURL();
+                }
+            }
+
+            const postRef = db.collection("posts").doc(postId);
+            await postRef.update({
+                comments: firebase.firestore.FieldValue.arrayUnion({
+                    u: user.name,
+                    uid: user.phone,
+                    type: type,
+                    data: finalContent,
+                    time: Date.now()
+                })
+            });
+            showAlert(lang === 'am' ? "አስተያየትዎ ደርሷል" : "Comment Added", "success");
+        }
+        // --- VIEW COMMENTS (Firebase Firestore) ---
+        async function viewComments(postId, type) {
+            const postDoc = await db.collection("posts").doc(postId).get();
+            if (!postDoc.exists) return;
+            
+            const p = postDoc.data();
+            const coms = (p.comments || []).filter(c => c.type === type);
+            const disp = document.getElementById('comments-display-area');
+            
+            if (coms.length === 0) {
+                disp.innerHTML = lang === 'am' ? "ምንም አስተያየት የለም" : "No Comments";
+            } else {
+                disp.innerHTML = coms.map(c => {
+                    let content = c.data; // content from saveComment in Part 16
+                    if (c.type === 'image') content = `<img src="${c.data}" width="100%" style="border-radius:5px;">`;
+                    else if (c.type === 'video') content = `<video src="${c.data}" controls width="100%"></video>`;
+                    else if (c.type === 'audio') content = `<audio src="${c.data}" controls style="width:100%;"></audio>`;
+                    
+                    return `<div style="padding:8px; border-bottom:1px dotted #ccc;">
+                                <b style="color:#007bff;">${c.u}:</b> <br> ${content}
+                            </div>`;
+                }).join('');
+            }
+            document.getElementById('view-comments-list-modal').style.display = 'flex';
+        }
+
+        // --- ADMIN FUNCTIONS (Firebase Integrated) ---
+        function promptAdminLogin() { document.getElementById('admin-login-modal').style.display = 'flex'; }
+        
+        async function adminLogin() {
+            const code = document.getElementById('admin-pass-in').value;
+            // Fetch admin pass from Firebase
+            const adminDoc = await db.collection("settings").doc("admin").get();
+            const correctPass = adminDoc.exists ? adminDoc.data().pass : adminPass; // Fallback to default
+
+            if (code === correctPass) { 
+                document.getElementById('admin-login-modal').style.display = 'none'; 
+                navTo('report-inbox'); 
+            } else {
+                alert(lang === 'am' ? "የተሳሳተ ኮድ" : "Wrong Code");
+            }
+        }
+
+        function promptAdminAction(action) {
+            pendingAdminAction = action;
+            document.getElementById('admin-action-modal').style.display = 'flex';
+        }
+
+        async function runAdminAction() {
+            const p = document.getElementById('admin-act-pass').value;
+            const adminDoc = await db.collection("settings").doc("admin").get();
+            const correctPass = adminDoc.exists ? adminDoc.data().pass : adminPass;
+
+            if (p === correctPass) {
+                document.getElementById('admin-action-modal').style.display = 'none';
+                document.getElementById('admin-act-pass').value = '';
+                
+                if (pendingAdminAction === 'changePass') document.getElementById('admin-chg-modal').style.display = 'block';
+                else if (pendingAdminAction === 'userStats') showUserStats();
+                else if (pendingAdminAction === 'premPay') document.getElementById('adm-prem-modal').style.display = 'block';
+                else if (pendingAdminAction === 'viewRep') renderReports();
+            } else {
+                alert("Wrong Admin Code");
+            }
+        }
+
+        // 1. Change Password (3 letters + 6 nums + 3 letters)
+        async function saveNewAdminPass() {
+            const old = document.getElementById('old-adm').value;
+            const newP = document.getElementById('new-adm').value;
+            const confP = document.getElementById('conf-adm').value;
+            
+            const adminDoc = await db.collection("settings").doc("admin").get();
+            const currentPass = adminDoc.exists ? adminDoc.data().pass : adminPass;
+
+            if (old !== currentPass) return showAlert("Old Password Wrong", "error");
+            if (newP !== confP) return showAlert("New Passwords mismatch", "error");
+            
+            // Format check: 3 small letters + 6 numbers + 3 small letters
+            const regex = /^[a-z]{3}\d{6}[a-z]{3}$/;
+            if (!regex.test(newP)) return showAlert("Format: 3 small letters + 6 numbers + 3 small letters", "error");
+            
+            // Update in Firebase
+            await db.collection("settings").doc("admin").set({ pass: newP });
+            adminPass = newP;
+            showAlert("Password Changed!", "success");
+            document.getElementById('admin-chg-modal').style.display = 'none';
+        }
+
+        // 2. User Stats (Aggregation from Firestore)
+        async function showUserStats() { 
+            const usersSnap = await db.collection("users").get();
+            const postsSnap = await db.collection("posts").get();
+            
+            let allPosts = [];
+            postsSnap.forEach(doc => allPosts.push(doc.data()));
+
+            let html = '';
+            usersSnap.forEach(doc => {
+                const u = doc.data();
+                const userPosts = allPosts.filter(p => p.userPhone === u.phone);
+                const totalLikes = userPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
+                const totalFollows = userPosts.reduce((sum, p) => sum + (p.follows || 0), 0);
+                
+                html += `<div style="border-bottom:1px solid #eee; padding:5px;">
+                            <b>${u.name}</b> (${u.phone})<br>
+                            Posts: ${userPosts.length} | Likes: ${totalLikes} | Follows: ${totalFollows}
+                         </div>`;
+            });
+            
+            document.getElementById('user-stats-container').innerHTML = html || 'No Users Found';
+            navTo('view-users-stats'); // Assuming this view exists
+        }
+        // --- ADMIN: REPORTS & MODERATION (Firebase Integrated) ---
+        async function promptReport(postId, targetUname) { 
+            const reason = prompt(lang === 'am' ? "ምክንያት ይጥቀሱ:" : "Reason:"); 
+            if (reason) { 
+                // Save report to Firestore
+                await db.collection("reports").add({
+                    postId: postId,
+                    reason: reason,
+                    reporter: user.name,
+                    reporterPhone: user.phone,
+                    target: targetUname,
+                    timestamp: Date.now()
+                });
+                showAlert(lang === 'am' ? "ሪፖርት ተደርጓል" : "Reported", "success"); 
+            } 
+        }
+
+        async function renderReports() {
+            const container = document.getElementById('admin-dynamic-content'); 
+            container.innerHTML = 'Loading Reports...';
+            
+            // Fetch both reports and posts to match data
+            const reportsSnap = await db.collection("reports").orderBy("timestamp", "desc").get();
+            const postsSnap = await db.collection("posts").get();
+            
+            let allPosts = {};
+            postsSnap.forEach(doc => { allPosts[doc.id] = doc.data(); });
+
+            if (reportsSnap.empty) { 
+                container.innerHTML = "No Reports"; 
+                return; 
+            }
+
+            let html = '';
+            reportsSnap.forEach(doc => {
+                const r = doc.data();
+                const p = allPosts[r.postId];
+                const isBanned = p ? p.isHidden : false;
+                const statusClass = isBanned ? 'banned-text' : 'open-text';
+                const statusTxt = isBanned ? "BANNED (Black)" : "OPEN (Blue)";
+                const containerClass = isBanned ? 'banned-indicator' : '';
+
+                html += `
+                    <div class="post-card ${containerClass}" style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:8px;">
+                        <b>Reporter:</b> ${r.reporter} <br> 
+                        <b>Target User:</b> ${r.target} <br> 
+                        <b>Reason:</b> ${r.reason}<br>
+                        Status: <span class="${statusClass}" style="font-weight:bold; color:${isBanned ? 'black' : 'blue'};">${statusTxt}</span><br>
+                        <div style="margin-top:10px; display:flex; gap:10px;">
+                            <button class="btn-red" style="padding:5px 10px; font-size:12px;" onclick="banPost('${r.postId}')">Ban</button> 
+                            <button class="btn-blue" style="padding:5px 10px; font-size:12px;" onclick="unbanPost('${r.postId}')">Open/Unban</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function banPost(id) { 
+            await db.collection("posts").doc(id).update({ isHidden: true });
+            showAlert("Banned", "success"); 
+            renderReports(); 
+        }
+
+        async function unbanPost(id) { 
+            await db.collection("posts").doc(id).update({ isHidden: false });
+            showAlert("Unbanned", "success"); 
+            renderReports(); 
+        }
+
+        // --- BUSINESS & BALANCE LOGIC ---
+        function upBal() {
+            if (!user) return;
+            // Display per currency
+            document.getElementById('bal-usd').innerText = (user.balUSD || 0).toFixed(2);
+            document.getElementById('bal-gbp').innerText = (user.balGBP || 0).toFixed(2);
+            document.getElementById('bal-eur').innerText = (user.balEUR || 0).toFixed(2);
+            document.getElementById('bal-etb').innerText = (user.balETB || 0).toFixed(2);
+            
+            // Total in USD
+            const tot = (user.balUSD || 0) + ((user.balGBP || 0) * 1.25) + ((user.balEUR || 0) * 1.1) + ((user.balETB || 0) / 120);
+            document.getElementById('bal-total').innerText = tot.toFixed(2);
+            
+            // Total in ETB
+            const totEth = (user.balETB || 0) + ((user.balUSD || 0) * 120) + ((user.balGBP || 0) * 150) + ((user.balEUR || 0) * 130);
+            document.getElementById('bal-total-etb').innerText = totEth.toFixed(2);
+        }
+
+        function preDeposit() { 
+            document.getElementById('dep-step-1').style.display = 'none'; 
+            document.getElementById('dep-step-2').style.display = 'block'; 
+        }
+
+        async function finalizeDeposit() {
+            const amt = parseFloat(document.getElementById('dep-amt').value); 
+            const cur = document.getElementById('dep-cur').value;
+            
+            if (isNaN(amt) || amt <= 0) return showAlert("Invalid Amount", "error");
+
+            // In Part 20, we will finalize the balance update via Admin Approval
+            showAlert(lang === 'am' ? "ደረሰኝ ተልኳል፣ በአድሚን ሲረጋገጥ ገቢ ይሆናል" : "Receipt sent, pending admin approval", "success");
+            navTo('view-home');
+        }
+        // --- GROUP & CHAT SYSTEM (Firebase Real-time) ---
+        async function showMyGroups() {
+            const container = document.getElementById('grp-list'); 
+            container.innerHTML = 'Loading Groups...';
+            
+            const groupsSnap = await db.collection("groups").get();
+            container.innerHTML = '';
+            
+            groupsSnap.forEach(doc => {
+                const g = doc.data();
+                const mine = g.creator === user.phone;
+                const txt = mine ? (lang === 'am' ? 'እርስዎ የፈጠሩት' : 'Yours') : (lang === 'am' ? 'የእርስዎ አይደለም' : 'Not Yours');
+                
+                const div = document.createElement('div');
+                div.className = 'user-item';
+                div.innerHTML = `<b>${g.name}</b> (${txt})`;
+                div.onclick = mine ? () => openGrp(doc.id) : () => alert(txt);
+                container.appendChild(div);
+            });
+            navTo('my-groups-sec');
+        }
+
+        async function handleChatList() { 
+            // Reuse user list but redirect to chat
+            showUserList(false); 
+            setTimeout(() => {
+                const items = document.querySelectorAll('.user-item');
+                items.forEach((item, idx) => {
+                    // Logic to get target user phone from the rendered list
+                    const targetPhone = item.getAttribute('data-phone');
+                    item.onclick = () => openChat(targetPhone);
+                });
+            }, 500);
+        }
+
+        function openChat(ph) { activeChat = { type: 'p', id: ph }; navTo('chat-sec'); listenForMessages(); }
+        function openGrp(id) { activeChat = { type: 'g', id: id }; navTo('chat-sec'); listenForMessages(); }
+
+        async function sendChat(type) {
+            const input = document.getElementById('chat-in');
+            const txt = input.value;
+            if (!txt) return;
+
+            const msg = {
+                u: user.name,
+                t: txt,
+                sender: user.phone,
+                type: type, // text/image/etc
+                time: Date.now()
+            };
+
+            if (activeChat.type === 'p') {
+                const chatID = [user.phone, activeChat.id].sort().join('_');
+                await db.collection("chats").doc(chatID).collection("messages").add(msg);
+            } else {
+                await db.collection("groups").doc(activeChat.id).collection("messages").add(msg);
+            }
+            input.value = '';
+        }
+
+        function listenForMessages() {
+            const container = document.getElementById('chat-box');
+            let chatRef;
+
+            if (activeChat.type === 'p') {
+                const chatID = [user.phone, activeChat.id].sort().join('_');
+                chatRef = db.collection("chats").doc(chatID).collection("messages");
+            } else {
+                chatRef = db.collection("groups").doc(activeChat.id).collection("messages");
+            }
+
+            // Real-time listener
+            chatRef.orderBy("time", "asc").onSnapshot(snapshot => {
+                container.innerHTML = snapshot.docs.map(doc => {
+                    const m = doc.data();
+                    const isMe = m.sender === user.phone;
+                    return `<div style="text-align: ${isMe ? 'right' : 'left'}; margin: 5px;">
+                                <small>${m.u}</small><br>
+                                <span style="background: ${isMe ? '#dcf8c6' : '#eee'}; padding: 5px 10px; border-radius: 10px; display: inline-block;">
+                                    ${m.t}
+                                </span>
+                            </div>`;
+                }).join('');
+                container.scrollTop = container.scrollHeight;
+            });
+        }
+
+        // --- LIVE CAMERA ---
+        function openLiveCamera() {
+            showView('view-live');
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+                    liveStream = stream;
+                    document.getElementById('live-video-element').srcObject = stream;
+                }).catch(err => showAlert("Camera Error", "error"));
+            }
+        }
+
+        function stopLive() {
+            if (liveStream) liveStream.getTracks().forEach(track => track.stop());
+            goBack();
+        }
+
+        // --- PROFILE & SETTINGS ---
+        async function saveProfile() {
+            const n = document.getElementById('prof-name-edit').value; 
+            const o = document.getElementById('old-pass').value; 
+            const p = document.getElementById('new-pass').value; 
+            const cp = document.getElementById('conf-pass').value;
+
+            if (p && p !== cp) return showAlert("Passwords do not match", "error");
+            if (o && o !== user.password) return showAlert("Old Password Wrong", "error");
+            
+            const updates = {};
+            if (n) updates.name = n;
+            if (p) updates.password = p;
+
+            await db.collection("users").doc(user.phone).update(updates);
+            // Refresh local user object
+            user = { ...user, ...updates };
+            showAlert("Updated", "success");
+        }
+
+        // --- FEEDBACK ---
+        async function giveFb(t) {
+            if (t === 'live') {
+                openLiveCamera();
+            } else {
+                const x = prompt("Text:");
+                if (x) {
+                    await db.collection("feedbacks").add({
+                        u: user.name,
+                        phone: user.phone,
+                        c: x,
+                        time: Date.now()
+                    });
+                    showAlert("Sent", "success");
+                }
+            }
+        }
+
+        // Initialize App Language
+        toggleLanguage(); toggleLanguage();
+    </script>
+    // --- PART 22: FIREBASE INITIALIZATION & CLOSING ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+    authDomain: "fasil-web-app-3a732.firebaseapp.com",
+    projectId: "fasil-web-app-3a732",
+    storageBucket: "fasil-web-app-3a732.firebasestorage.app",
+    messagingSenderId: "239133072986",
+    appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  
+  // Define Database and Storage globally for use in previous functions
+  window.db = firebase.firestore();
+  window.storage = firebase.storage();
+  
+  console.log("Fasil Web App: Firebase Connected Successfully!");
+</script>
+
+</body>
+</html>
