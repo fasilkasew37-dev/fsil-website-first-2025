@@ -1,0 +1,1817 @@
+ፍ<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App (Firebase Online)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- General CSS --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center; padding: 0; margin: 0;
+            background-color: #f0f4f8; color: #333;
+            padding-bottom: 90px;
+        }
+        .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+        
+        /* Header */
+        .top-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; padding: 5px 10px; border-bottom: 3px solid #007bff;
+        }
+        .marquee-container-top { flex: 1; overflow: hidden; white-space: nowrap; margin: 0 10px; }
+        .marquee-text-top { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; color: #007bff; font-weight: bold; font-size: 16px; }
+        
+        /* Footer */
+        .footer-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .bottom-nav { display: flex; height: 55px; width: 100%; }
+        .nav-btn { flex: 1; border: none; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .nav-home { background-color: #28a745; } .nav-live { background-color: #ffc107; color: black; } .nav-profile { background-color: #dc3545; }
+        .bottom-marquee { background: #f0f0f0; color: #28a745; font-weight: bold; overflow: hidden; white-space: nowrap; height: 25px; line-height: 25px; font-size: 12px; }
+        .bottom-marquee span { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        /* Sections */
+        .section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 400px; }
+        .show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+        /* Welcome Split - Compacted */
+        .split-container { display: flex; justify-content: space-between; gap: 5px; text-align: left; margin-bottom: 5px; }
+        .split-left { width: 48%; color: #007bff; font-size: 10px; line-height: 1.2; padding: 2px; }
+        .split-right { width: 48%; color: #d35400; font-size: 10px; font-weight: bold; line-height: 1.2; border-left: 1px solid #ccc; padding-left: 5px; padding: 2px; }
+        .blue-spacer { height: 10px; background-color: #007bff; margin: 5px 0; border-radius: 5px; }
+        #t-in, #t-po { font-size: 9px; }
+
+        /* --- LOGO CSS --- */
+        .brand-area { display: flex; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 20px; position: relative; transform: scale(1.0); }
+        .side-logo-container { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #007bff; background: white; z-index: 5; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0, 123, 255, 0.6); }
+        .side-logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .left-logo { margin-right: -20px; } .right-logo { margin-left: -20px; }
+        .complex-logo { position: relative; width: 130px; height: 130px; z-index: 10; }
+        .ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: glowing 1.5s infinite alternate ease-in-out; }
+        @keyframes glowing { 0% { box-shadow: 0 0 5px currentColor; filter: brightness(100%); } 100% { box-shadow: 0 0 20px currentColor; filter: brightness(150%); } }
+        .ring-blue { width: 130px; height: 130px; border: 4px solid #00008b; color: #00008b; z-index: 1; }
+        .ring-red { width: 110px; height: 110px; border: 3px solid red; color: red; z-index: 2; }
+        .ring-yellow { width: 90px; height: 90px; border: 3px solid yellow; color: yellow; z-index: 3; }
+        .ring-green { width: 70px; height: 70px; background: transparent; border: 2px solid green; border-radius: 50%; z-index: 4; }
+        .center-lion { position: absolute; width: 70px; height: 70px; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; object-fit: cover; border-radius: 50%; border: 2px solid white; background-color: #007bff; }
+        .pos-item { position: absolute; width: 16px; height: 16px; object-fit: cover; border-radius: 50%; border: 1px solid white; }
+        .p-n { top: -8px; left: 50%; transform: translateX(-50%); } .p-s { bottom: -8px; left: 50%; transform: translateX(-50%); } 
+        .p-e { right: -8px; top: 50%; transform: translateY(-50%); } .p-w { left: -8px; top: 50%; transform: translateY(-50%); }
+
+        /* FWA Animated Brand Text */
+        .fwa-brand {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        .fwa-letter {
+            font-size: 48px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            animation: colorPulse 2s infinite alternate;
+            display: inline-block;
+        }
+        .letter-f { color: #28a745; animation-delay: 0s; } /* Green */
+        .letter-w { color: #ffc107; animation-delay: 0.4s; } /* Yellow */
+        .letter-a { color: #dc3545; animation-delay: 0.8s; } /* Red */
+        @keyframes colorPulse {
+            0% { filter: brightness(100%); transform: scale(1); }
+            100% { filter: brightness(150%); transform: scale(1.1); }
+        }
+
+        /* SPLASH SCREEN */
+        #splash-screen { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: #007bff; 
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        #splash-msg { 
+            margin-top: 30px; 
+            color: white; 
+            font-size: 22px; 
+            font-weight: bold; 
+            text-align: center; 
+            padding: 20px; 
+            animation: slideTxt 5s linear infinite; 
+            display: none; 
+        }
+        @keyframes slideTxt { 
+            0% {transform: translateX(100%);} 
+            100% {transform: translateX(-100%);} 
+        }
+
+        /* Dashboard Split */
+        .dash-layout { display: flex; gap: 10px; align-items: flex-start; }
+        .dash-left { width: 60%; text-align: left; } .dash-right { width: 40%; }
+        
+        /* UI Elements */
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; } .btn-yellow { background: #ffc107; color: black; }
+        .btn-small { padding: 8px; font-size: 12px; margin: 2px 0; }
+        .btn-tiny { padding: 5px; font-size: 10px; margin: 1px; }
+        .btn-admin { background: #333; color: white; display: none; }
+        .lang-btn { background: #6c757d; color: white; padding: 4px 8px; font-size: 10px; border-radius: 4px; border:none; cursor: pointer; margin-top: 2px;}
+        
+        /* Modified Buttons */
+        .btn-compact { padding: 8px; margin: 2px 0; font-size: 14px; margin-top: 15px; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-box { background: white; padding: 20px; width: 85%; border-radius: 10px; text-align: center; max-height: 80vh; overflow-y: auto; }
+
+        /* Post Card */
+        .post-card { border: 1px solid #eee; background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: left; }
+        .post-header { display: flex; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+        .post-header img { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .post-actions { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; flex-wrap: wrap; }
+        .action-icon { background: none; border: none; color: #007bff; font-size: 12px; cursor: pointer; padding: 5px; margin: 0; width: auto; display: inline-flex; align-items: center; gap: 3px; }
+        
+        .user-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .user-item img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .user-item.bright-blue { background-color: #007bff; color: white; border-radius: 5px; }
+        
+        #live-video-element { width: 100%; height: 350px; background: #000; border-radius: 8px; object-fit: cover; }
+        .hidden-input { display: none; }
+        .hidden { display: none; }
+        
+        /* Admin Indicators */
+        .banned-text { color: black !important; font-weight: bold; }
+        .open-text { color: #007bff !important; font-weight: bold; }
+        .banned-indicator { border: 2px solid black; background: #eee; }
+        
+        /* Firebase Status */
+        .firebase-status {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            z-index: 1000;
+            display: none;
+        }
+        .firebase-online { background: #28a745; }
+        .firebase-offline { background: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <!-- SPLASH SCREEN (Logo visible for 3 seconds) -->
+    <div id="splash-screen">
+        <div class="brand-area" style="transform: scale(1.5);">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                <img src="lion_image.jpg" class="center-lion">
+            </div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        <!-- FWA Brand Text -->
+        <div class="fwa-brand">
+            <span class="fwa-letter letter-f">F</span>
+            <span class="fwa-letter letter-w">W</span>
+            <span class="fwa-letter letter-a">A</span>
+        </div>
+        <div id="splash-msg">እንኳን ደስ አለዎት በተሳካ ሁኔታ ተመዝግበዋል እናመሰግናለን</div>
+    </div>
+
+    <!-- Firebase Status Indicator -->
+    <div id="firebase-status" class="firebase-status">🔥 Online</div>
+
+    <!-- Header -->
+    <div class="top-header">
+        <!-- LEFT HEADER LOGO (FULL LOGO) -->
+        <div class="brand-area" style="transform: scale(0.35); width: 60px; height: 60px;">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue">
+                    <div class="ring ring-red">
+                        <div class="ring ring-yellow">
+                            <div class="ring ring-green"></div>
+                        </div>
+                    </div>
+                </div>
+                <img src="lion_image.jpg" class="center-lion">
+            </div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        
+        <div class="marquee-container-top"><span class="marquee-text-top" id="head-txt">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+        
+        <!-- RIGHT HEADER LOGO (FULL LOGO) -->
+        <div style="text-align: right; display: flex; flex-direction: column; align-items: center;">
+            <div class="brand-area" style="transform: scale(0.35); width: 60px; height: 60px;">
+                <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                <div class="complex-logo">
+                    <div class="ring ring-blue">
+                        <div class="ring ring-red">
+                            <div class="ring ring-yellow">
+                                <div class="ring ring-green"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <img src="lion_image.jpg" class="center-lion">
+                </div>
+                <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+            </div>
+            <button class="lang-btn" onclick="toggleLanguage()" id="lang-btn-txt">Language</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Modals -->
+        <div class="modal-overlay" id="custom-modal"><div class="modal-box"><h3 id="modal-title"></h3><p id="modal-msg"></p><button class="btn-blue" onclick="closeModal()">OK</button></div></div>
+        
+        <div class="modal-overlay" id="pass-modal"><div class="modal-box"><h3 id="pass-title">Password Required</h3><input type="password" id="pass-input" placeholder="Password" style="text-align:center;"><button class="btn-green" onclick="verifyPass()">Confirm</button><button class="btn-red" onclick="document.getElementById('pass-modal').style.display='none'">Cancel</button></div></div>
+
+        <!-- Admin Action Password Modal -->
+        <div class="modal-overlay" id="admin-action-modal"><div class="modal-box"><h3>Admin Verification</h3><input type="password" id="admin-act-pass" placeholder="Admin Code"><button class="btn-green" onclick="runAdminAction()">Verify</button><button class="btn-red" onclick="document.getElementById('admin-action-modal').style.display='none'">Cancel</button></div></div>
+
+        <!-- Admin Change Pass Modal -->
+        <div class="modal-overlay" id="admin-chg-modal"><div class="modal-box"><h3>Change Admin Password</h3>
+            <input type="password" id="old-adm" placeholder="Old Admin Code">
+            <input type="password" id="new-adm" placeholder="New (abc123456xyz)">
+            <input type="password" id="conf-adm" placeholder="Confirm New">
+            <button class="btn-green" onclick="saveNewAdminPass()">Change</button>
+            <button class="btn-red" onclick="document.getElementById('admin-chg-modal').style.display='none'">Cancel</button>
+        </div></div>
+
+        <!-- Admin Premium Pay Modal -->
+        <div class="modal-overlay" id="adm-prem-modal"><div class="modal-box"><h3>Premium Payment Receiver</h3>
+            <button class="btn-blue" onclick="alert('PayPal/Intl Payment Gateway Open')">1. International (PayPal)</button>
+            <button class="btn-green" onclick="alert('Local Method 1 Gateway Open')">2. Local Bank 1</button>
+            <button class="btn-green" onclick="alert('Local Method 2 Gateway Open')">3. Local Bank 2</button>
+            <button class="btn-red" onclick="document.getElementById('adm-prem-modal').style.display='none'">Close</button>
+        </div></div>
+
+        <!-- Comment Action Modal -->
+        <div class="modal-overlay" id="comment-type-modal"><div class="modal-box"><h3 id="t-com-act">Action</h3>
+            <button class="btn-blue" onclick="openComSub('give')">Give Comment</button>
+            <button class="btn-blue" onclick="openComSub('view')">View Comments</button>
+            <button class="btn-red" onclick="document.getElementById('comment-type-modal').style.display='none'">Cancel</button>
+        </div></div>
+
+        <!-- Give/View Sub Modal -->
+        <div class="modal-overlay" id="comment-media-modal"><div class="modal-box"><h3 id="t-com-media">Select Type</h3>
+            <button class="btn-blue" onclick="processComment('text')">Text</button>
+            <button class="btn-blue" onclick="processComment('image')">Image</button>
+            <button class="btn-blue" onclick="processComment('video')">Video</button>
+            <button class="btn-blue" onclick="processComment('audio')">Voice</button>
+            <button class="btn-red" onclick="document.getElementById('comment-media-modal').style.display='none'">Cancel</button>
+        </div></div>
+
+        <!-- View Comments List Modal -->
+        <div class="modal-overlay" id="view-comments-list-modal"><div class="modal-box"><h3>Comments</h3><div id="comments-display-area" style="text-align:left; max-height:300px; overflow-y:auto;"></div><button class="btn-red" onclick="document.getElementById('view-comments-list-modal').style.display='none'">Close</button></div></div>
+
+        <!-- Share Modal -->
+        <div class="modal-overlay" id="share-modal"><div class="modal-box"><h3>Share To</h3>
+            <button class="btn-blue" onclick="shareTo('telegram')">Telegram</button>
+            <button class="btn-blue" onclick="shareTo('facebook')">Facebook</button>
+            <button class="btn-blue" onclick="shareTo('tiktok')">TikTok</button>
+            <button class="btn-blue" onclick="shareTo('youtube')">YouTube</button>
+            <button class="btn-red" onclick="closeShare()">Close</button>
+        </div></div>
+
+        <div class="modal-overlay" id="admin-login-modal"><div class="modal-box"><h3>Admin Login</h3><input type="password" id="admin-pass-in" placeholder="Code (abc123456abd)"><button class="btn-green" onclick="adminLogin()">Enter</button><button class="btn-red" onclick="document.getElementById('admin-login-modal').style.display='none'">Cancel</button></div></div>
+
+        <!-- Receipt Modal -->
+        <div class="modal-overlay" id="receipt-modal"><div class="modal-box"><h3>Payment Receipt</h3>
+            <p>Receipt Uploaded Successfully.</p>
+            <div id="receipt-actions">
+                <button class="btn-blue" onclick="downloadReceipt()">Save Receipt to Phone</button>
+                <button class="btn-green" onclick="closeReceiptModal()">Receive Receipt (OK)</button>
+            </div>
+        </div></div>
+
+        <!-- 1. AGREEMENT & WELCOME -->
+        <div id="view-agreement" class="section show">
+            <div id="welcome-content">
+                <div class="split-container">
+                    <div class="split-left">
+                        <h4 id="t-w-s">እንኳን ደህና መጡ</h4>
+                        <p id="t-in">ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ሁሌም ትክክለኛ መረጃዎችን ያቀርባል።</p>
+                    </div>
+                    <div class="split-right">
+                        <h4 id="t-p-s">ጥብቅ መመሪያ</h4>
+                        <p id="t-po">ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው።</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 5px; justify-content: center;">
+                    <button class="btn-green btn-tiny" onclick="handleAgree()" id="btn-agree">እስማማለሁ</button>
+                    <button class="btn-red btn-tiny" onclick="showAlert('አልተስማሙም', 'error')" id="btn-disagree">አልስማማም</button>
+                </div>
+                <div class="blue-spacer"></div>
+                
+                <!-- Main Logo with FWA Brand -->
+                <div class="brand-area" id="main-brand-logo">
+                    <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                    <div class="complex-logo">
+                        <div class="ring ring-blue"><div class="ring ring-red"><img src="lion_image.jpg" class="pos-item p-n"><img src="lion_image.jpg" class="pos-item p-s"><img src="lion_image.jpg" class="pos-item p-e"><img src="lion_image.jpg" class="pos-item p-w"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                        <img src="lion_image.jpg" class="center-lion">
+                    </div>
+                    <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+                </div>
+                
+                <!-- FWA Brand Text -->
+                <div class="fwa-brand">
+                    <span class="fwa-letter letter-f">F</span>
+                    <span class="fwa-letter letter-w">W</span>
+                    <span class="fwa-letter letter-a">A</span>
+                </div>
+
+            </div>
+            <div id="auth-section" style="display:none;">
+                <p style="color: green; font-weight: bold; font-size: 14px;" id="t-thx">አገልግሎታችንን ስለመረጡ እናመሰግናለን! አዲስ ከሆኑ ይመዝገቡ፣ ካለዎት ይግቡ።</p>
+                <div style="display:flex; gap:10px;"><button class="btn-red" onclick="showAuth('signup')" id="btn-sh-s">መመዝገቢያ</button><button class="btn-red" onclick="showAuth('login')" id="btn-sh-l">መግቢያ</button></div>
+                
+                <div id="form-signup" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <div id="signup-step-1">
+                        <h3 style="color:#dc3545;" id="h-s">ምዝገባ (አዲስ ብቻ)</h3>
+                        <input type="text" id="reg-name" placeholder="Full Name">
+                        <input type="text" id="reg-phone" placeholder="Phone (09... 10 digits)">
+                        <input type="email" id="reg-email" placeholder="Email (@gmail.com only)">
+                        <input type="password" id="reg-pass" placeholder="Password (6 digits)">
+                        <button class="btn-green" onclick="preSignup()">Submit</button>
+                    </div>
+                    <div id="signup-step-2" style="display:none;">
+                        <h3>Upload Profile Photo</h3>
+                        <button class="btn-blue" onclick="promptUpload('profile')">Upload Photo</button>
+                        <input type="file" id="file-profile" class="hidden-input" accept="image/*">
+                        <button class="btn-green" onclick="finalSignup()">Complete Registration</button>
+                    </div>
+                </div>
+
+                <div id="form-login" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <h3 style="color:#dc3545;" id="h-l">መግቢያ (ነባር)</h3>
+                    <input type="text" id="log-phone" placeholder="Phone">
+                    <input type="password" id="log-pass" placeholder="Password">
+                    <button class="btn-blue" onclick="doLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MAIN DASHBOARD -->
+        <div id="view-home" class="section">
+            <div style="display:flex; align-items:center; border-bottom:1px solid #ddd; padding-bottom:5px;">
+                <!-- DASHBOARD HEADER LOGO (FULL LOGO) -->
+                <div class="brand-area" style="transform: scale(0.25); width: 50px; height: 50px; margin-right: 10px;">
+                    <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                    <div class="complex-logo">
+                        <div class="ring ring-blue">
+                            <div class="ring ring-red">
+                                <div class="ring ring-yellow">
+                                    <div class="ring ring-green"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <img src="lion_image.jpg" class="center-lion">
+                    </div>
+                    <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+                </div>
+                <h2 id="t-d" style="margin:0;">ዳሽቦርድ</h2>
+            </div>
+            <div class="dash-layout" style="margin-top:10px;">
+                <div class="dash-left">
+                    <button class="btn-green" style="border-radius: 0;" id="btn-fc" onclick="toggleList('free')">የነፃ አገልግሎት ማዕከል</button>
+                    <div id="list-free" style="display:none; padding-left: 10px;">
+                        <button class="btn-green btn-small" onclick="navTo('view-info')" id="btn-lv">መረጃ መመልከት</button>
+                        <button class="btn-green btn-small" onclick="navTo('post-info')" id="btn-lp">መረጃ መለጠፍ</button>
+                        <button class="btn-green btn-small" onclick="handleGroupCreate()" id="btn-lg">ግሩፕ መፍጠር</button>
+                        <button class="btn-green btn-small" onclick="showMyGroups()" id="btn-lmg">የፈጠሩትን ግሩፕ ለመመልከት</button>
+                        <button class="btn-green btn-small" onclick="handleChatList()" id="btn-lc">ቻት</button>
+                        <button class="btn-green btn-small" onclick="navTo('feedback-sec')" id="btn-lf">ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት እና ለመመልከት</button>
+                        <button class="btn-green btn-small" onclick="showUserList(false)" id="btn-lu">ተጠቃሚዎች</button>
+                        <button class="btn-green btn-small" onclick="checkAuth('business-sec')" id="btn-lb">ቢዝነስ</button>
+                        <button class="btn-green btn-small" style="background-color:#333;" onclick="checkAuth('report-inbox')" id="btn-admin-rep">ሪፖርት መቀበያ (Admin)</button>
+                    </div>
+                    <button class="btn-yellow" style="border-radius: 0; margin-top: 10px;" id="btn-pc" onclick="toggleList('prem')">የክፍያ ፕሪሚየም አገልግሎት</button>
+                    <div id="list-prem" style="display:none; padding-left: 10px;">
+                        <!-- Premium buttons now lead to Premium feed -->
+                        <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium Video Feed (High Quality)')">ጥራት ያለው ቪዲዮ</button>
+                        <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium News Feed')">ዜና (High Quality)</button>
+                        <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium Image Feed')">ምስል (High Quality)</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('ppt')" id="btn-pp">PowerPoint</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('pdf')" id="btn-ppdf">PDF</button>
+                    </div>
+                </div>
+                <div class="dash-right">
+                    <!-- RIGHT PANEL LOGO (FULL LOGO) -->
+                    <div class="brand-area" style="transform: scale(0.5);">
+                        <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                        <div class="complex-logo">
+                            <div class="ring ring-blue">
+                                <div class="ring ring-red">
+                                    <div class="ring ring-yellow">
+                                        <div class="ring ring-green"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <img src="lion_image.jpg" class="center-lion">
+                        </div>
+                        <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-red" style="margin-top:20px;" onclick="doLogout()" id="btn-out">ውጣ</button>
+        </div>
+
+        <!-- 3. SECTIONS -->
+
+        <!-- Post -->
+        <div id="post-info" class="section">
+            <h3 id="t-ph">መረጃ መለጠፍ</h3>
+            <div id="post-type-select">
+                <button class="btn-blue" onclick="setupPost('text')" id="btn-pt">📝 Text</button>
+                <button class="btn-blue" onclick="setupPost('image')" id="btn-pi">📷 Image</button>
+                <button class="btn-blue" onclick="setupPost('video')" id="btn-pv">🎥 Video</button>
+                <button class="btn-blue" onclick="setupPost('audio')" id="btn-pa">🎙️ Audio</button>
+            </div>
+            <div id="post-form-area" style="display:none; border-top:1px solid #ccc; margin-top:10px; padding-top:10px;">
+                <p id="post-instr" style="color:blue; font-size:12px;"></p>
+                <div style="display:flex; gap:5px;">
+                     <input type="text" id="p-title" placeholder="Title (Required)">
+                     <button class="btn-red btn-tiny" onclick="clearPostForm()">አፅዳ (Clear)</button>
+                </div>
+                <textarea id="p-content" placeholder="Details (Text Only)..." style="display:none;"></textarea>
+                <input type="file" id="file-post" class="hidden-input">
+                <button class="btn-green" onclick="submitPost()" id="btn-pnow">Post Now</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk1">Back</button>
+        </div>
+
+        <!-- View -->
+        <div id="view-info" class="section">
+            <h3 id="t-vh">መረጃ መመልከት</h3>
+            <div style="display:flex; gap:5px;">
+                <button class="btn-blue btn-small" onclick="renderPosts('text')" id="btn-vt">Text</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('image')" id="btn-vi">Image</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('video')" id="btn-vv">Video</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('audio')" id="btn-va">Audio</button>
+            </div>
+            <div id="feed-container" style="margin-top:10px;"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk2">Back</button>
+        </div>
+
+        <!-- Admin Report Inbox -->
+        <div id="report-inbox" class="section">
+            <h3>ሪፖርት መቀበያ (Admin)</h3>
+            <div style="margin-bottom:10px; display:flex; flex-direction:column; gap:5px;">
+                <button class="btn-blue btn-small" onclick="promptAdminAction('changePass')">1. Change Admin Pass</button>
+                <button class="btn-blue btn-small" onclick="promptAdminAction('userStats')">2. User Activity Monitor</button>
+                <button class="btn-green btn-small" onclick="promptAdminAction('premPay')">3. Premium Payment Receiver</button>
+                <button class="btn-red btn-small" onclick="promptAdminAction('viewRep')">4. Receive Reports (Ban/Unban)</button>
+            </div>
+            <!-- Container for dynamic admin content -->
+            <div id="admin-dynamic-content" style="text-align:left; margin-top:10px;"></div>
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Business -->
+        <div id="business-sec" class="section">
+            <h3 id="t-bh">ቢዝነስ ማዕከል</h3>
+            <div style="background:#f9f9f9; padding:10px; border:1px solid #ddd;">
+                <p>USD: <b id="bal-usd">0.00</b> | GBP: <b id="bal-gbp" style="color:red;">0.00</b> | EUR: <b id="bal-eur" style="color:blue;">0.00</b></p>
+                <p>ETB: <b id="bal-etb" style="color:green;">0.00</b></p>
+                <hr>
+                <p style="color:green; font-weight:bold;">Total (USD): <span id="bal-total">0.00</span></p>
+                <p style="color:red; font-weight:bold;">Total (ETB): <span id="bal-total-etb">0.00</span></p>
+            </div>
+            <button class="btn-green" onclick="navTo('deposit-sec')" id="btn-bd">Deposit</button>
+            <button class="btn-blue" onclick="navTo('withdraw-sec')" id="btn-bw">Withdraw</button>
+            <button class="btn-yellow" onclick="navTo('intl-sec')" id="btn-bi">International Purchase</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk3">Back</button>
+        </div>
+
+        <!-- Deposit -->
+        <div id="deposit-sec" class="section">
+            <h3 id="t-dep-h">Deposit</h3>
+            <div id="dep-step-1">
+                <input type="number" id="dep-amt" placeholder="Amount (ETB)">
+                <select id="dep-cur"><option value="ETB">ETB</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="EUR">EUR</option></select>
+                <button class="btn-green" onclick="preDeposit()">Submit</button>
+            </div>
+            <div id="dep-step-2" class="hidden">
+                <button class="btn-blue" onclick="promptUpload('deposit')">Upload Receipt</button>
+                <input type="file" id="file-deposit" class="hidden-input">
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk4">Back</button>
+        </div>
+
+        <!-- Withdraw -->
+        <div id="withdraw-sec" class="section">
+            <h3 id="t-with-h">Withdraw</h3>
+            <select id="w-cur"><option value="USD">From USD</option><option value="GBP">From GBP</option><option value="EUR">From EUR</option><option value="ETB">From ETB</option></select>
+            <select id="w-method" onchange="toggleReceiverInput()"><option value="Telebirr">Telebirr</option><option value="CBE">CBE</option><option value="PayPal">PayPal</option></select>
+            <!-- Telebirr specific styling -->
+            <input type="text" id="w-dest" placeholder="Phone/Account" style="display:none; margin-bottom: 2px; font-size: 13px;">
+            <input type="number" id="w-amt" placeholder="Amount">
+            
+            <button class="btn-compact btn-blue" onclick="reqWithdraw()" id="btn-sub-with">Withdraw</button>
+            <button class="btn-compact btn-red" onclick="goBack()" id="btn-bk5">Back</button>
+        </div>
+
+        <!-- Intl Purchase -->
+        <div id="intl-sec" class="section">
+            <h3 id="t-intl-h">International Purchase</h3>
+            <button class="btn-blue" onclick="document.getElementById('intl-list').style.display='block'">ምረጥ (Select)</button>
+            <div id="intl-list" class="hidden" style="margin-top:10px;">
+                <p>Select Service to Pay:</p>
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('ChatGPT')">1. ChatGPT</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Amazon')">2. Amazon</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Hosting')">3. Hosting</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Domain')">4. Domain</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Netflix')">5. Netflix</button>
+                </div>
+                <input type="file" id="file-intl" class="hidden-input">
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk6">Back</button>
+        </div>
+
+        <!-- Premium Pay -->
+        <div id="prem-pricing" class="section">
+            <h3 id="t-pay-h">Payment</h3>
+            <button class="btn-green" onclick="pay(5)">Daily (5 ETB)</button>
+            <button class="btn-green" onclick="pay(25)">Weekly (25 ETB)</button>
+            <button class="btn-green" onclick="pay(30)">Monthly (30 ETB)</button>
+            <div id="pay-up-area" style="display:none;">
+                <button class="btn-blue" onclick="promptUpload('pay')">Upload Receipt</button>
+                <input type="file" id="file-pay" class="hidden-input">
+                <button class="btn-green" onclick="finPay()">Confirm</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk7">Back</button>
+        </div>
+
+        <!-- Feedback -->
+        <div id="feedback-sec" class="section">
+            <h3 id="t-fh">Feedback</h3>
+            <p id="t-fb-sub">ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት</p>
+            <button class="btn-blue" onclick="giveFb('text')" id="btn-fb-txt">Text</button>
+            <button class="btn-yellow" onclick="openLiveCamera()" id="btn-fb-live">Live</button>
+            <hr>
+            <button class="btn-blue" onclick="viewFbs()" id="btn-view-fb">View Feedbacks</button>
+            <div id="fb-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk8">Back</button>
+        </div>
+
+        <!-- Chat / Group -->
+        <div id="chat-sec" class="section">
+            <h3 id="t-chat-h">Chat</h3>
+            <div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ddd; margin-bottom:5px;"></div>
+            <input type="text" id="chat-in" placeholder="Message">
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <button class="btn-blue btn-small" onclick="sendChat('text')">Send</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-img')">📷</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-vid')">🎥</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-aud')">🎙️</button>
+                <button class="btn-red btn-small" onclick="openLiveCamera()">🔴</button>
+            </div>
+            <input type="file" id="file-chat" class="hidden-input">
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk9">Back</button>
+        </div>
+
+        <!-- User List (Read Only) -->
+        <div id="user-list-sec" class="section">
+            <h3 id="t-users-h">Users</h3>
+            <div id="ul-cont"></div>
+            <button class="btn-green" id="btn-grp-done" style="display:none;" onclick="createGroup()">Done (5+)</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk10">Back</button>
+        </div>
+
+        <!-- My Groups -->
+        <div id="my-groups-sec" class="section">
+            <h3 id="t-mygrp-h">My Groups</h3>
+            <div id="grp-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk11">Back</button>
+        </div>
+
+        <!-- Live View (Real Camera) -->
+        <div id="view-live" class="section">
+            <h2 id="t-live">ቀጥታ ስርጭት (Live)</h2>
+            <video id="live-video-element" autoplay playsinline></video>
+            <button class="btn-red" onclick="stopLive()">Stop Live</button>
+        </div>
+
+        <!-- Profile -->
+        <div id="view-profile" class="section">
+            <h2 id="t-prof">የግል ማዕከል</h2>
+            <div style="text-align:left;">
+                <p>Phone: <b id="prof-phone"></b> (Disabled)</p>
+                <h4 id="t-edit-prof">Edit Profile</h4>
+                <input type="text" id="prof-name-edit" placeholder="Name">
+                <input type="password" id="old-pass" placeholder="Old Password">
+                <input type="password" id="new-pass" placeholder="New Password">
+                <input type="password" id="conf-pass" placeholder="Confirm Password">
+                <button class="btn-blue" onclick="promptUpload('profile-edit')" id="btn-chg-pic">Change Photo</button>
+                <input type="file" id="file-profile-edit" class="hidden-input" accept="image/*">
+                <button class="btn-green" onclick="saveProfile()" id="btn-up-prof">Update</button>
+            </div>
+            <button class="btn-red" style="margin-top:10px;" onclick="doLogout()" id="btn-prof-out">Logout</button>
+        </div>
+
+    </div>
+
+    <!-- Hidden Input for Comments -->
+    <input type="file" id="comment-file-input" class="hidden-input">
+    <input type="file" id="universal-file" class="hidden-input">
+
+    <!-- Footer Wrapper with Marquee Below -->
+    <div class="footer-wrapper">
+        <div class="bottom-nav">
+            <button class="nav-btn nav-home" onclick="navTab('home')"><i class="fas fa-home"></i> <span id="nav-h">Home</span></button>
+            <button class="nav-btn nav-live" onclick="navTab('live')"><i class="fas fa-broadcast-tower"></i> <span id="nav-l">Live</span></button>
+            <button class="nav-btn nav-profile" onclick="navTab('profile')"><i class="fas fa-user"></i> <span id="nav-p">Profile</span></button>
+        </div>
+        <div class="bottom-marquee">
+            <span>ፋሲል ዌብ አፕ - Fasil Web App (Service Center) | 🔥 Firebase Online</span>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+            authDomain: "fasil-web-app-3a732.firebaseapp.com",
+            projectId: "fasil-web-app-3a732",
+            storageBucket: "fasil-web-app-3a732.appspot.com",
+            messagingSenderId: "239133072986",
+            appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        console.log("🔥 Firebase Initialized Successfully!");
+        
+        // Global Firebase tools
+        window.firebaseTools = {
+            db: db,
+            
+            // Save post to Firebase
+            savePost: async function(postData) {
+                try {
+                    const docRef = await addDoc(collection(db, "posts"), {
+                        ...postData,
+                        timestamp: new Date()
+                    });
+                    console.log("✅ Post saved to Firebase:", docRef.id);
+                    return { success: true, id: docRef.id };
+                } catch (error) {
+                    console.error("❌ Error saving post:", error);
+                    return { success: false, error: error };
+                }
+            },
+            
+            // Get posts from Firebase
+            getPosts: async function() {
+                try {
+                    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+                    const querySnapshot = await getDocs(q);
+                    const posts = [];
+                    querySnapshot.forEach((doc) => {
+                        posts.push({ id: doc.id, ...doc.data() });
+                    });
+                    console.log("✅ Posts loaded from Firebase:", posts.length);
+                    return posts;
+                } catch (error) {
+                    console.error("❌ Error getting posts:", error);
+                    return [];
+                }
+            },
+            
+            // Save user to Firebase
+            saveUser: async function(userData) {
+                try {
+                    const docRef = await addDoc(collection(db, "users"), {
+                        ...userData,
+                        createdAt: new Date()
+                    });
+                    console.log("✅ User saved to Firebase:", userData.phone);
+                    return { success: true, id: docRef.id };
+                } catch (error) {
+                    console.error("❌ Error saving user:", error);
+                    return { success: false, error: error };
+                }
+            },
+            
+            // Get users from Firebase
+            getUsers: async function() {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "users"));
+                    const users = [];
+                    querySnapshot.forEach((doc) => {
+                        users.push(doc.data());
+                    });
+                    console.log("✅ Users loaded from Firebase:", users.length);
+                    return users;
+                } catch (error) {
+                    console.error("❌ Error getting users:", error);
+                    return [];
+                }
+            },
+            
+            // Real-time posts listener
+            setupRealtimePosts: function(callback) {
+                const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+                return onSnapshot(q, (snapshot) => {
+                    const posts = [];
+                    snapshot.forEach((doc) => {
+                        posts.push({ id: doc.id, ...doc.data() });
+                    });
+                    callback(posts);
+                });
+            },
+            
+            // Test connection
+            testConnection: async function() {
+                try {
+                    await addDoc(collection(db, "test"), { test: true, time: new Date() });
+                    return true;
+                } catch (error) {
+                    return false;
+                }
+            }
+        };
+        
+        // Test and show status
+        window.firebaseTools.testConnection().then(success => {
+            const statusEl = document.getElementById('firebase-status');
+            if(success) {
+                statusEl.textContent = '🔥 Online';
+                statusEl.className = 'firebase-status firebase-online';
+                statusEl.style.display = 'block';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            } else {
+                statusEl.textContent = '🔴 Offline';
+                statusEl.className = 'firebase-status firebase-offline';
+                statusEl.style.display = 'block';
+            }
+        });
+    </script>
+
+    <script>
+        // --- DATA ---
+        let user = JSON.parse(localStorage.getItem('fg_user')) || null;
+        let users = JSON.parse(localStorage.getItem('fg_users')) || [];
+        let posts = JSON.parse(localStorage.getItem('fg_posts')) || [];
+        let groups = JSON.parse(localStorage.getItem('fg_groups')) || [];
+        let chats = JSON.parse(localStorage.getItem('fg_chats')) || {};
+        let feedbacks = JSON.parse(localStorage.getItem('fg_fbs')) || [];
+        let reports = JSON.parse(localStorage.getItem('fg_reports')) || [];
+        let adminPass = localStorage.getItem('fg_admin_pass') || 'abc123456abc';
+        
+        let lang = 'am';
+        let hasAgreed = false;
+        let viewHistory = [];
+        let activePostType = 'text';
+        let activeChat = null;
+        let activeCommentPostId = null;
+        let pendingAct = null;
+        let uploadTarget = '';
+        let liveStream = null;
+        let comMode = 'view'; 
+        let pendingAdminAction = null;
+        let lastReceiptUrl = '';
+        let firebaseUnsubscribe = null;
+
+        const RATES = {USD:120, GBP:150, EUR:130};
+
+        // --- SPLASH SCREEN (3 seconds) ---
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('splash-screen').style.display = 'none';
+            }, 3000);
+        };
+
+        // --- FIREBASE INTEGRATION FUNCTIONS ---
+        async function loadFirebaseData() {
+            if(!window.firebaseTools) {
+                console.log("Firebase not loaded yet");
+                return;
+            }
+            
+            try {
+                // Load posts from Firebase
+                const firebasePosts = await window.firebaseTools.getPosts();
+                if(firebasePosts.length > 0) {
+                    posts = firebasePosts;
+                    console.log("Loaded", posts.length, "posts from Firebase");
+                    
+                    // Update local storage as backup
+                    localStorage.setItem('fg_posts', JSON.stringify(posts));
+                }
+                
+                // Load users from Firebase
+                const firebaseUsers = await window.firebaseTools.getUsers();
+                if(firebaseUsers.length > 0) {
+                    users = firebaseUsers;
+                    console.log("Loaded", users.length, "users from Firebase");
+                    
+                    // Update local storage as backup
+                    localStorage.setItem('fg_users', JSON.stringify(users));
+                }
+                
+                // Setup real-time updates
+                if(window.firebaseTools.setupRealtimePosts) {
+                    firebaseUnsubscribe = window.firebaseTools.setupRealtimePosts((updatedPosts) => {
+                        posts = updatedPosts;
+                        // Refresh posts view if active
+                        if(document.getElementById('view-info').classList.contains('show')) {
+                            renderPosts(activePostType);
+                        }
+                    });
+                }
+                
+            } catch (error) {
+                console.error("Error loading Firebase data:", error);
+            }
+        }
+        
+        // Call on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                loadFirebaseData();
+            }, 2000);
+        });
+
+        // --- MODIFIED FUNCTIONS FOR FIREBASE ---
+        async function submitPost() {
+            const t = document.getElementById('p-title').value; 
+            const c = document.getElementById('p-content').value;
+            
+            if(!t) return showAlert("Title required", "error");
+            if(activePostType === 'text' && !c) return showAlert("Content required", "error");
+            
+            const forbidden = ['politics', 'hate', 'war', 'racism', 'ፖለቲካ', 'ዘረኝነት', 'ጦርነት'];
+            if(forbidden.some(w => (t + ' ' + c).toLowerCase().includes(w))) {
+                return showAlert("ከፖሊሲያችን ውጭ ነው መለጠፍ አይቻልም", "error");
+            }
+
+            const savePostData = async (d) => {
+                const postData = {
+                    t, 
+                    c, 
+                    d, 
+                    type: activePostType, 
+                    u: user.name, 
+                    uid: user.phone, 
+                    photo: user.photo || '', 
+                    likes: 0, 
+                    follows: 0, 
+                    isHidden: false, 
+                    comments: [],
+                    timestamp: new Date()
+                };
+                
+                // Try Firebase first
+                if(window.firebaseTools && window.firebaseTools.savePost) {
+                    const result = await window.firebaseTools.savePost(postData);
+                    if(result.success) {
+                        showAlert("✅ ፖስት በፋየርቤዝ ላይ ተሰቀለ!", "success");
+                        
+                        // Add to local array
+                        posts.unshift({ id: result.id, ...postData });
+                        localStorage.setItem('fg_posts', JSON.stringify(posts));
+                        
+                        // Clear and reset
+                        clearPostForm();
+                        document.getElementById('post-form-area').style.display = 'none'; 
+                        document.getElementById('post-type-select').style.display = 'block';
+                        renderPosts(activePostType); 
+                        navTo('view-info');
+                        return;
+                    }
+                }
+                
+                // Fallback to local storage
+                posts.unshift({ id: Date.now(), ...postData });
+                localStorage.setItem('fg_posts', JSON.stringify(posts));
+                showAlert("📱 ፖስት በሎካል ስቶሬጅ ተሰቀለ", "success");
+                
+                // Clear and reset
+                clearPostForm();
+                document.getElementById('post-form-area').style.display = 'none'; 
+                document.getElementById('post-type-select').style.display = 'block';
+                renderPosts(activePostType); 
+                navTo('view-info');
+            };
+            
+            if(activePostType !== 'text') { 
+                const f = document.getElementById('file-post').files[0]; 
+                if(f) { 
+                    const r = new FileReader(); 
+                    r.onload = async e => {
+                        await savePostData(e.target.result);
+                    }; 
+                    r.readAsDataURL(f); 
+                } else {
+                    await savePostData(null);
+                }
+            } else {
+                await savePostData(null);
+            }
+        }
+
+        async function finalSignup() {
+            const n = document.getElementById('reg-name').value; 
+            const p = document.getElementById('reg-phone').value; 
+            const e = document.getElementById('reg-email').value; 
+            const pw = document.getElementById('reg-pass').value; 
+            const f = document.getElementById('file-profile').files[0];
+            
+            if(!f) return showAlert("Photo required", "error");
+            
+            // Check duplicates
+            if(users.some(u => u.phone === p || u.email === e)) {
+                return showAlert(lang === 'am' ? 'ይህ ስልክ/ኢሜል ተመዝግቧል' : 'Already Registered', "error");
+            }
+            
+            // Convert photo to base64
+            const photoBase64 = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(f);
+            });
+            
+            const newUser = {
+                name: n, 
+                phone: p, 
+                email: e, 
+                password: pw, 
+                balUSD: 0, 
+                balGBP: 0, 
+                balEUR: 0, 
+                balETB: 0, 
+                photo: photoBase64, 
+                regDate: Date.now()
+            };
+            
+            // Try Firebase first
+            if(window.firebaseTools && window.firebaseTools.saveUser) {
+                const result = await window.firebaseTools.saveUser(newUser);
+                if(result.success) {
+                    // Add to local
+                    users.push(newUser);
+                    localStorage.setItem('fg_users', JSON.stringify(users));
+                    showAlert("✅ በፋየርቤዝ ላይ ተመዝግበዋል!", "success");
+                    showAuth('login');
+                    return;
+                }
+            }
+            
+            // Fallback to local storage
+            users.push(newUser);
+            localStorage.setItem('fg_users', JSON.stringify(users));
+            showAlert("📱 በሎካል ስቶሬጅ ተመዝግበዋል", "success");
+            showAuth('login');
+        }
+
+        async function renderPosts(type) {
+            const c = document.getElementById('feed-container'); 
+            
+            // Show loading
+            c.innerHTML = '<p style="color:#007bff;">🔥 ፖስቶች በመጫን ላይ...</p>';
+            
+            // Try to load from Firebase if empty
+            if(posts.length === 0 && window.firebaseTools) {
+                const firebasePosts = await window.firebaseTools.getPosts();
+                if(firebasePosts.length > 0) {
+                    posts = firebasePosts;
+                    localStorage.setItem('fg_posts', JSON.stringify(posts));
+                }
+            }
+            
+            const fs = posts.filter(p => p.type === type && !p.isHidden);
+            
+            if(!fs.length) {
+                c.innerHTML = '<p>ምንም ፖስቶች የሉም። የመጀመሪያው ይሁኑ!</p>';
+                return;
+            }
+            
+            c.innerHTML = '';
+            fs.forEach(p => {
+                let m = ''; 
+                if(p.d) { 
+                    if(p.type === 'image') m = `<img src="${p.d}" width="100%" style="max-height:300px;object-fit:contain;">`; 
+                    else if(p.type === 'video') m = `<video src="${p.d}" controls playsinline width="100%" style="max-height:300px;"></video>`; 
+                    else m = `<audio src="${p.d}" controls></audio>`; 
+                }
+                
+                const isMine = p.uid === user.phone;
+                const delHtml = isMine ? 
+                    `<button class="btn-red btn-tiny" style="width:100%; margin-top:5px;" onclick="tryDelete('${p.id || p.uid}', '${p.uid}')">Delete Post</button>` : 
+                    '';
+                
+                const firebaseIcon = p.id && p.id.length > 15 ? ' 🔥' : ' 📱';
+                
+                c.innerHTML += `<div class="post-card">
+                    <div class="post-header">
+                        <img src="${p.photo || 'lion_image.jpg'}"> 
+                        <b>${p.u}</b>
+                        <span style="font-size:10px;color:#888;margin-left:auto;">${firebaseIcon}</span>
+                    </div>
+                    <h4>${p.t}</h4>
+                    <p>${p.c || ''}</p>
+                    ${m}
+                    <div class="post-actions">
+                        <button class="action-icon" onclick="likePost('${p.id || p.uid}', this)">Like ${p.likes || 0}</button>
+                        <button class="action-icon" onclick="openComModal('${p.id || p.uid}')">Comment</button>
+                        <button class="action-icon" onclick="sharePost()">Share</button>
+                        <button class="action-icon" onclick="promptReport('${p.id || p.uid}', '${p.u}')">Report</button>
+                        <button class="action-icon" onclick="followUser('${p.id || p.uid}', this)">Follow ${p.follows || 0}</button>
+                    </div>
+                    ${delHtml}
+                </div>`;
+            });
+        }
+
+        // --- TRANSLATIONS (Strict 100%) ---
+        const TXT = {
+            'am': {
+                'head-txt':'እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!', 'lang-btn-txt':'እንግሊዝኛ (English)',
+                't-w-s':'እንኳን ደህና መጡ', 't-in':'ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ሁሌም ትክክለኛ መረጃዎችን ያቀርባል። እውነተኛ መረጃወችን መመልከት እና መጋራት ይችላሉ በተጨማሪም ሌሎች የፓወር ፖይንት የቢዝነስ እና ፒዲኤፍ አገልግሎቶችን ያገኛሉ እናመሰግናለን።',
+                't-p-s':'ጥብቅ መመሪያ', 't-po':'ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው። ፖሊሲያችን ጥሰው ከተገኙ በጥብቅ የሲስተም ቁጥጥራችን እና በጥብቅ ሲስተማችን በራስ ሰር ከአገልግሎታችን ሲስተም ሊያግድወት ይችላል።',
+                'btn-agree':'እስማማለሁ', 'btn-disagree':'አልስማማም',
+                't-thx':'አገልግሎታችንን ስለመረጡ እናመሰግናለን! አዲስ ከሆኑ ይመዝገቡ፣ ካለዎት ይግቡ።',
+                'btn-sh-s':'መመዝገቢያ', 'btn-sh-l':'መግቢያ', 'h-s':'ምዝገባ', 'h-l':'መግቢያ',
+                't-d':'ዳሽቦርድ', 'btn-fc':'የነፃ አገልግሎት ማዕከል', 'btn-pc':'የክፍያ ፕሪሚየም አገልግሎት', 'btn-out':'ውጣ', 
+                'btn-lv':'መረጃ መመልከት', 'btn-lp':'መረጃ መለጠፍ', 'btn-lg':'ግሩፕ መፍጠር', 'btn-lmg':'የፈጠሩትን ግሩፕ',
+                'btn-lc':'ቻት', 'btn-lf':'ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት እና ለመመልከት', 'btn-lu':'ተጠቃሚዎች', 'btn-lb':'ቢዝነስ', 'btn-admin-rep':'ሪፖርት መቀበያ (Admin)',
+                'btn-pv':'ጥራት ቪዲዮ', 'btn-pn':'ዜና', 'btn-pp':'PowerPoint', 'btn-ppdf':'PDF',
+                't-ph':'መረጃ መለጠፍ', 't-vh':'መረጃ መመልከት', 't-bh':'ቢዝነስ ማዕከል', 't-dep-h':'ገንዘብ ማስገባት',
+                't-with-h':'ገንዘብ ማውጣት', 't-intl-h':'ዓለም አቀፍ ግዢ', 't-pay-h':'ክፍያ', 't-fb-h':'አስተያየት',
+                't-chat-h':'ቻት', 't-users-h':'ተጠቃሚዎች', 't-mygrp-h':'ግሩፖች', 't-live':'ቀጥታ ስርጭት', 't-prof':'የግል ማዕከል',
+                'nav-h':'ዋና', 'nav-l':'ላይቭ', 'nav-p':'ፕሮፋይል', 'btn-back-1':'ተመለስ', 'btn-select':'ምረጥ',
+                'btn-p-txt':'📝 ፅሁፍ', 'btn-p-img':'📷 ምስል', 'btn-p-vid':'🎥 ቪዲዮ', 'btn-p-aud':'🎙️ ድምፅ',
+                'btn-v-txt':'ፅሁፍ', 'btn-v-img':'ምስል', 'btn-v-vid':'ቪዲዮ', 'btn-v-aud':'ድምፅ',
+                'btn-post-now':'ለጥፍ', 'btn-dep':'ገንዘብ አስገባ', 'btn-with':'ገንዘብ አውጣ', 'btn-intl':'አለም አቀፍ ግዢ',
+                't-edit-prof':'ፕሮፋይል መቀየር', 'btn-chg-pic':'ፎቶ ቀይር', 'btn-up-prof':'አዘምን (Update)', 'btn-prof-out':'ውጣ',
+                't-fb-sub':'ለአድሚን (Text / Live)', 'btn-fb-txt':'በፅሁፍ', 'btn-fb-live':'ላይቭ', 'btn-view-fb':'አስተያየት ይመልከቱ',
+                't-choose-com':'ኮመንት አይነት ይምረጡ', 't-post-instr':'አባክዎ መረጃውን ይፃፉ', 't-com-act':'አማራጭ', 't-com-media':'አይነት ይምረጡ'
+            },
+            'en': {
+                'head-txt':'Welcome to Fasil Web App Service Center!', 'lang-btn-txt':'Amharic (አማርኛ)',
+                't-w-s':'Welcome', 't-in':'Fasil Web App is a reliable digital sharing platform. You can share real information and access PPT/PDF services.',
+                't-p-s':'Strict Policy', 't-po':'Political conflict, hatred, racism, and fake news are strictly prohibited. Violators will be automatically banned by our AI system.',
+                'btn-agree':'I Agree', 'btn-disagree':'Disagree',
+                't-thx':'Thank you! Register or Login.', 'btn-sh-s':'Signup', 'btn-sh-l':'Login', 'h-s':'Register', 'h-l':'Login',
+                't-d':'Dashboard', 'btn-fc':'Free Services', 'btn-pc':'Premium Services', 'btn-out':'Logout',
+                'btn-lv':'View Info', 'btn-lp':'Post Info', 'btn-lg':'Create Group', 'btn-lmg':'My Groups',
+                'btn-lc':'Chat', 'btn-lf':'Feedback to Creator', 'btn-lu':'Users', 'btn-lb':'Business', 'btn-admin-rep':'Report Inbox',
+                'btn-pv':'HD Video', 'btn-pn':'News', 'btn-pp':'PPT', 'btn-ppdf':'PDF',
+                't-ph':'Post Info', 't-vh':'View Info', 't-bh':'Business Center', 't-dep-h':'Deposit',
+                't-with-h':'Withdraw', 't-intl-h':'Intl Purchase', 't-pay-h':'Payment', 't-fb-h':'Feedback',
+                't-chat-h':'Chat', 't-users-h':'Users', 't-mygrp-h':'My Groups', 't-live':'Live Stream', 't-prof':'Profile',
+                'nav-h':'Home', 'nav-l':'Live', 'nav-p':'Profile', 'btn-back-1':'Back', 'btn-select':'Select',
+                'btn-p-txt':'📝 Text', 'btn-p-img':'📷 Image', 'btn-p-vid':'🎥 Video', 'btn-p-aud':'🎙️ Audio',
+                'btn-v-txt':'Text', 'btn-v-img':'Image', 'btn-v-vid':'Video', 'btn-v-aud':'Audio',
+                'btn-post-now':'Post', 'btn-dep':'Deposit', 'btn-with':'Withdraw', 'btn-intl':'Intl Purchase',
+                't-edit-prof':'Edit Profile', 'btn-chg-pic':'Change Photo', 'btn-up-prof':'Update', 'btn-prof-out':'Logout',
+                't-fb-sub':'To Admin (Text / Live)', 'btn-fb-txt':'Text', 'btn-fb-live':'Live', 'btn-view-fb':'View Feedbacks',
+                't-choose-com':'Choose Comment Type', 't-post-instr':'Please enter content details', 't-com-act':'Action', 't-com-media':'Select Type'
+            }
+        };
+
+        // --- CORE FUNCTIONS ---
+        function toggleLanguage() {
+            lang = lang==='am'?'en':'am';
+            const t = TXT[lang];
+            for(let k in t) { 
+                if(document.getElementById(k)) 
+                    document.getElementById(k).innerText = t[k]; 
+            }
+        }
+        
+        function showView(id) {
+            document.querySelectorAll('.section').forEach(e => e.classList.remove('show'));
+            document.getElementById(id).classList.add('show');
+        }
+        
+        function navTo(id) {
+            const current = document.querySelector('.section.show');
+            if(current && current.id !== 'view-home') viewHistory.push('view-home');
+            showView(id);
+            if(id === 'business-sec') upBal();
+        }
+        
+        function goBack() {
+            if(viewHistory.length > 0) showView(viewHistory.pop());
+            else {
+                if(user) showView('view-home'); 
+                else showView('view-agreement');
+            }
+        }
+        
+        function showAlert(m, t) {
+            document.getElementById('modal-title').innerText = t === 'error' ? '❌ Error' : '✅ Success';
+            document.getElementById('modal-msg').innerText = m;
+            document.getElementById('custom-modal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('custom-modal').style.display = 'none';
+        }
+        
+        // --- NAV TABS PROTECT (NO WHITE SCREEN) ---
+        function navTab(t) {
+            if(t === 'home') {
+                if(!hasAgreed) return showAlert(lang === 'am' ? 'እባክዎ መጀመሪያ ፖሊሲውን ይስማሙ' : 'Please agree to policy', "error");
+                if(!user) return showAlert(lang === 'am' ? 'እባክዎ ይግቡ/ይመዝገቡ' : 'Please Login/Register', "error");
+                showView('view-home');
+                return;
+            }
+
+            if(!hasAgreed) return showAlert(lang === 'am' ? 'እባክዎ መጀመሪያ ፖሊሲውን ይስማሙ' : 'Please agree to policy', "error");
+            if(!user) return showAlert(lang === 'am' ? 'እባክዎ ይግቡ/ይመዝገቡ' : 'Please Login/Register', "error");
+            
+            document.querySelectorAll('.section').forEach(e => e.classList.remove('show'));
+            
+            if(t === 'live') openLiveCamera();
+            else if(t === 'profile') {
+                showView('view-profile');
+                document.getElementById('prof-phone').innerText = user.phone;
+                document.getElementById('prof-name-edit').value = user.name || '';
+            }
+        }
+
+        // --- AUTH ---
+        function handleAgree() { 
+            hasAgreed = true; 
+            document.getElementById('welcome-content').style.display = 'none'; 
+            document.getElementById('auth-section').style.display = 'block'; 
+        }
+        
+        function showAuth(t) { 
+            document.getElementById('form-signup').style.display = t === 'signup' ? 'block' : 'none'; 
+            document.getElementById('form-login').style.display = t === 'login' ? 'block' : 'none'; 
+        }
+        
+        // RECEIPT HANDLING
+        function triggerReceiptModal(url) {
+            lastReceiptUrl = url;
+            document.getElementById('receipt-modal').style.display = 'flex';
+        }
+        
+        function downloadReceipt() {
+            const a = document.createElement('a');
+            a.href = lastReceiptUrl;
+            a.download = "Fasil-Receipt.png";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            alert("Saved to Phone!");
+        }
+        
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').style.display = 'none';
+            showAlert("እናመሰግናለን (Thank you)", "success");
+            if(uploadTarget === 'intl') navTo('view-home');
+            else if(uploadTarget === 'deposit') document.getElementById('pass-modal').style.display = 'flex';
+            else if(uploadTarget === 'pay') document.getElementById('pass-modal').style.display = 'flex';
+        }
+
+        function promptUpload(target) {
+            uploadTarget = target;
+            alert(lang === 'am' ? 'ፋይል ይምረጡ' : 'Select File');
+            let i = document.getElementById('file-profile');
+            if(target === 'post') i = document.getElementById('file-post');
+            if(target === 'deposit') i = document.getElementById('file-deposit');
+            if(target === 'intl') i = document.getElementById('file-intl');
+            if(target === 'pay') i = document.getElementById('file-pay');
+            if(target.startsWith('chat')) i = document.getElementById('file-chat');
+            if(target === 'profile-edit') i = document.getElementById('file-profile-edit');
+            if(target === 'comment') i = document.getElementById('comment-file-input');
+            i.click();
+            i.onchange = () => { 
+                showAlert(lang === 'am' ? 'ተመርጧል' : 'Selected', "success");
+                
+                if(target === 'deposit' || target === 'intl' || target === 'pay') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) { triggerReceiptModal(e.target.result); }
+                    reader.readAsDataURL(i.files[0]);
+                    return;
+                }
+
+                if(target === 'post') { 
+                    document.getElementById('post-form-area').style.display = 'block'; 
+                    document.getElementById('post-type-select').style.display = 'none';
+                }
+                if(target === 'comment') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        saveComment(activeCommentPostId, activePostType, e.target.result);
+                    }
+                    reader.readAsDataURL(i.files[0]);
+                }
+            };
+        }
+        
+        function preSignup() {
+            const p = document.getElementById('reg-phone').value; 
+            const e = document.getElementById('reg-email').value;
+            if(!p.match(/^09\d{8}$/)) return showAlert("Phone must start with 09 (10 digits)", "error");
+            if(!e.endsWith("@gmail.com")) return showAlert("Email must be @gmail.com", "error");
+            
+            if(users.some(u => u.phone === p || u.email === e)) {
+                return showAlert(lang === 'am' ? 'ይህ ስልክ/ኢሜል ተመዝግቧል (Already Registered)' : 'Already Registered', "error");
+            }
+
+            document.getElementById('signup-step-1').style.display = 'none';
+            document.getElementById('signup-step-2').style.display = 'block';
+        }
+        
+        function doLogin() {
+            const p = document.getElementById('log-phone').value; 
+            const pw = document.getElementById('log-pass').value;
+            const u = users.find(x => x.phone === p && x.password === pw);
+            
+            if(u) { 
+                user = u; 
+                if(user.balETB === undefined) user.balETB = 0; 
+                localStorage.setItem('fg_user', JSON.stringify(u)); 
+                if(user.name === 'Admin' || user.name === 'Fasil') {
+                    document.getElementById('btn-admin-rep').style.display = 'block';
+                }
+                document.getElementById('view-agreement').classList.remove('show'); 
+                showView('view-home'); 
+            } else {
+                showAlert("Invalid phone or password", "error");
+            }
+        }
+        
+        function doLogout() { 
+            user = null; 
+            localStorage.removeItem('fg_user'); 
+            
+            // Unsubscribe from Firebase real-time updates
+            if(firebaseUnsubscribe) {
+                firebaseUnsubscribe();
+            }
+            
+            location.reload(); 
+        }
+        
+        function checkAuth(sec) { 
+            if(!user) return showAlert("Login First", "error");
+            pendingAct = () => navTo(sec);
+            document.getElementById('pass-modal').style.display = 'flex';
+        }
+
+        // --- DASHBOARD UI ---
+        function toggleList(t) { 
+            const l = document.getElementById('list-' + t); 
+            l.style.display = l.style.display === 'none' ? 'block' : 'none'; 
+        }
+
+        // --- POSTS ---
+        function clearPostForm() {
+            document.getElementById('p-title').value = '';
+            document.getElementById('p-content').value = '';
+            document.getElementById('file-post').value = '';
+        }
+        
+        function setupPost(t) { 
+            activePostType = t; 
+            if(t !== 'text') {
+                let i = document.getElementById('file-post');
+                if(t === 'image') i.accept = 'image/*'; 
+                if(t === 'video') i.accept = 'video/*'; 
+                if(t === 'audio') i.accept = 'audio/*';
+                promptUpload('post');
+            } else {
+                document.getElementById('post-form-area').style.display = 'block'; 
+                document.getElementById('post-type-select').style.display = 'none';
+                document.getElementById('p-content').style.display = 'block'; 
+                document.getElementById('post-instr').textContent = "Title + Content Required";
+            }
+            if(t !== 'text') { 
+                document.getElementById('p-content').style.display = 'none'; 
+                document.getElementById('post-instr').textContent = "Title Required (No Details)"; 
+            }
+        }
+        
+        function tryDelete(id, uid) { 
+            if(uid === user.phone) { 
+                posts = posts.filter(p => (p.id || p.uid) !== id); 
+                localStorage.setItem('fg_posts', JSON.stringify(posts)); 
+                showAlert('Deleted', 'success'); 
+                renderPosts(activePostType); 
+            } else {
+                showAlert(lang === 'am' ? 'የእርስዎ አይደለም የሰዎችን መደለት አይችሉም' : 'Not yours', 'error'); 
+            }
+        }
+        
+        function likePost(id, btn) { 
+            const p = posts.find(x => (x.id || x.uid) === id); 
+            if(p) {
+                p.likes = (p.likes || 0) + 1; 
+                localStorage.setItem('fg_posts', JSON.stringify(posts)); 
+                btn.innerHTML = `Like ${p.likes}`;
+            }
+        }
+        
+        function followUser(id, btn) { 
+            const p = posts.find(x => (x.id || x.uid) === id); 
+            if(p) {
+                p.follows = (p.follows || 0) + 1; 
+                localStorage.setItem('fg_posts', JSON.stringify(posts)); 
+                btn.innerHTML = `Follow ${p.follows}`;
+            }
+        }
+        
+        function sharePost() { 
+            document.getElementById('share-modal').style.display = 'flex'; 
+        }
+        
+        function closeShare() { 
+            document.getElementById('share-modal').style.display = 'none'; 
+        }
+        
+        function shareTo(platform) {
+            const txt = "Check this post on Fasil Web App!";
+            let url = "";
+            if(platform === 'telegram') url = `https://telegram.me/share/url?url=&text=${txt}`;
+            if(platform === 'facebook') url = `https://www.facebook.com/sharer/sharer.php?u=&quote=${txt}`;
+            if(platform === 'tiktok') url = `https://www.tiktok.com/`;
+            if(platform === 'youtube') url = `https://www.youtube.com/`;
+            window.open(url, '_blank');
+            closeShare();
+        }
+        
+        // Comment System
+        function openComModal(id) { 
+            activeCommentPostId = id; 
+            document.getElementById('comment-type-modal').style.display = 'flex'; 
+        }
+        
+        function openComSub(mode) { 
+            comMode = mode; 
+            document.getElementById('comment-type-modal').style.display = 'none'; 
+            document.getElementById('comment-media-modal').style.display = 'flex';
+        }
+        
+        function processComment(type) {
+            document.getElementById('comment-media-modal').style.display = 'none';
+            if(comMode === 'give') {
+                if(type === 'text') {
+                    const txt = prompt("Comment:");
+                    if(!txt) return showAlert("Empty", "error");
+                    saveComment(activeCommentPostId, type, txt);
+                } else {
+                    activePostType = type; 
+                    const inp = document.getElementById('comment-file-input');
+                    inp.accept = type + '/*';
+                    inp.click();
+                }
+            } else {
+                const p = posts.find(x => (x.id || x.uid) === activeCommentPostId);
+                const coms = (p?.comments || []).filter(c => c.type === type);
+                const disp = document.getElementById('comments-display-area');
+                if(coms.length === 0) disp.innerHTML = "No Comments";
+                else disp.innerHTML = coms.map(c => {
+                    let content = c.txt;
+                    if(c.type === 'image') content = `<img src="${c.txt}" width="100%">`;
+                    else if(c.type === 'video') content = `<video src="${c.txt}" controls width="100%"></video>`;
+                    else if(c.type === 'audio') content = `<audio src="${c.txt}" controls></audio>`;
+                    return `<div><b>${c.u}:</b> <br> ${content}</div><hr>`;
+                }).join('');
+                document.getElementById('view-comments-list-modal').style.display = 'flex';
+            }
+        }
+        
+        function saveComment(pid, type, txt) {
+            const p = posts.find(x => (x.id || x.uid) === pid);
+            if(!p) return;
+            if(!p.comments) p.comments = [];
+            p.comments.push({ u: user.name, type, txt });
+            localStorage.setItem('fg_posts', JSON.stringify(posts));
+            showAlert("Comment Sent", "success");
+        }
+
+        // --- ADMIN FUNCTIONS ---
+        function promptAdminLogin() { 
+            document.getElementById('admin-login-modal').style.display = 'flex'; 
+        }
+        
+        function adminLogin() {
+            const code = document.getElementById('admin-pass-in').value;
+            if(code === adminPass) { 
+                document.getElementById('admin-login-modal').style.display = 'none'; 
+                navTo('report-inbox'); 
+            } else {
+                alert("Wrong Code");
+            }
+        }
+        
+        function promptAdminAction(action) {
+            pendingAdminAction = action;
+            document.getElementById('admin-action-modal').style.display = 'flex';
+        }
+        
+        function runAdminAction() {
+            const p = document.getElementById('admin-act-pass').value;
+            if(p === adminPass) {
+                document.getElementById('admin-action-modal').style.display = 'none';
+                document.getElementById('admin-act-pass').value = '';
+                if(pendingAdminAction === 'changePass') document.getElementById('admin-chg-modal').style.display = 'block';
+                else if(pendingAdminAction === 'userStats') showUserStats();
+                else if(pendingAdminAction === 'premPay') document.getElementById('adm-prem-modal').style.display = 'block';
+                else if(pendingAdminAction === 'viewRep') renderReports();
+            } else {
+                alert("Wrong Admin Code");
+            }
+        }
+
+        // 1. Change Password
+        function saveNewAdminPass() {
+            const old = document.getElementById('old-adm').value;
+            const newP = document.getElementById('new-adm').value;
+            const confP = document.getElementById('conf-adm').value;
+            
+            if(old !== adminPass) return showAlert("Old Password Wrong", "error");
+            if(newP !== confP) return showAlert("New Passwords mismatch", "error");
+            
+            const regex = /^[a-z]{3}\d{6}[a-z]{3}$/;
+            if(!regex.test(newP)) return showAlert("Format: 3 small letters + 6 numbers + 3 small letters", "error");
+            
+            adminPass = newP;
+            localStorage.setItem('fg_admin_pass', newP);
+            showAlert("Password Changed!", "success");
+            document.getElementById('admin-chg-modal').style.display = 'none';
+        }
+
+        // 2. User Stats
+        function showUserStats() { 
+            let html = users.map(u => {
+                let userPosts = posts.filter(p => p.uid === u.phone);
+                let totalLikes = userPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
+                let totalFollows = userPosts.reduce((sum, p) => sum + (p.follows || 0), 0);
+                let regTime = u.regDate ? u.regDate : Date.now();
+                let days = Math.floor((Date.now() - regTime) / (1000 * 60 * 60 * 24));
+                
+                let vids = userPosts.filter(p => p.type === 'video').length;
+                let imgs = userPosts.filter(p => p.type === 'image').length;
+                let auds = userPosts.filter(p => p.type === 'audio').length;
+
+                return `<div class="post-card">
+                    <img src="lion_image.jpg" width="30"> <b>${u.name}</b><br>
+                    Reg Days: ${days}<br>
+                    Likes Received: ${totalLikes} | Follows Received: ${totalFollows}<br>
+                    Posts: Video (${vids}), Image (${imgs}), Audio (${auds})
+                </div>`;
+            }).join('');
+            document.getElementById('admin-dynamic-content').innerHTML = html || "No Users"; 
+        }
+
+        // 4. Reports
+        function promptReport(id, uname) { 
+            const r = prompt("Reason:");
+            if(r) { 
+                const p = posts.find(x => (x.id || x.uid) === id);
+                reports.push({
+                    id, 
+                    reason: r, 
+                    reporter: user.name, 
+                    reporterPhoto: user.photo, 
+                    target: uname, 
+                    postContent: p ? p.t : ''
+                }); 
+                localStorage.setItem('fg_reports', JSON.stringify(reports)); 
+                showAlert("Reported", "success"); 
+            } 
+        }
+        
+        function renderReports() {
+            const c = document.getElementById('admin-dynamic-content'); 
+            c.innerHTML = '';
+            if(reports.length === 0) { 
+                c.innerHTML = "No Reports"; 
+                return; 
+            }
+            reports.forEach(r => {
+                const p = posts.find(x => (x.id || x.uid) === r.id);
+                const isBanned = p ? p.isHidden : false;
+                const statusClass = isBanned ? 'banned-text' : 'open-text';
+                const containerClass = isBanned ? 'banned-indicator' : '';
+                const statusTxt = isBanned ? "BANNED (Black)" : "OPEN (Blue)";
+
+                c.innerHTML += `<div class="post-card ${containerClass}">
+                    <b>Reporter:</b> ${r.reporter} <img src="lion_image.jpg" width="20"><br> 
+                    <b>Post:</b> ${r.postContent} <br> 
+                    <b>Reason:</b> ${r.reason}<br>
+                    Status: <span class="${statusClass}">${statusTxt}</span><br>
+                    <button class="btn-red btn-small" onclick="banPost('${r.id}')">Ban</button> 
+                    <button class="btn-blue btn-small" onclick="unbanPost('${r.id}')">Open/Unban</button>
+                </div>`;
+            });
+        }
+        
+        function banPost(id) { 
+            const p = posts.find(x => (x.id || x.uid) === id); 
+            if(p) {
+                p.isHidden = true; 
+                localStorage.setItem('fg_posts', JSON.stringify(posts)); 
+                showAlert("Banned", "success"); 
+                renderReports(); 
+            }
+        }
+        
+        function unbanPost(id) { 
+            const p = posts.find(x => (x.id || x.uid) === id); 
+            if(p) {
+                p.isHidden = false; 
+                localStorage.setItem('fg_posts', JSON.stringify(posts)); 
+                showAlert("Unbanned", "success"); 
+                renderReports(); 
+            }
+        }
+
+        // --- BUSINESS ---
+        function upBal() {
+            document.getElementById('bal-usd').innerText = (user.balUSD || 0).toFixed(2);
+            document.getElementById('bal-gbp').innerText = (user.balGBP || 0).toFixed(2);
+            document.getElementById('bal-eur').innerText = (user.balEUR || 0).toFixed(2);
+            document.getElementById('bal-etb').innerText = (user.balETB || 0).toFixed(2);
+            const tot = (user.balUSD || 0) + ((user.balGBP || 0) * 1.25) + ((user.balEUR || 0) * 1.1) + ((user.balETB || 0) / 120);
+            document.getElementById('bal-total').innerText = tot.toFixed(2);
+            const totEth = (user.balETB || 0) + ((user.balUSD || 0) * 120) + ((user.balGBP || 0) * 150) + ((user.balEUR || 0) * 130);
+            document.getElementById('bal-total-etb').innerText = totEth.toFixed(2);
+        }
+        
+        function preDeposit() { 
+            document.getElementById('dep-step-1').style.display = 'none'; 
+            document.getElementById('dep-step-2').style.display = 'block'; 
+        }
+        
+        function finalizeDeposit() {
+            const a = parseFloat(document.getElementById('dep-amt').value); 
+            const c = document.getElementById('dep-cur').value;
+            if(a >= 100) {
+                if(c === 'USD') user.balUSD += a / RATES.USD; 
+                else if(c === 'GBP') user.balGBP += a / RATES.GBP; 
+                else if(c === 'EUR') user.balEUR += a / RATES.EUR; 
+                else user.balETB += a;
+                localStorage.setItem('fg_user', JSON.stringify(user));
+                showAlert("Deposited!", "success"); 
+                upBal(); 
+                document.getElementById('dep-step-1').style.display = 'block'; 
+                document.getElementById('dep-step-2').style.display = 'none'; 
+                navTo('business-sec');
+            } else {
+                showAlert("Min 100 ETB", "error");
+            }
+        }
+        
+        function toggleReceiverInput() {
+            const m = document.getElementById('w-method').value;
+            const i = document.getElementById('w-dest');
+            i.style.display = 'block';
+            i.placeholder = m === 'PayPal' ? 'Email (@gmail)' : (m === 'CBE' ? '1000... (13 digit)' : 'Phone 09...');
+        }
+        
+        function reqWithdraw() {
+            const m = document.getElementById('w-method').value; 
+            const d = document.getElementById('w-dest').value;
+            if(m === 'Telebirr' && !/^09\d{8}$/.test(d)) return showAlert("Telebirr must be 09... (10 digits)", "error");
+            if(m === 'PayPal' && !d.endsWith('@gmail.com')) return showAlert("Email required", "error");
+            if(m === 'CBE' && (!d.match(/^(1000|10000)\d{9}$/) || d.length !== 13)) return showAlert("Invalid CBE", "error");
+            if(!document.getElementById('w-amt').value) return showAlert("Please enter amount", "error");
+
+            document.getElementById('pass-modal').style.display = 'flex';
+            pendingAct = () => {
+                const a = parseFloat(document.getElementById('w-amt').value);
+                const c = document.getElementById('w-cur').value;
+                if(c === 'USD') user.balUSD -= a;
+                if(c === 'GBP') user.balGBP -= a;
+                if(c === 'EUR') user.balEUR -= a;
+                if(c === 'ETB') user.balETB -= a;
+                localStorage.setItem('fg_user', JSON.stringify(user));
+                showAlert("Success", "success"); 
+                navTo('business-sec');
+            };
+        }
+        
+        function triggerIntlPay(item) {
+            document.getElementById('pass-modal').style.display = 'flex';
+            pendingAct = () => { promptUpload('intl'); };
+        }
+        
+        function doIntl() { /* Replaced by triggerIntlPay logic */ }
+
+        function verifyPass() { 
+            if(document.getElementById('pass-input').value === user.password) { 
+                document.getElementById('pass-modal').style.display = 'none'; 
+                if(pendingAct) pendingAct(); 
+            } else {
+                alert("Wrong Password");
+            }
+        }
+
+        // --- PREMIUM ---
+        function openPrem(t) { 
+            navTo('prem-pricing'); 
+        }
+        
+        function pay(a) { 
+            document.getElementById('pay-up-area').style.display = 'block'; 
+        }
+        
+        function finPay() { 
+            showAlert("Activated!", "success"); 
+            goBack(); 
+        }
+
+        // --- CHAT & USER ---
+        function handleGroupCreate() { 
+            showUserList(true); 
+        }
+        
+        function showUserList(selMode) {
+            const c = document.getElementById('ul-cont'); 
+            c.innerHTML = '';
+            users.forEach(u => {
+                if(u.phone === user.phone) return;
+                c.innerHTML += `<div class="user-item" onclick="${selMode ? 'togBlue(this)' : ''}">
+                    <img src="${u.photo || 'lion_image.jpg'}"> 
+                    <b>${u.name}</b>
+                </div>`;
+            });
+            document.getElementById('btn-grp-done').style.display = selMode ? 'block' : 'none';
+            navTo('user-list-sec');
+        }
+        
+        function togBlue(el) { 
+            el.classList.toggle('bright-blue'); 
+            checkGrpCount(); 
+        }
+        
+        function checkGrpCount() {
+            const cnt = document.querySelectorAll('.bright-blue').length;
+            document.getElementById('btn-grp-done').style.display = cnt >= 5 ? 'block' : 'none';
+        }
+        
+        function createGroup() {
+            const n = prompt("Name:");
+            if(n) {
+                groups.push({ id: Date.now(), name: n, creator: user.phone, msgs: [] });
+                localStorage.setItem('fg_groups', JSON.stringify(groups));
+                showAlert("Group Created", "success"); 
+                goBack();
+            }
+        }
+        
+        function showMyGroups() {
+            const c = document.getElementById('grp-list'); 
+            c.innerHTML = '';
+            groups.forEach(g => {
+                const mine = g.creator === user.phone;
+                const txt = mine ? (lang === 'am' ? 'እርስዎ የፈጠሩት' : 'Yours') : (lang === 'am' ? 'የእርስዎ አይደለም' : 'Not Yours');
+                c.innerHTML += `<div class="user-item" onclick="${mine ? 'openGrp(' + g.id + ')' : 'alert(\'' + txt + '\')'}">
+                    <b>${g.name}</b> (${txt})
+                </div>`; 
+            });
+            navTo('my-groups-sec');
+        }
+        
+        function handleChatList() { 
+            showUserList(false); 
+            const items = document.querySelectorAll('.user-item');
+            items.forEach((item, idx) => {
+                const target = users.filter(u => u.phone !== user.phone)[idx];
+                if(target) {
+                    item.onclick = () => openChat(target.phone);
+                }
+            });
+        }
+        
+        function openChat(ph) { 
+            activeChat = { type: 'p', id: ph }; 
+            navTo('chat-sec'); 
+            renderChat(); 
+        }
+        
+        function openGrp(id) { 
+            activeChat = { type: 'g', id: id }; 
+            navTo('chat-sec'); 
+            renderChat(); 
+        }
+        
+        function sendChat(t) {
+            const txt = document.getElementById('chat-in').value; 
+            const msg = { u: user.name, t: txt, type: t };
+            if(activeChat.type === 'p') { 
+                const k = [user.phone, activeChat.id].sort().join('_'); 
+                if(!chats[k]) chats[k] = []; 
+                chats[k].push(msg); 
+                localStorage.setItem('fg_chats', JSON.stringify(chats)); 
+            } else { 
+                const g = groups.find(x => x.id === activeChat.id); 
+                g.msgs.push(msg); 
+                localStorage.setItem('fg_groups', JSON.stringify(groups)); 
+            }
+            renderChat();
+        }
+        
+        function renderChat() {
+            const c = document.getElementById('chat-box'); 
+            let msgs = [];
+            if(activeChat.type === 'p') { 
+                const k = [user.phone, activeChat.id].sort().join('_'); 
+                msgs = chats[k] || []; 
+            } else {
+                const g = groups.find(x => x.id === activeChat.id);
+                msgs = g ? g.msgs : [];
+            }
+            c.innerHTML = msgs.map(m => `<div><b>${m.u}:</b> ${m.t}</div>`).join('');
+        }
+        
+        // --- LIVE ---
+        function openLiveCamera() {
+            showView('view-live');
+            if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+                    liveStream = stream;
+                    document.getElementById('live-video-element').srcObject = stream;
+                });
+            }
+        }
+        
+        function stopLive() {
+            if(liveStream) liveStream.getTracks().forEach(track => track.stop());
+            goBack();
+        }
+
+        // --- PROFILE ---
+        function saveProfile() {
+            const n = document.getElementById('prof-name-edit').value; 
+            const o = document.getElementById('old-pass').value; 
+            const p = document.getElementById('new-pass').value; 
+            const cp = document.getElementById('conf-pass').value;
+            if(p && p !== cp) return showAlert("Passwords do not match", "error");
+            if(o && o !== user.password) return showAlert("Old Password Wrong", "error");
+            if(n) user.name = n; 
+            if(p) user.password = p;
+            localStorage.setItem('fg_user', JSON.stringify(user));
+            showAlert("Updated", "success");
+        }
+
+        // --- FEEDBACK ---
+        function giveFb(t) {
+            if(t === 'live') openLiveCamera();
+            else { 
+                const x = prompt("Text:"); 
+                if(x) { 
+                    feedbacks.push({ u: user.name, c: x }); 
+                    localStorage.setItem('fg_fbs', JSON.stringify(feedbacks)); 
+                    showAlert("Sent", "success"); 
+                } 
+            }
+        }
+        
+        function viewFbs() { 
+            document.getElementById('fb-list').innerHTML = feedbacks.map(f => `<div><b>${f.u}:</b> ${f.c}</div>`).join(''); 
+        }
+
+        // Init
+        toggleLanguage(); 
+        toggleLanguage();
+        
+        // Show Firebase status on load
+        setTimeout(() => {
+            if(window.firebaseTools) {
+                const statusEl = document.getElementById('firebase-status');
+                statusEl.style.display = 'block';
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
