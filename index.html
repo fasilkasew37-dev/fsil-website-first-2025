@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ፋሲል ዌብ አፕ - Fasil Web App (Firebase Online)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- General CSS --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center; padding: 0; margin: 0;
+            background-color: #f0f4f8; color: #333;
+            padding-bottom: 90px;
+        }
+        .container { max-width: 700px; margin: 0 auto; padding: 5px; }
+        
+        /* Header */
+        .top-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; padding: 5px 10px; border-bottom: 3px solid #007bff;
+        }
+        .marquee-container-top { flex: 1; overflow: hidden; white-space: nowrap; margin: 0 10px; }
+        .marquee-text-top { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; color: #007bff; font-weight: bold; font-size: 16px; }
+        
+        /* Footer */
+        .footer-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .bottom-nav { display: flex; height: 55px; width: 100%; }
+        .nav-btn { flex: 1; border: none; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .nav-home { background-color: #28a745; } .nav-live { background-color: #ffc107; color: black; } .nav-profile { background-color: #dc3545; }
+        .bottom-marquee { background: #f0f0f0; color: #28a745; font-weight: bold; overflow: hidden; white-space: nowrap; height: 25px; line-height: 25px; font-size: 12px; }
+        .bottom-marquee span { display: inline-block; padding-left: 100%; animation: marquee 12s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        /* Sections */
+        .section { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 400px; }
+        .show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+        /* Welcome Split - Compacted */
+        .split-container { display: flex; justify-content: space-between; gap: 5px; text-align: left; margin-bottom: 5px; }
+        .split-left { width: 48%; color: #007bff; font-size: 10px; line-height: 1.2; padding: 2px; }
+        .split-right { width: 48%; color: #d35400; font-size: 10px; font-weight: bold; line-height: 1.2; border-left: 1px solid #ccc; padding-left: 5px; padding: 2px; }
+        .blue-spacer { height: 10px; background-color: #007bff; margin: 5px 0; border-radius: 5px; }
+        #t-in, #t-po { font-size: 9px; }
+
+        /* --- LOGO CSS --- */
+        .brand-area { display: flex; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 20px; position: relative; transform: scale(1.0); }
+        .side-logo-container { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #007bff; background: white; z-index: 5; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0, 123, 255, 0.6); }
+        .side-logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .left-logo { margin-right: -20px; } .right-logo { margin-left: -20px; }
+        .complex-logo { position: relative; width: 130px; height: 130px; z-index: 10; }
+        .ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: glowing 1.5s infinite alternate ease-in-out; }
+        @keyframes glowing { 0% { box-shadow: 0 0 5px currentColor; filter: brightness(100%); } 100% { box-shadow: 0 0 20px currentColor; filter: brightness(150%); } }
+        .ring-blue { width: 130px; height: 130px; border: 4px solid #00008b; color: #00008b; z-index: 1; }
+        .ring-red { width: 110px; height: 110px; border: 3px solid red; color: red; z-index: 2; }
+        .ring-yellow { width: 90px; height: 90px; border: 3px solid yellow; color: yellow; z-index: 3; }
+        .ring-green { width: 70px; height: 70px; background: transparent; border: 2px solid green; border-radius: 50%; z-index: 4; }
+        .center-lion { position: absolute; width: 70px; height: 70px; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; object-fit: cover; border-radius: 50%; border: 2px solid white; background-color: #007bff; }
+        .pos-item { position: absolute; width: 16px; height: 16px; object-fit: cover; border-radius: 50%; border: 1px solid white; }
+        .p-n { top: -8px; left: 50%; transform: translateX(-50%); } .p-s { bottom: -8px; left: 50%; transform: translateX(-50%); } 
+        .p-e { right: -8px; top: 50%; transform: translateY(-50%); } .p-w { left: -8px; top: 50%; transform: translateY(-50%); }
+
+        /* FWA Animated Brand Text */
+        .fwa-brand {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        .fwa-letter {
+            font-size: 48px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            animation: colorPulse 2s infinite alternate;
+            display: inline-block;
+        }
+        .letter-f { color: #28a745; animation-delay: 0s; } /* Green */
+        .letter-w { color: #ffc107; animation-delay: 0.4s; } /* Yellow */
+        .letter-a { color: #dc3545; animation-delay: 0.8s; } /* Red */
+        @keyframes colorPulse {
+            0% { filter: brightness(100%); transform: scale(1); }
+            100% { filter: brightness(150%); transform: scale(1.1); }
+        }
+
+        /* SPLASH SCREEN */
+        #splash-screen { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: #007bff; 
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        #splash-msg { 
+            margin-top: 30px; 
+            color: white; 
+            font-size: 22px; 
+            font-weight: bold; 
+            text-align: center; 
+            padding: 20px; 
+            animation: slideTxt 5s linear infinite; 
+            display: none; 
+        }
+        @keyframes slideTxt { 
+            0% {transform: translateX(100%);} 
+            100% {transform: translateX(-100%);} 
+        }
+
+        /* Dashboard Split */
+        .dash-layout { display: flex; gap: 10px; align-items: flex-start; }
+        .dash-left { width: 60%; text-align: left; } .dash-right { width: 40%; }
+        
+        /* UI Elements */
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-green { background: #28a745; } .btn-red { background: #dc3545; } .btn-blue { background: #007bff; } .btn-yellow { background: #ffc107; color: black; }
+        .btn-small { padding: 8px; font-size: 12px; margin: 2px 0; }
+        .btn-tiny { padding: 5px; font-size: 10px; margin: 1px; }
+        .btn-admin { background: #333; color: white; display: none; }
+        .lang-btn { background: #6c757d; color: white; padding: 4px 8px; font-size: 10px; border-radius: 4px; border:none; cursor: pointer; margin-top: 2px;}
+        
+        /* Modified Buttons */
+        .btn-compact { padding: 8px; margin: 2px 0; font-size: 14px; margin-top: 15px; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-box { background: white; padding: 20px; width: 85%; border-radius: 10px; text-align: center; max-height: 80vh; overflow-y: auto; }
+
+        /* Post Card */
+        .post-card { border: 1px solid #eee; background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: left; }
+        .post-header { display: flex; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+        .post-header img { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .post-actions { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; flex-wrap: wrap; }
+        .action-icon { background: none; border: none; color: #007bff; font-size: 12px; cursor: pointer; padding: 5px; margin: 0; width: auto; display: inline-flex; align-items: center; gap: 3px; }
+        
+        .user-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .user-item img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .user-item.bright-blue { background-color: #007bff; color: white; border-radius: 5px; }
+        
+        #live-video-element { width: 100%; height: 350px; background: #000; border-radius: 8px; object-fit: cover; }
+        .hidden-input { display: none; }
+        .hidden { display: none; }
+        
+        /* Admin Indicators */
+        .banned-text { color: black !important; font-weight: bold; }
+        .open-text { color: #007bff !important; font-weight: bold; }
+        .banned-indicator { border: 2px solid black; background: #eee; }
+        
+        /* Firebase Status - PERMANENT */
+        .firebase-status {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            z-index: 1000;
+            display: block !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .firebase-online { 
+            background: #28a745; 
+            border: 1px solid #1e7e34;
+        }
+        .firebase-offline { 
+            background: #dc3545; 
+            border: 1px solid #bd2130;
+        }
+        
+        /* Password Show/Hide Toggle */
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .password-wrapper input {
+            padding-right: 40px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 14px;
+            width: auto;
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* FWA Notes Modal - UPDATED */
+        .fwa-notes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+        .fwa-notes-grid.hidden {
+            display: none;
+        }
+        .fwa-note-btn {
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            color: white;
+            border: 2px solid #5e35b1;
+            font-weight: bold;
+            padding: 12px 5px;
+            transition: all 0.3s ease;
+        }
+        .fwa-note-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .fwa-note-image {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #9c27b0;
+            border-radius: 8px;
+            margin: 10px 0;
+            animation: fadeIn 0.5s;
+        }
+        .fwa-image-container {
+            text-align: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin: 10px 0;
+            animation: fadeIn 0.5s;
+        }
+        .fwa-back-btn {
+            margin-top: 15px;
+            background: #6c757d;
+        }
+        
+        /* Business Section Updates */
+        .business-balance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .balance-item {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        .balance-label {
+            font-size: 12px;
+            color: #666;
+        }
+        .balance-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .usd-bal { color: #28a745; }
+        .gbp-bal { color: #dc3545; }
+        .eur-bal { color: #007bff; }
+        .etb-bal { color: #ffc107; }
+        .fwa-bal { color: #9c27b0; }
+        
+        /* Live Stream Real-Time Indicators */
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #dc3545;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        .live-online {
+            background-color: #28a745 !important;
+            animation: pulse-green 1.5s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+        
+        /* Real-Time Live Stream */
+        .live-stream-container {
+            position: relative;
+            width: 100%;
+            margin: 15px 0;
+        }
+        .live-status-bar {
+            background: #dc3545;
+            color: white;
+            padding: 8px;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .live-viewers {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            z-index: 10;
+        }
+        .live-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        /* User Status Indicators */
+        .user-status {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        .user-live {
+            background-color: #28a745;
+            color: white;
+        }
+        .user-offline {
+            background-color: #333;
+            color: white;
+        }
+        
+        /* Chat View Improvements */
+        .chat-message {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        .chat-message-sent {
+            background-color: #e3f2fd;
+            border-color: #bbdefb;
+            margin-left: 20px;
+        }
+        .chat-message-received {
+            background-color: #f1f8e9;
+            border-color: #dcedc8;
+            margin-right: 20px;
+        }
+        .chat-timestamp {
+            font-size: 10px;
+            color: #666;
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        /* Block/Unblock Indicators */
+        .blocked-user {
+            opacity: 0.5;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .block-btn {
+            background-color: #dc3545;
+            font-size: 10px;
+            padding: 3px 8px;
+        }
+        .unblock-btn {
+            background-color: #28a745;
+            font-size: 10px;
+            padding: 3px 8px;
+        }
+        
+        /* Admin Statistics */
+        .admin-stats {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .stat-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .stat-value {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        /* User Own Info */
+        .user-own-post {
+            border-left: 4px solid #007bff;
+            background-color: #f0f8ff;
+        }
+        .engagement-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .engagement-item {
+            text-align: center;
+        }
+        .engagement-count {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .engagement-label {
+            font-size: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SPLASH SCREEN (Logo visible for 3 seconds) -->
+    <div id="splash-screen">
+        <div class="brand-area" style="transform: scale(1.5);">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue"><div class="ring ring-red"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                <img src="lion_image.jpg" class="center-lion">
+            </div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        <!-- FWA Brand Text -->
+        <div class="fwa-brand">
+            <span class="fwa-letter letter-f">F</span>
+            <span class="fwa-letter letter-w">W</span>
+            <span class="fwa-letter letter-a">A</span>
+        </div>
+        <div id="splash-msg">እንኳን ደስ አለዎት በተሳካ ሁኔታ ተመዝግበዋል እናመሰግናለን</div>
+    </div>
+
+    <!-- Firebase Status Indicator - PERMANENT -->
+    <div id="firebase-status" class="firebase-status">🔥 Online</div>
+
+    <!-- Header -->
+    <div class="top-header">
+        <!-- LEFT HEADER LOGO (FULL LOGO) -->
+        <div class="brand-area" style="transform: scale(0.35); width: 60px; height: 60px; margin-right: 10px;">
+            <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+            <div class="complex-logo">
+                <div class="ring ring-blue">
+                    <div class="ring ring-red">
+                        <div class="ring ring-yellow">
+                            <div class="ring ring-green"></div>
+                        </div>
+                    </div>
+                </div>
+                <img src="lion_image.jpg" class="center-lion">
+            </div>
+            <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+        </div>
+        
+        <div class="marquee-container-top"><span class="marquee-text-top" id="head-txt">እንኳን ወደ ፋሲል ዌብ አፕ የአገልግሎት ማዕከል በደህና መጡ!</span></div>
+        
+        <!-- RIGHT HEADER LOGO (FULL LOGO) -->
+        <div style="text-align: right; display: flex; flex-direction: column; align-items: center;">
+            <div class="brand-area" style="transform: scale(0.35); width: 60px; height: 60px;">
+                <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                <div class="complex-logo">
+                    <div class="ring ring-blue">
+                        <div class="ring ring-red">
+                            <div class="ring ring-yellow">
+                                <div class="ring ring-green"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <img src="lion_image.jpg" class="center-lion">
+                </div>
+                <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+            </div>
+            <button class="lang-btn" onclick="toggleLanguage()" id="lang-btn-txt">Language</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Modals -->
+        <div class="modal-overlay" id="custom-modal"><div class="modal-box"><h3 id="modal-title"></h3><p id="modal-msg"></p><button class="btn-blue" onclick="closeModal()">OK</button></div></div>
+        
+        <div class="modal-overlay" id="pass-modal"><div class="modal-box"><h3 id="pass-title">Password Required</h3><input type="password" id="pass-input" placeholder="Password" style="text-align:center;"><button class="btn-green" onclick="verifyPass()">Confirm</button><button class="btn-red" onclick="document.getElementById('pass-modal').style.display='none'">Cancel</button></div></div>
+
+        <!-- Profile Password Modal -->
+        <div class="modal-overlay" id="profile-pass-modal"><div class="modal-box"><h3>Profile Access</h3><input type="password" id="profile-pass-input" placeholder="Your Login Password"><button class="btn-green" onclick="verifyProfilePass()">Enter Profile</button><button class="btn-red" onclick="document.getElementById('profile-pass-modal').style.display='none'">Cancel</button></div></div>
+
+        <!-- Logout Confirmation Modal -->
+        <div class="modal-overlay" id="logout-modal"><div class="modal-box"><h3>Confirm Logout</h3><p>Are you sure you want to logout? You will need to login again to access your account.</p><button class="btn-red" onclick="confirmLogout()">Yes, Logout</button><button class="btn-green" onclick="document.getElementById('logout-modal').style.display='none'">Cancel</button></div></div>
+
+        <!-- Admin Action Password Modal -->
+        <div class="modal-overlay" id="admin-action-modal"><div class="modal-box"><h3>Admin Verification</h3><input type="password" id="admin-act-pass" placeholder="Admin Code"><button class="btn-green" onclick="runAdminAction()">Verify</button><button class="btn-red" onclick="document.getElementById('admin-action-modal').style.display='none'">Cancel</button></div></div>
+
+        <!-- Admin Change Pass Modal -->
+        <div class="modal-overlay" id="admin-chg-modal"><div class="modal-box"><h3>Change Admin Password</h3>
+            <input type="password" id="old-adm" placeholder="Old Admin Code">
+            <input type="password" id="new-adm" placeholder="New (abc123456xyz)">
+            <input type="password" id="conf-adm" placeholder="Confirm New">
+            <button class="btn-green" onclick="saveNewAdminPass()">Change</button>
+            <button class="btn-red" onclick="document.getElementById('admin-chg-modal').style.display='none'">Cancel</button>
+        </div></div>
+
+        <!-- Admin Premium Pay Modal -->
+        <div class="modal-overlay" id="adm-prem-modal"><div class="modal-box"><h3>Premium Payment Receiver</h3>
+            <button class="btn-blue" onclick="alert('PayPal/Intl Payment Gateway Open')">1. International (PayPal)</button>
+            <button class="btn-green" onclick="alert('Local Method 1 Gateway Open')">2. Local Bank 1</button>
+            <button class="btn-green" onclick="alert('Local Method 2 Gateway Open')">3. Local Bank 2</button>
+            <button class="btn-red" onclick="document.getElementById('adm-prem-modal').style.display='none'">Close</button>
+        </div></div>
+
+        <!-- Comment Action Modal -->
+        <div class="modal-overlay" id="comment-type-modal"><div class="modal-box"><h3 id="t-com-act">Action</h3>
+            <button class="btn-blue" onclick="openComSub('give')">Give Comment</button>
+            <button class="btn-blue" onclick="openComSub('view')">View Comments</button>
+            <button class="btn-red" onclick="document.getElementById('comment-type-modal').style.display='none'">Cancel</button>
+        </div></div>
+
+        <!-- Give/View Sub Modal -->
+        <div class="modal-overlay" id="comment-media-modal"><div class="modal-box"><h3 id="t-com-media">Select Type</h3>
+            <button class="btn-blue" onclick="processComment('text')">Text</button>
+            <button class="btn-blue" onclick="processComment('image')">Image</button>
+            <button class="btn-blue" onclick="processComment('video')">Video</button>
+            <button class="btn-blue" onclick="processComment('audio')">Voice</button>
+            <button class="btn-red" onclick="document.getElementById('comment-media-modal').style.display='none'">Cancel</button>
+        </div></div>
+
+        <!-- View Comments List Modal -->
+        <div class="modal-overlay" id="view-comments-list-modal"><div class="modal-box"><h3>Comments</h3><div id="comments-display-area" style="text-align:left; max-height:300px; overflow-y:auto;"></div><button class="btn-red" onclick="document.getElementById('view-comments-list-modal').style.display='none'">Close</button></div></div>
+
+        <!-- View Chat Modal -->
+        <div class="modal-overlay" id="view-chat-modal"><div class="modal-box">
+            <h3 id="view-chat-title">Chat Conversation</h3>
+            <div id="chat-conversation-display" style="text-align:left; max-height:300px; overflow-y:auto; margin-bottom:10px; padding:10px; border:1px solid #ddd; border-radius:5px;"></div>
+            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <input type="text" id="chat-response-input" placeholder="Type your message..." style="flex:1;">
+                <button class="btn-blue btn-small" onclick="sendChatResponse()">Send</button>
+            </div>
+            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-response-img')">📷 Image</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-response-audio')">🎙️ Voice</button>
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <button class="btn-red btn-small" onclick="blockCurrentChatUser()" id="block-chat-btn">Block User</button>
+                <button class="btn-green btn-small" onclick="unblockCurrentChatUser()" id="unblock-chat-btn" style="display:none;">Unblock User</button>
+                <button class="btn-red" onclick="document.getElementById('view-chat-modal').style.display='none'">Close</button>
+            </div>
+        </div></div>
+
+        <!-- Share Modal -->
+        <div class="modal-overlay" id="share-modal"><div class="modal-box"><h3>Share To</h3>
+            <button class="btn-blue" onclick="shareTo('telegram')">Telegram</button>
+            <button class="btn-blue" onclick="shareTo('facebook')">Facebook</button>
+            <button class="btn-blue" onclick="shareTo('tiktok')">TikTok</button>
+            <button class="btn-blue" onclick="shareTo('youtube')">YouTube</button>
+            <button class="btn-red" onclick="closeShare()">Close</button>
+        </div></div>
+
+        <div class="modal-overlay" id="admin-login-modal"><div class="modal-box"><h3>Admin Login</h3><input type="password" id="admin-pass-in" placeholder="Code (abc123456abd)"><button class="btn-green" onclick="adminLogin()">Enter</button><button class="btn-red" onclick="document.getElementById('admin-login-modal').style.display='none'">Cancel</button></div></div>
+
+        <!-- Receipt Modal -->
+        <div class="modal-overlay" id="receipt-modal"><div class="modal-box"><h3>Payment Receipt</h3>
+            <p>Receipt Uploaded Successfully.</p>
+            <div id="receipt-actions">
+                <button class="btn-blue" onclick="downloadReceipt()">Save Receipt to Phone</button>
+                <button class="btn-green" onclick="closeReceiptModal()">Receive Receipt (OK)</button>
+            </div>
+        </div></div>
+
+        <!-- FWA Notes Modal - UPDATED -->
+        <div class="modal-overlay" id="fwa-notes-modal"><div class="modal-box">
+            <h3>FWA Notes Images and Designs</h3>
+            <div id="fwa-buttons-container" class="fwa-notes-grid">
+                <button class="fwa-note-btn" onclick="showFWAImage(1)">1 FWA</button>
+                <button class="fwa-note-btn" onclick="showFWAImage(5)">5 FWA</button>
+                <button class="fwa-note-btn" onclick="showFWAImage(10)">10 FWA</button>
+                <button class="fwa-note-btn" onclick="showFWAImage(50)">50 FWA</button>
+                <button class="fwa-note-btn" onclick="showFWAImage(100)">100 FWA</button>
+                <button class="fwa-note-btn" onclick="showFWAImage(200)">200 FWA</button>
+                <button class="fwa-note-btn" onclick="showFWAImage(500)">500 FWA</button>
+                <button class="fwa-note-btn" onclick="showFWAImage(1000)">1000 FWA</button>
+            </div>
+            <div id="fwa-image-display" class="fwa-image-container" style="display:none;">
+                <!-- Image will be displayed here -->
+            </div>
+            <button class="btn-red fwa-back-btn" onclick="closeFWAViewer()" style="display:none;">Back to FWA Notes</button>
+            <button class="btn-red" onclick="document.getElementById('fwa-notes-modal').style.display='none'" style="margin-top: 15px;">Close</button>
+        </div></div>
+
+        <!-- Admin Total Users Modal -->
+        <div class="modal-overlay" id="admin-total-users-modal"><div class="modal-box">
+            <h3>Total Users Statistics</h3>
+            <div class="admin-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total Registered Users:</span>
+                    <span class="stat-value" id="total-users-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active Today:</span>
+                    <span class="stat-value" id="active-today-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Live Now:</span>
+                    <span class="stat-value" id="live-now-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">New This Month:</span>
+                    <span class="stat-value" id="new-month-count">0</span>
+                </div>
+            </div>
+            <button class="btn-red" onclick="document.getElementById('admin-total-users-modal').style.display='none'">Close</button>
+        </div></div>
+
+        <!-- 1. AGREEMENT & WELCOME -->
+        <div id="view-agreement" class="section show">
+            <div id="welcome-content">
+                <div class="split-container">
+                    <div class="split-left">
+                        <h4 id="t-w-s">እንኳን ደህና መጡ</h4>
+                        <p id="t-in">ይህ የፋሲል ዌብ አፕ በተአማኒነት እንዲሰራ የተቀየሰ ዲጂታል መረጃ መጋሪያ ነው። ሁሌም ትክክለኛ መረጃዎችን ያቀርባል።</p>
+                    </div>
+                    <div class="split-right">
+                        <h4 id="t-p-s">ጥብቅ መመሪያ</h4>
+                        <p id="t-po">ፖለቲካ፣ ጥላቻ፣ ዘረኝነት እና ሀሰተኛ መረጃ ማቅረብ በጥብቅ የተከለከለ ነው።</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 5px; justify-content: center;">
+                    <button class="btn-green btn-tiny" onclick="handleAgree()" id="btn-agree">እስማማለሁ</button>
+                    <button class="btn-red btn-tiny" onclick="showAlert('አልተስማሙም', 'error')" id="btn-disagree">አልስማማም</button>
+                </div>
+                <div class="blue-spacer"></div>
+                
+                <!-- Main Logo with FWA Brand -->
+                <div class="brand-area" id="main-brand-logo">
+                    <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                    <div class="complex-logo">
+                        <div class="ring ring-blue"><div class="ring ring-red"><img src="lion_image.jpg" class="pos-item p-n"><img src="lion_image.jpg" class="pos-item p-s"><img src="lion_image.jpg" class="pos-item p-e"><img src="lion_image.jpg" class="pos-item p-w"><div class="ring ring-yellow"><div class="ring ring-green"></div></div></div></div>
+                        <img src="lion_image.jpg" class="center-lion">
+                    </div>
+                    <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+                </div>
+                
+                <!-- FWA Brand Text -->
+                <div class="fwa-brand">
+                    <span class="fwa-letter letter-f">F</span>
+                    <span class="fwa-letter letter-w">W</span>
+                    <span class="fwa-letter letter-a">A</span>
+                </div>
+
+            </div>
+            <div id="auth-section" style="display:none;">
+                <p style="color: green; font-weight: bold; font-size: 14px;" id="t-thx">አገልግሎታችንን ስለመረጡ እናመሰግናለን! አዲስ ከሆኑ ይመዝገቡ፣ ካለዎት ይግቡ።</p>
+                <div style="display:flex; gap:10px;"><button class="btn-red" onclick="showAuth('signup')" id="btn-sh-s">መመዝገቢያ</button><button class="btn-red" onclick="showAuth('login')" id="btn-sh-l">መግቢያ</button></div>
+                
+                <div id="form-signup" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <div id="signup-step-1">
+                        <h3 style="color:#dc3545;" id="h-s">ምዝገባ (አዲስ ብቻ)</h3>
+                        <input type="text" id="reg-name" placeholder="Full Name">
+                        <input type="text" id="reg-phone" placeholder="Phone (09... 10 digits)">
+                        <input type="email" id="reg-email" placeholder="Email (@gmail.com only)">
+                        <div class="password-wrapper">
+                            <input type="password" id="reg-pass" placeholder="Password (6 digits)">
+                            <button class="toggle-password" type="button" onclick="togglePasswordVisibility('reg-pass', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <button class="btn-green" onclick="preSignup()">Submit</button>
+                    </div>
+                    <div id="signup-step-2" style="display:none;">
+                        <h3>Upload Profile Photo</h3>
+                        <button class="btn-blue" onclick="promptUpload('profile')">Upload Photo</button>
+                        <input type="file" id="file-profile" class="hidden-input" accept="image/*">
+                        <button class="btn-green" onclick="finalSignup()">Complete Registration</button>
+                    </div>
+                </div>
+
+                <div id="form-login" style="display:none; margin-top:10px; border: 1px solid #dc3545; padding: 10px; border-radius: 5px;">
+                    <h3 style="color:#dc3545;" id="h-l">መግቢያ (ነባር)</h3>
+                    <input type="text" id="log-phone" placeholder="Phone">
+                    <div class="password-wrapper">
+                        <input type="password" id="log-pass" placeholder="Password">
+                        <button class="toggle-password" type="button" onclick="togglePasswordVisibility('log-pass', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <button class="btn-blue" onclick="doLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MAIN DASHBOARD -->
+        <div id="view-home" class="section">
+            <div style="display:flex; align-items:center; border-bottom:1px solid #ddd; padding-bottom:5px;">
+                <!-- DASHBOARD HEADER LOGO (FULL LOGO) -->
+                <div class="brand-area" style="transform: scale(0.25); width: 50px; height: 50px; margin-right: 10px;">
+                    <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                    <div class="complex-logo">
+                        <div class="ring ring-blue">
+                            <div class="ring ring-red">
+                                <div class="ring ring-yellow">
+                                    <div class="ring ring-green"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <img src="lion_image.jpg" class="center-lion">
+                    </div>
+                    <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+                </div>
+                <h2 id="t-d" style="margin:0;">ዳሽቦርድ</h2>
+            </div>
+            <div class="dash-layout" style="margin-top:10px;">
+                <div class="dash-left">
+                    <button class="btn-green" style="border-radius: 0;" id="btn-fc" onclick="toggleList('free')">የነፃ አገልግሎት ማዕከል</button>
+                    <div id="list-free" style="display:none; padding-left: 10px;">
+                        <button class="btn-green btn-small" onclick="navTo('view-info')" id="btn-lv">መረጃ መመልከት</button>
+                        <button class="btn-green btn-small" onclick="showOwnInfo()" id="btn-own-info">View Your Own Info</button>
+                        <button class="btn-green btn-small" onclick="navTo('post-info')" id="btn-lp">መረጃ መለጠፍ</button>
+                        <button class="btn-green btn-small" onclick="handleGroupCreate()" id="btn-lg">ግሩፕ መፍጠር</button>
+                        <button class="btn-green btn-small" onclick="showMyGroups()" id="btn-lmg">የፈጠሩትን ግሩፕ ለመመልከት</button>
+                        <button class="btn-green btn-small" onclick="handleChatList()" id="btn-lc">ቻት</button>
+                        <button class="btn-green btn-small" onclick="navTo('feedback-sec')" id="btn-lf">ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት እና ለመመልከት</button>
+                        <button class="btn-green btn-small" onclick="showUserList(false)" id="btn-lu">ተጠቃሚዎች</button>
+                        <button class="btn-green btn-small" onclick="checkAuth('business-sec')" id="btn-lb">ቢዝነስ</button>
+                        <button class="btn-green btn-small" style="background-color:#333;" onclick="checkAuth('report-inbox')" id="btn-admin-rep">ሪፖርት መቀበያ (Admin)</button>
+                    </div>
+                    <button class="btn-yellow" style="border-radius: 0; margin-top: 10px;" id="btn-pc" onclick="toggleList('prem')">የክፍያ ፕሪሚየም አገልግሎት</button>
+                    <div id="list-prem" style="display:none; padding-left: 10px;">
+                        <!-- Premium buttons now lead to Premium feed -->
+                        <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium Video Feed (High Quality)')">ጥራት ያለው ቪዲዮ</button>
+                        <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium News Feed')">ዜና (High Quality)</button>
+                        <button class="btn-yellow btn-small" onclick="navTo('view-info'); alert('Premium Image Feed')">ምስል (High Quality)</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('ppt')" id="btn-pp">PowerPoint</button>
+                        <button class="btn-yellow btn-small" onclick="openPrem('pdf')" id="btn-ppdf">PDF</button>
+                    </div>
+                </div>
+                <div class="dash-right">
+                    <!-- RIGHT PANEL LOGO (FULL LOGO) -->
+                    <div class="brand-area" style="transform: scale(0.5);">
+                        <div class="side-logo-container left-logo"><img src="eagle_image.jpg" class="side-logo-img"></div>
+                        <div class="complex-logo">
+                            <div class="ring ring-blue">
+                                <div class="ring ring-red">
+                                    <div class="ring ring-yellow">
+                                        <div class="ring ring-green"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <img src="lion_image.jpg" class="center-lion">
+                        </div>
+                        <div class="side-logo-container right-logo"><img src="dove_image.jpg" class="side-logo-img"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-red" style="margin-top:20px;" onclick="doLogout()" id="btn-out">ውጣ</button>
+        </div>
+
+        <!-- 3. SECTIONS -->
+
+        <!-- Post -->
+        <div id="post-info" class="section">
+            <h3 id="t-ph">መረጃ መለጠፍ</h3>
+            <div id="post-type-select">
+                <button class="btn-blue" onclick="setupPost('text')" id="btn-pt">📝 Text</button>
+                <button class="btn-blue" onclick="setupPost('image')" id="btn-pi">📷 Image</button>
+                <button class="btn-blue" onclick="setupPost('video')" id="btn-pv">🎥 Video</button>
+                <button class="btn-blue" onclick="setupPost('audio')" id="btn-pa">🎙️ Audio</button>
+            </div>
+            <div id="post-form-area" style="display:none; border-top:1px solid #ccc; margin-top:10px; padding-top:10px;">
+                <p id="post-instr" style="color:blue; font-size:12px;"></p>
+                <div style="display:flex; gap:5px;">
+                     <input type="text" id="p-title" placeholder="Title (Required)">
+                     <button class="btn-red btn-tiny" onclick="clearPostForm()">አፅዳ (Clear)</button>
+                </div>
+                <textarea id="p-content" placeholder="Details (Text Only)..." style="display:none;"></textarea>
+                <input type="file" id="file-post" class="hidden-input">
+                <button class="btn-green" onclick="submitPost()" id="btn-pnow">Post Now</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk1">Back</button>
+        </div>
+
+        <!-- View -->
+        <div id="view-info" class="section">
+            <h3 id="t-vh">መረጃ መመልከት</h3>
+            <div style="display:flex; gap:5px;">
+                <button class="btn-blue btn-small" onclick="renderPosts('text')" id="btn-vt">Text</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('image')" id="btn-vi">Image</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('video')" id="btn-vv">Video</button>
+                <button class="btn-blue btn-small" onclick="renderPosts('audio')" id="btn-va">Audio</button>
+            </div>
+            <div id="feed-container" style="margin-top:10px;"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk2">Back</button>
+        </div>
+
+        <!-- User Own Info Section -->
+        <div id="user-own-info" class="section">
+            <h3>Your Information</h3>
+            <div id="own-info-stats" class="admin-stats" style="margin-bottom:15px;">
+                <div class="stat-item">
+                    <span class="stat-label">Total Posts:</span>
+                    <span class="stat-value" id="own-total-posts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Likes Received:</span>
+                    <span class="stat-value" id="own-total-likes">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Follows Received:</span>
+                    <span class="stat-value" id="own-total-follows">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Comments Received:</span>
+                    <span class="stat-value" id="own-total-comments">0</span>
+                </div>
+            </div>
+            <div style="margin-bottom:10px;">
+                <button class="btn-blue btn-small" onclick="renderOwnPosts('text')">Your Text Posts</button>
+                <button class="btn-blue btn-small" onclick="renderOwnPosts('image')">Your Images</button>
+                <button class="btn-blue btn-small" onclick="renderOwnPosts('video')">Your Videos</button>
+                <button class="btn-blue btn-small" onclick="renderOwnPosts('audio')">Your Audio</button>
+            </div>
+            <div id="own-posts-container" style="margin-top:10px;"></div>
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Admin Report Inbox -->
+        <div id="report-inbox" class="section">
+            <h3>ሪፖርት መቀበያ (Admin)</h3>
+            <div style="margin-bottom:10px; display:flex; flex-direction:column; gap:5px;">
+                <button class="btn-blue btn-small" onclick="promptAdminAction('changePass')">1. Change Admin Pass</button>
+                <button class="btn-blue btn-small" onclick="promptAdminAction('userStats')">2. User Activity Monitor</button>
+                <button class="btn-blue btn-small" onclick="promptAdminAction('totalUsers')">3. Total Number of Users</button>
+                <button class="btn-green btn-small" onclick="promptAdminAction('premPay')">4. Premium Payment Receiver</button>
+                <button class="btn-red btn-small" onclick="promptAdminAction('viewRep')">5. Receive Reports (Ban/Unban)</button>
+            </div>
+            <!-- Container for dynamic admin content -->
+            <div id="admin-dynamic-content" style="text-align:left; margin-top:10px;"></div>
+            <button class="btn-red btn-small" onclick="goBack()">Back</button>
+        </div>
+
+        <!-- Business -->
+        <div id="business-sec" class="section">
+            <h3 id="t-bh">ቢዝነስ ማዕከል</h3>
+            <div class="business-balance-grid">
+                <div class="balance-item">
+                    <div class="balance-label">USD</div>
+                    <div class="balance-value usd-bal" id="bal-usd">0.00</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-label">GBP</div>
+                    <div class="balance-value gbp-bal" id="bal-gbp">0.00</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-label">EUR</div>
+                    <div class="balance-value eur-bal" id="bal-eur">0.00</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-label">ETB</div>
+                    <div class="balance-value etb-bal" id="bal-etb">0.00</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-label">FWA</div>
+                    <div class="balance-value fwa-bal" id="bal-fwa">0.00</div>
+                </div>
+            </div>
+            <div style="background:#f9f9f9; padding:10px; border:1px solid #ddd; margin-top:10px; border-radius:5px;">
+                <p style="color:green; font-weight:bold;">Total (USD): <span id="bal-total">0.00</span></p>
+                <p style="color:red; font-weight:bold;">Total (ETB): <span id="bal-total-etb">0.00</span></p>
+                <p style="color:#9c27b0; font-weight:bold;">Total (FWA): <span id="bal-total-fwa">0.00</span></p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                <button class="btn-green" onclick="navTo('deposit-sec')" id="btn-bd">Deposit</button>
+                <button class="btn-blue" onclick="navTo('withdraw-sec')" id="btn-bw">Withdraw</button>
+            </div>
+            <button class="btn-yellow" onclick="navTo('intl-sec')" id="btn-bi" style="margin-top: 10px;">International Purchase</button>
+            <button class="btn-blue" onclick="openFWAViewer()" id="btn-view-fwa" style="margin-top: 10px; background: #9c27b0;">View FWA Notes Images and Designs</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk3" style="margin-top: 10px;">Back</button>
+        </div>
+
+        <!-- Deposit -->
+        <div id="deposit-sec" class="section">
+            <h3 id="t-dep-h">Deposit</h3>
+            <div id="dep-step-1">
+                <input type="number" id="dep-amt" placeholder="Amount">
+                <select id="dep-cur">
+                    <option value="ETB">ETB</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                    <option value="EUR">EUR</option>
+                    <option value="FWA">FWA</option>
+                </select>
+                <button class="btn-green" onclick="preDeposit()">Submit</button>
+            </div>
+            <div id="dep-step-2" class="hidden">
+                <button class="btn-blue" onclick="promptUpload('deposit')">Upload Receipt</button>
+                <input type="file" id="file-deposit" class="hidden-input">
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk4">Back</button>
+        </div>
+
+        <!-- Withdraw -->
+        <div id="withdraw-sec" class="section">
+            <h3 id="t-with-h">Withdraw</h3>
+            <select id="w-cur">
+                <option value="USD">From USD</option>
+                <option value="GBP">From GBP</option>
+                <option value="EUR">From EUR</option>
+                <option value="ETB">From ETB</option>
+                <option value="FWA">From FWA</option>
+            </select>
+            <select id="w-method" onchange="toggleReceiverInput()">
+                <option value="Telebirr">Telebirr</option>
+                <option value="CBE">CBE</option>
+                <option value="PayPal">PayPal</option>
+                <option value="FWA">FWA Transfer</option>
+            </select>
+            <!-- Telebirr specific styling -->
+            <input type="text" id="w-dest" placeholder="Phone/Account" style="display:none; margin-bottom: 2px; font-size: 13px;">
+            <input type="number" id="w-amt" placeholder="Amount">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <button class="btn-compact btn-blue" onclick="reqWithdraw()" id="btn-sub-with">Withdraw</button>
+                <button class="btn-compact btn-red" onclick="goBack()" id="btn-bk5">Back</button>
+            </div>
+        </div>
+
+        <!-- Intl Purchase -->
+        <div id="intl-sec" class="section">
+            <h3 id="t-intl-h">International Purchase</h3>
+            <button class="btn-blue" onclick="document.getElementById('intl-list').style.display='block'">ምረጥ (Select)</button>
+            <div id="intl-list" class="hidden" style="margin-top:10px;">
+                <p>Select Service to Pay:</p>
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('ChatGPT')">1. ChatGPT</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Amazon')">2. Amazon</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Hosting')">3. Hosting</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Domain')">4. Domain</button>
+                    <button class="btn-blue btn-small" onclick="triggerIntlPay('Netflix')">5. Netflix</button>
+                </div>
+                <input type="file" id="file-intl" class="hidden-input">
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk6">Back</button>
+        </div>
+
+        <!-- Premium Pay -->
+        <div id="prem-pricing" class="section">
+            <h3 id="t-pay-h">Payment</h3>
+            <button class="btn-green" onclick="pay(5)">Daily (5 ETB)</button>
+            <button class="btn-green" onclick="pay(25)">Weekly (25 ETB)</button>
+            <button class="btn-green" onclick="pay(30)">Monthly (30 ETB)</button>
+            <div id="pay-up-area" style="display:none;">
+                <button class="btn-blue" onclick="promptUpload('pay')">Upload Receipt</button>
+                <input type="file" id="file-pay" class="hidden-input">
+                <button class="btn-green" onclick="finPay()">Confirm</button>
+            </div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk7">Back</button>
+        </div>
+
+        <!-- Feedback -->
+        <div id="feedback-sec" class="section">
+            <h3 id="t-fh">Feedback</h3>
+            <p id="t-fb-sub">ለፋሲል ዌብ አፕ ፈጣሪ አስተያየት ለመስጠት</p>
+            <button class="btn-blue" onclick="giveFb('text')" id="btn-fb-txt">Text</button>
+            <button class="btn-yellow" onclick="openRealLiveStream()" id="btn-fb-live">
+                <span class="live-indicator" id="fb-live-indicator"></span> Real Live
+            </button>
+            <hr>
+            <button class="btn-blue" onclick="viewFbs()" id="btn-view-fb">View Feedbacks</button>
+            <div id="fb-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk8">Back</button>
+        </div>
+
+        <!-- Chat / Group -->
+        <div id="chat-sec" class="section">
+            <h3 id="t-chat-h">Chat</h3>
+            <div id="chat-box" style="height:200px; overflow-y:auto; border:1px solid #ddd; margin-bottom:5px;"></div>
+            <input type="text" id="chat-in" placeholder="Message">
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <button class="btn-blue btn-small" onclick="sendChat('text')">Send</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-img')">📷</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-vid')">🎥</button>
+                <button class="btn-yellow btn-small" onclick="promptUpload('chat-aud')">🎙️</button>
+                <button class="btn-red btn-small" onclick="openRealLiveStream()">
+                    <span class="live-indicator" id="chat-live-indicator"></span> 🔴
+                </button>
+            </div>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <button class="btn-blue btn-small" onclick="openViewChat()">View Chat</button>
+                <button class="btn-green btn-small" onclick="showBlockedUsers()">Blocked Users</button>
+            </div>
+            <input type="file" id="file-chat" class="hidden-input">
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk9">Back</button>
+        </div>
+
+        <!-- User List (Read Only) -->
+        <div id="user-list-sec" class="section">
+            <h3 id="t-users-h">Users</h3>
+            <div id="ul-cont"></div>
+            <button class="btn-green" id="btn-grp-done" style="display:none;" onclick="createGroup()">Done (5+)</button>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk10">Back</button>
+        </div>
+
+        <!-- My Groups -->
+        <div id="my-groups-sec" class="section">
+            <h3 id="t-mygrp-h">My Groups</h3>
+            <div id="grp-list"></div>
+            <button class="btn-red btn-small" onclick="goBack()" id="btn-bk11">Back</button>
+        </div>
+
+        <!-- Live View (Real Camera) - UPDATED -->
+        <div id="view-live" class="section">
+            <h2 id="t-live">
+                <span class="live-indicator live-online"></span> ቀጥታ ስርጭት (Real Live)
+            </h2>
+            <div class="live-stream-container">
+                <div class="live-status-bar">
+                    <span class="live-indicator live-online"></span>
+                    <span>LIVE NOW</span>
+                    <span class="live-viewers" id="live-viewers-count">👁️ 0 Viewers</span>
+                </div>
+                <video id="live-video-element" autoplay playsinline></video>
+                <div class="live-controls">
+                    <button class="btn-green" onclick="startRealLiveStream()">Start Live Stream</button>
+                    <button class="btn-red" onclick="stopRealLiveStream()">Stop Live</button>
+                    <button class="btn-yellow" onclick="toggleLiveAudio()" id="live-audio-btn">🔇 Mute Audio</button>
+                </div>
+            </div>
+            <div id="live-chat-container" style="margin-top: 15px; display: none;">
+                <h4>Live Chat</h4>
+                <div id="live-chat-box" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;"></div>
+                <input type="text" id="live-chat-input" placeholder="Type message...">
+                <button class="btn-blue btn-small" onclick="sendLiveChat()">Send</button>
+            </div>
+            <button class="btn-red" onclick="stopRealLiveStream(); goBack();" style="margin-top: 15px;">Exit Live</button>
+        </div>
+
+        <!-- Profile -->
+        <div id="view-profile" class="section">
+            <h2 id="t-prof">የግል ማዕከል</h2>
+            <div style="text-align:left;">
+                <p>Phone: <b id="prof-phone"></b> (Disabled)</p>
+                <h4 id="t-edit-prof">Edit Profile</h4>
+                <input type="text" id="prof-name-edit" placeholder="Name">
+                <input type="password" id="old-pass" placeholder="Old Password">
+                <div class="password-wrapper">
+                    <input type="password" id="new-pass" placeholder="New Password">
+                    <button class="toggle-password" type="button" onclick="togglePasswordVisibility('new-pass', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="conf-pass" placeholder="Confirm Password">
+                    <button class="toggle-password" type="button" onclick="togglePasswordVisibility('conf-pass', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button class="btn-blue" onclick="promptUpload('profile-edit')" id="btn-chg-pic">Change Photo</button>
+                <input type="file" id="file-profile-edit" class="hidden-input" accept="image/*">
+                <button class="btn-green" onclick="saveProfile()" id="btn-up-prof">Update</button>
+                <button class="btn-red" onclick="showLogoutConfirmation()" id="btn-logout-profile" style="margin-top:10px;">Logout</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Hidden Input for Comments -->
+    <input type="file" id="comment-file-input" class="hidden-input">
+    <input type="file" id="universal-file" class="hidden-input">
+
+    <!-- Hidden Input for Chat Responses -->
+    <input type="file" id="chat-response-file" class="hidden-input">
+
+    <!-- Footer Wrapper with Marquee Below -->
+    <div class="footer-wrapper">
+        <div class="bottom-nav">
+            <button class="nav-btn nav-home" onclick="navTab('home')"><i class="fas fa-home"></i> <span id="nav-h">Home</span></button>
+            <button class="nav-btn nav-live" onclick="navTab('live')">
+                <i class="fas fa-broadcast-tower"></i> 
+                <span id="nav-l">Live</span>
+                <span class="live-indicator" id="nav-live-indicator" style="position: absolute; top: 5px; right: 5px;"></span>
+            </button>
+            <button class="nav-btn nav-profile" onclick="openProfileWithPassword()">
+                <i class="fas fa-user"></i> 
+                <span id="nav-p">Profile</span>
+            </button>
+        </div>
+        <div class="bottom-marquee">
+            <span>ፋሲል ዌብ አፕ - Fasil Web App (Service Center) | 🔥 Firebase Online | <span id="live-status-text">🔴 Offline</span></span>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWS8PJ0kmu56hixesxV1KrMH8NRciH6U0",
+            authDomain: "fasil-web-app-3a732.firebaseapp.com",
+            projectId: "fasil-web-app-3a732",
+            storageBucket: "fasil-web-app-3a732.appspot.com",
+            messagingSenderId: "239133072986",
+            appId: "1:239133072986:web:0dcbd768e1e916b9b64263"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        console.log("🔥 Firebase Initialized Successfully!");
+        
+        // Global Firebase tools
+        window.firebaseTools = {
+            db: db,
+            
+            // Save post to Firebase
+            savePost: async function(postData) {
+                try {
+                    const docRef = await addDoc(collection(db, "posts"), {
+                        ...postData,
+                        timestamp: new Date()
+                    });
+                    console.log("✅ Post saved to Firebase:", docRef.id);
+                    return { success: true, id: docRef.id };
+                } catch (error) {
+                    console.error("❌ Error saving post:", error);
+                    return { success: false, error: error };
+                }
+            },
+            
+            // Get posts from Firebase
+            getPosts: async function() {
+                try {
+                    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+                    const querySnapshot = await getDocs(q);
+                    const posts = [];
+                    querySnapshot.forEach((doc) => {
+                        posts.push({ id: doc.id, ...doc.data() });
+                    });
+                    console.log("✅ Posts loaded from Firebase:", posts.length);
+                    return posts;
+                } catch (error) {
+                    console.error("❌ Error getting posts:", error);
+                    return [];
+                }
+            },
+            
+            // Save user to Firebase
+            saveUser: async function(userData) {
+                try {
+                    const docRef = await addDoc(collection(db, "users"), {
+                        ...userData,
+                        createdAt: new Date(),
+                        lastActive: new Date(),
+                        isOnline: false
+                    });
+                    console.log("✅ User saved to Firebase:", userData.phone);
+                    return { success: true, id: docRef.id };
+                } catch (error) {
+                    console.error("❌ Error saving user:", error);
+                    return { success: false, error: error };
+                }
+            },
+            
+            // Get users from Firebase
+            getUsers: async function() {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "users"));
+                    const users = [];
+                    querySnapshot.forEach((doc) => {
+                        users.push({ id: doc.id, ...doc.data() });
+                    });
+                    console.log("✅ Users loaded from Firebase:", users.length);
+                    return users;
+                } catch (error) {
+                    console.error("❌ Error getting users:", error);
+                    return [];
+                }
+            },
+            
+            // Update user balance in Firebase
+            updateUserBalance: async function(userId, currency, amount) {
+                try {
+                    const userRef = doc(db, "users", userId);
+                    await updateDoc(userRef, {
+                        [`bal${currency}`]: increment(amount)
+                    });
+                    console.log(`✅ ${currency} balance updated for user ${userId}`);
+                    return { success: true };
+                } catch (error) {
+                    console.error("❌ Error updating balance:", error);
+                    return { success: false, error: error };
+                }
+            },
+            
+            // Update user status
+            updateUserStatus: async function(userId, isOnline) {
+                try {
+                    const userRef = doc(db, "users", userId);
+                    await updateDoc(userRef, {
+                        isOnline: isOnline,
+                        lastActive: new Date()
+                    });
+                    return { success: true };
+                } catch (error) {
+                    console.error("❌ Error updating user status:", error);
+                    return { success: false, error: error };
+                }
+            },
+            
+            // Real-time posts listener
+            setupRealtimePosts: function(callback) {
+                const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+                return onSnapshot(q, (snapshot) => {
+                    const posts = [];
+                    snapshot.forEach((doc) => {
+                        posts.push({ id: doc.id, ...doc.data() });
+                    });
+                    callback(posts);
+                });
+            },
+            
+            // Real-time users listener
+            setupRealtimeUsers: function(callback) {
+                const q = query(collection(db, "users"), orderBy("lastActive", "desc"));
+                return onSnapshot(q, (snapshot) => {
+                    const users = [];
+                    snapshot.forEach((doc) => {
+                        users.push({ id: doc.id, ...doc.data() });
+                    });
+                    callback(users);
+                });
+            },
+            
+            // Real-time live stream status
+            setupLiveStreamStatus: function(callback) {
+                const q = query(collection(db, "liveStream"), orderBy("timestamp", "desc"));
+                return onSnapshot(q, (snapshot) => {
+                    const liveStreams = [];
+                    snapshot.forEach((doc) => {
+                        liveStreams.push({ id: doc.id, ...doc.data() });
+                    });
+                    callback(liveStreams);
+                });
+            },
+            
+            // Save live stream status
+            saveLiveStreamStatus: async function(streamData) {
+                try {
+                    const docRef = await addDoc(collection(db, "liveStream"), {
+                        ...streamData,
+                        timestamp: new Date()
+                    });
+                    return { success: true, id: docRef.id };
+                } catch (error) {
+                    console.error("❌ Error saving live stream:", error);
+                    return { success: false, error: error };
+                }
+            },
+            
+            // Test connection
+            testConnection: async function() {
+                try {
+                    await addDoc(collection(db, "test"), { test: true, time: new Date() });
+                    return true;
+                } catch (error) {
+                    return false;
+                }
+            }
+        };
+        
+        // Test and show PERMANENT status
+        window.firebaseTools.testConnection().then(success => {
+            const statusEl = document.getElementById('firebase-status');
+            if(success) {
+                statusEl.textContent = '🔥 Online';
+                statusEl.className = 'firebase-status firebase-online';
+                statusEl.style.display = 'block'; // Always visible
+                
+                // Status is now PERMANENT - no auto-hide
+            } else {
+                statusEl.textContent = '🔴 Offline';
+                statusEl.className = 'firebase-status firebase-offline';
+                statusEl.style.display = 'block'; // Always visible
+            }
+        });
+    </script>
+
+    <script>
+        // --- DATA ---
+        let user = JSON.parse(localStorage.getItem('fg_user')) || null;
+        let users = JSON.parse(localStorage.getItem('fg_users')) || [];
+        let posts = JSON.parse(localStorage.getItem('fg_posts')) || [];
+        let groups = JSON.parse(localStorage.getItem('fg_groups')) || [];
+        let chats = JSON.parse(localStorage.getItem('fg_chats')) || {};
+        let feedbacks = JSON.parse(localStorage.getItem('fg_fbs')) || [];
+        let reports = JSON.parse(localStorage.getItem('fg_reports')) || [];
+        let adminPass = localStorage.getItem('fg_admin_pass') || 'abc123456abc';
+        let blockedUsers = JSON.parse(localStorage.getItem('fg_blocked')) || [];
+        let activeChatUser = null;
+        
+        let lang = 'am';
+        let hasAgreed = false;
+        let viewHistory = [];
+        let activePostType = 'text';
+        let activeChat = null;
+        let activeCommentPostId = null;
+        let pendingAct = null;
+        let uploadTarget = '';
+        let liveStream = null;
+        let comMode = 'view'; 
+        let pendingAdminAction = null;
+        let lastReceiptUrl = '';
+        let firebaseUnsubscribe = null;
+        let pendingDeposit = null;
+        let liveStreamActive = false;
+        let liveViewers = 0;
+        let liveViewersInterval = null;
+        let liveChatMessages = [];
+        let liveAudioMuted = false;
+        let currentViewChatUser = null;
+
+        const RATES = {USD:120, GBP:150, EUR:130, FWA:1};
+
+        // --- SPLASH SCREEN (3 seconds) ---
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('splash-screen').style.display = 'none';
+            }, 3000);
+            
+            // Initialize FWA balance if not exists
+            if(user && user.balFWA === undefined) {
+                user.balFWA = 0;
+                localStorage.setItem('fg_user', JSON.stringify(user));
+            }
+            
+            // Update live indicators
+            updateLiveIndicators();
+            
+            // Setup real-time user status updates
+            setupRealTimeUserStatus();
+        };
+
+        // --- FIREBASE INTEGRATION FUNCTIONS ---
+        async function loadFirebaseData() {
+            if(!window.firebaseTools) {
+                console.log("Firebase not loaded yet");
+                return;
+            }
+            
+            try {
+                // Load posts from Firebase
+                const firebasePosts = await window.firebaseTools.getPosts();
+                if(firebasePosts.length > 0) {
+                    posts = firebasePosts;
+                    console.log("Loaded", posts.length, "posts from Firebase");
+                    
+                    // Update local storage as backup
+                    localStorage.setItem('fg_posts', JSON.stringify(posts));
+                }
+                
+                // Load users from Firebase
+                const firebaseUsers = await window.firebaseTools.getUsers();
+                if(firebaseUsers.length > 0) {
+                    users = firebaseUsers;
+                    console.log("Loaded", users.length, "users from Firebase");
+                    
+                    // Update local storage as backup
+                    localStorage.setItem('fg_users', JSON.stringify(users));
+                }
+                
+                // Setup real-time updates
+                if(window.firebaseTools.setupRealtimePosts) {
+                    firebaseUnsubscribe = window.firebaseTools.setupRealtimePosts((updatedPosts) => {
+                        posts = updatedPosts;
+                        // Refresh posts view if active
+                        if(document.getElementById('view-info').classList.contains('show')) {
+                            renderPosts(activePostType);
+                        }
+                        if(document.getElementById('user-own-info').classList.contains('show')) {
+                            renderOwnPosts(activePostType);
+                        }
+                    });
+                }
+                
+                // Setup live stream status updates
+                if(window.firebaseTools.setupLiveStreamStatus) {
+                    window.firebaseTools.setupLiveStreamStatus((liveStreams) => {
+                        if(liveStreams.length > 0) {
+                            const latestStream = liveStreams[0];
+                            if(latestStream.isActive) {
+                                updateLiveIndicators(true);
+                            } else {
+                                updateLiveIndicators(false);
+                            }
+                        }
+                    });
+                }
+                
+            } catch (error) {
+                console.error("Error loading Firebase data:", error);
+            }
+        }
+        
+        // Setup real-time user status
+        function setupRealTimeUserStatus() {
+            if(window.firebaseTools && window.firebaseTools.setupRealtimeUsers) {
+                window.firebaseTools.setupRealtimeUsers((updatedUsers) => {
+                    users = updatedUsers;
+                    localStorage.setItem('fg_users', JSON.stringify(users));
+                    
+                    // Update user list if visible
+                    if(document.getElementById('user-list-sec').classList.contains('show')) {
+                        showUserList(false);
+                    }
+                });
+            }
+        }
+        
+        // Update user online status
+        function updateUserOnlineStatus(isOnline) {
+            if(user && user.id && window.firebaseTools && window.firebaseTools.updateUserStatus) {
+                window.firebaseTools.updateUserStatus(user.id, isOnline);
+            }
+        }
+
+        // Call on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                loadFirebaseData();
+            }, 2000);
+            
+            // Set user as online
+            updateUserOnlineStatus(true);
+        });
+
+        // --- NEW FUNCTIONS ---
+        
+        // 1. Password Show/Hide Toggle
+        function togglePasswordVisibility(passwordFieldId, button) {
+            const passwordField = document.getElementById(passwordFieldId);
+            const icon = button.querySelector('i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // 2. FWA Notes Viewer - UPDATED with specific image names
+        function openFWAViewer() {
+            document.getElementById('fwa-notes-modal').style.display = 'flex';
+            document.getElementById('fwa-buttons-container').style.display = 'grid';
+            document.getElementById('fwa-image-display').style.display = 'none';
+            document.querySelector('.fwa-back-btn').style.display = 'none';
+        }
+        
+        function showFWAImage(amount) {
+            // Hide buttons
+            document.getElementById('fwa-buttons-container').style.display = 'none';
+            
+            // Show image container
+            const imageContainer = document.getElementById('fwa-image-display');
+            imageContainer.style.display = 'block';
+            
+            // Show back button
+            document.querySelector('.fwa-back-btn').style.display = 'block';
+            
+            // Specific image names as requested
+            const imageMap = {
+                1: 'image_fwa_1note.jpg',
+                5: 'image_fwa_5note.jpg',
+                10: 'image_fwa_10note.jpg',
+                50: 'image_fwa_50note.jpg',
+                100: 'image_fwa_100note.jpg',
+                200: 'image_fwa_200note.jpg',
+                500: 'image_fwa_500note.jpg',
+                1000: 'image_fwa_1000note.jpg'
+            };
+            
+            const imgName = imageMap[amount];
+            imageContainer.innerHTML = `
+                <h4>${amount} FWA Note Design</h4>
+                <img src="${imgName}" alt="${amount} FWA Note" class="fwa-note-image" onerror="this.src='lion_image.jpg'">
+                <p style="font-size: 14px; color: #333; margin-top: 10px;">
+                    Official ${amount} FWA Currency Note Design
+                </p>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Image: ${imgName}
+                </p>
+            `;
+        }
+        
+        function closeFWAViewer() {
+            // Show buttons again
+            document.getElementById('fwa-buttons-container').style.display = 'grid';
+            
+            // Hide image container
+            document.getElementById('fwa-image-display').style.display = 'none';
+            
+            // Hide back button
+            document.querySelector('.fwa-back-btn').style.display = 'none';
+        }
+        
+        // 3. Updated Balance Display with FWA - ACTUALLY UPDATES
+        function upBal() {
+            if (!user) return;
+            
+            // Update displayed balances
+            document.getElementById('bal-usd').innerText = (user.balUSD || 0).toFixed(2);
+            document.getElementById('bal-gbp').innerText = (user.balGBP || 0).toFixed(2);
+            document.getElementById('bal-eur').innerText = (user.balEUR || 0).toFixed(2);
+            document.getElementById('bal-etb').innerText = (user.balETB || 0).toFixed(2);
+            document.getElementById('bal-fwa').innerText = (user.balFWA || 0).toFixed(2);
+            
+            // Calculate totals
+            const totUSD = (user.balUSD || 0) + 
+                          ((user.balGBP || 0) * 1.25) + 
+                          ((user.balEUR || 0) * 1.1) + 
+                          ((user.balETB || 0) / 120) + 
+                          ((user.balFWA || 0) / 120);
+            
+            const totETB = (user.balETB || 0) + 
+                          ((user.balUSD || 0) * 120) + 
+                          ((user.balGBP || 0) * 150) + 
+                          ((user.balEUR || 0) * 130) + 
+                          (user.balFWA || 0);
+            
+            const totFWA = (user.balFWA || 0) + 
+                          ((user.balUSD || 0) * 120) + 
+                          ((user.balGBP || 0) * 150) + 
+                          ((user.balEUR || 0) * 130) + 
+                          (user.balETB || 0);
+            
+            document.getElementById('bal-total').innerText = totUSD.toFixed(2);
+            document.getElementById('bal-total-etb').innerText = totETB.toFixed(2);
+            document.getElementById('bal-total-fwa').innerText = totFWA.toFixed(2);
+            
+            // Save updated user data
+            localStorage.setItem('fg_user', JSON.stringify(user));
+        }
+        
+        // 4. Profile Password Protection
+        function openProfileWithPassword() {
+            if(!user) {
+                showAlert("Please login first", "error");
+                return;
+            }
+            document.getElementById('profile-pass-modal').style.display = 'flex';
+        }
+        
+        function verifyProfilePass() {
+            const pass = document.getElementById('profile-pass-input').value;
+            if(pass === user.password) {
+                document.getElementById('profile-pass-modal').style.display = 'none';
+                document.getElementById('profile-pass-input').value = '';
+                showView('view-profile');
+                document.getElementById('prof-phone').innerText = user.phone;
+                document.getElementById('prof-name-edit').value = user.name || '';
+            } else {
+                alert("Wrong Password");
+            }
+        }
+        
+        // 5. Logout Functionality
+        function showLogoutConfirmation() {
+            document.getElementById('logout-modal').style.display = 'flex';
+        }
+        
+        function confirmLogout() {
+            // Set user as offline
+            updateUserOnlineStatus(false);
+            
+            // Remove from active users
+            user = null;
+            localStorage.removeItem('fg_user');
+            
+            // Stop live stream if active
+            if (liveStreamActive) {
+                stopRealLiveStream();
+            }
+            
+            // Unsubscribe from Firebase
+            if(firebaseUnsubscribe) {
+                firebaseUnsubscribe();
+            }
+            
+            document.getElementById('logout-modal').style.display = 'none';
+            
+            // Show logout message
+            showAlert("Logged out successfully", "success");
+            
+            // Reload to show login screen
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        }
+        
+        // 6. User List with Live Status
+        function showUserList(selMode) {
+            const c = document.getElementById('ul-cont'); 
+            c.innerHTML = '';
+            users.forEach(u => {
+                if(u.phone === user.phone) return;
+                
+                const isBlocked = blockedUsers.includes(u.phone);
+                const isLive = u.isOnline || false;
+                const statusClass = isLive ? 'user-live' : 'user-offline';
+                const statusText = isLive ? 'Live' : 'Non-Live';
+                
+                c.innerHTML += `<div class="user-item ${isBlocked ? 'blocked-user' : ''}" onclick="${selMode ? 'togBlue(this)' : `openViewChatWith('${u.phone}')`}">
+                    <img src="${u.photo || 'lion_image.jpg'}"> 
+                    <div style="flex:1;">
+                        <b>${u.name}</b>
+                        <span class="user-status ${statusClass}">${statusText}</span>
+                    </div>
+                    ${isBlocked ? '<span style="color:#dc3545; font-size:10px;">Blocked</span>' : ''}
+                </div>`;
+            });
+            document.getElementById('btn-grp-done').style.display = selMode ? 'block' : 'none';
+            navTo('user-list-sec');
+        }
+        
+        // 7. View Chat Feature
+        function openViewChat() {
+            if(!activeChat || !activeChat.id) {
+                showAlert("Please select a user to chat with first", "error");
+                return;
+            }
+            openViewChatWith(activeChat.id);
+        }
+        
+        function openViewChatWith(userPhone) {
+            currentViewChatUser = userPhone;
+            const targetUser = users.find(u => u.phone === userPhone);
+            if(!targetUser) return;
+            
+            document.getElementById('view-chat-title').textContent = `Chat with ${targetUser.name}`;
+            document.getElementById('view-chat-modal').style.display = 'flex';
+            
+            // Check if user is blocked
+            const isBlocked = blockedUsers.includes(userPhone);
+            document.getElementById('block-chat-btn').style.display = isBlocked ? 'none' : 'block';
+            document.getElementById('unblock-chat-btn').style.display = isBlocked ? 'block' : 'none';
+            
+            renderChatConversation(userPhone);
+        }
+        
+        function renderChatConversation(userPhone) {
+            const container = document.getElementById('chat-conversation-display');
+            const chatKey = [user.phone, userPhone].sort().join('_');
+            const messages = chats[chatKey] || [];
+            
+            if(messages.length === 0) {
+                container.innerHTML = '<p style="color:#666; text-align:center;">No messages yet. Start the conversation!</p>';
+                return;
+            }
+            
+            container.innerHTML = messages.map(msg => {
+                const isSender = msg.u === user.name;
+                const msgClass = isSender ? 'chat-message-sent' : 'chat-message-received';
+                const time = msg.time ? msg.time : new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                let content = msg.t;
+                if(msg.type === 'image') {
+                    content = `<img src="${msg.t}" style="max-width:100%; border-radius:5px;">`;
+                } else if(msg.type === 'audio') {
+                    content = `<audio src="${msg.t}" controls style="width:100%;"></audio>`;
+                }
+                
+                return `<div class="chat-message ${msgClass}">
+                    <div><b>${msg.u}:</b></div>
+                    <div>${content}</div>
+                    <div class="chat-timestamp">${time}</div>
+                </div>`;
+            }).join('');
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function sendChatResponse() {
+            if(!currentViewChatUser) return;
+            
+            const input = document.getElementById('chat-response-input');
+            const message = input.value.trim();
+            
+            if(!message) {
+                showAlert("Please enter a message", "error");
+                return;
+            }
+            
+            // Check if user is blocked
+            if(blockedUsers.includes(currentViewChatUser)) {
+                showAlert("You have blocked this user. Unblock to send messages.", "error");
+                return;
+            }
+            
+            const chatKey = [user.phone, currentViewChatUser].sort().join('_');
+            if(!chats[chatKey]) chats[chatKey] = [];
+            
+            chats[chatKey].push({
+                u: user.name,
+                t: message,
+                type: 'text',
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            });
+            
+            localStorage.setItem('fg_chats', JSON.stringify(chats));
+            input.value = '';
+            renderChatConversation(currentViewChatUser);
+        }
+        
+        // 8. Block/Unblock Users
+        function blockCurrentChatUser() {
+            if(!currentViewChatUser) return;
+            
+            if(!blockedUsers.includes(currentViewChatUser)) {
+                blockedUsers.push(currentViewChatUser);
+                localStorage.setItem('fg_blocked', JSON.stringify(blockedUsers));
+                showAlert("User blocked successfully", "success");
+                
+                // Update button visibility
+                document.getElementById('block-chat-btn').style.display = 'none';
+                document.getElementById('unblock-chat-btn').style.display = 'block';
+            }
+        }
+        
+        function unblockCurrentChatUser() {
+            if(!currentViewChatUser) return;
+            
+            blockedUsers = blockedUsers.filter(phone => phone !== currentViewChatUser);
+            localStorage.setItem('fg_blocked', JSON.stringify(blockedUsers));
+            showAlert("User unblocked successfully", "success");
+            
+            // Update button visibility
+            document.getElementById('block-chat-btn').style.display = 'block';
+            document.getElementById('unblock-chat-btn').style.display = 'none';
+        }
+        
+        function showBlockedUsers() {
+            if(blockedUsers.length === 0) {
+                showAlert("You haven't blocked any users", "info");
+                return;
+            }
+            
+            let message = "Blocked Users:\n";
+            blockedUsers.forEach(phone => {
+                const blockedUser = users.find(u => u.phone === phone);
+                message += `• ${blockedUser ? blockedUser.name : phone}\n`;
+            });
+            
+            alert(message);
+        }
+        
+        // 9. Admin Total Users
+        function showTotalUsers() {
+            // Calculate statistics
+            const totalUsers = users.length;
+            const today = new Date().toDateString();
+            const activeToday = users.filter(u => {
+                if(!u.lastActive) return false;
+                const lastActiveDate = new Date(u.lastActive).toDateString();
+                return lastActiveDate === today;
+            }).length;
+            
+            const liveNow = users.filter(u => u.isOnline).length;
+            const thisMonth = new Date().getMonth();
+            const newThisMonth = users.filter(u => {
+                if(!u.createdAt) return false;
+                const userMonth = new Date(u.createdAt).getMonth();
+                return userMonth === thisMonth;
+            }).length;
+            
+            // Update display
+            document.getElementById('total-users-count').textContent = totalUsers;
+            document.getElementById('active-today-count').textContent = activeToday;
+            document.getElementById('live-now-count').textContent = liveNow;
+            document.getElementById('new-month-count').textContent = newThisMonth;
+            
+            document.getElementById('admin-total-users-modal').style.display = 'flex';
+        }
+        
+        // 10. User Own Info
+        function showOwnInfo() {
+            if(!user) {
+                showAlert("Please login first", "error");
+                return;
+            }
+            
+            document.getElementById('pass-modal').style.display = 'flex';
+            pendingAct = () => {
+                // Calculate user stats
+                const userPosts = posts.filter(p => p.uid === user.phone);
+                const totalPosts = userPosts.length;
+                const totalLikes = userPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
+                const totalFollows = userPosts.reduce((sum, p) => sum + (p.follows || 0), 0);
+                const totalComments = userPosts.reduce((sum, p) => sum + ((p.comments || []).length), 0);
+                
+                // Update stats display
+                document.getElementById('own-total-posts').textContent = totalPosts;
+                document.getElementById('own-total-likes').textContent = totalLikes;
+                document.getElementById('own-total-follows').textContent = totalFollows;
+                document.getElementById('own-total-comments').textContent = totalComments;
+                
+                // Show the section
+                navTo('user-own-info');
+                renderOwnPosts('text');
+            };
+        }
+        
+        function renderOwnPosts(type) {
+            const c = document.getElementById('own-posts-container'); 
+            const userPosts = posts.filter(p => p.uid === user.phone && p.type === type && !p.isHidden);
+            
+            if(!userPosts.length) {
+                c.innerHTML = `<p style="color:#666; text-align:center;">You haven't posted any ${type} content yet.</p>`;
+                return;
+            }
+            
+            c.innerHTML = '';
+            userPosts.forEach(p => {
+                let m = ''; 
+                if(p.d) { 
+                    if(p.type === 'image') m = `<img src="${p.d}" width="100%" style="max-height:300px;object-fit:contain;">`; 
+                    else if(p.type === 'video') m = `<video src="${p.d}" controls playsinline width="100%" style="max-height:300px;"></video>`; 
+                    else m = `<audio src="${p.d}" controls></audio>`; 
+                }
+                
+                const comments = p.comments || [];
+                const commentCount = comments.length;
+                
+                c.innerHTML += `<div class="post-card user-own-post">
+                    <div class="post-header">
+                        <img src="${p.photo || 'lion_image.jpg'}"> 
+                        <b>${p.u}</b>
+                        <span style="font-size:10px;color:#888;margin-left:auto;">Your Post</span>
+                    </div>
+                    <h4>${p.t}</h4>
+                    <p>${p.c || ''}</p>
+                    ${m}
+                    <div class="engagement-stats">
+                        <div class="engagement-item">
+                            <div class="engagement-count">${p.likes || 0}</div>
+                            <div class="engagement-label">Likes</div>
+                        </div>
+                        <div class="engagement-item">
+                            <div class="engagement-count">${p.follows || 0}</div>
+                            <div class="engagement-label">Follows</div>
+                        </div>
+                        <div class="engagement-item">
+                            <div class="engagement-count">${commentCount}</div>
+                            <div class="engagement-label">Comments</div>
+                        </div>
+                    </div>
+                    <div class="post-actions">
+                        <button class="action-icon" onclick="likePost('${p.id || p.uid}', this)">Like ${p.likes || 0}</button>
+                        <button class="action-icon" onclick="openComModal('${p.id || p.uid}')">Comment</button>
+                        <button class="action-icon" onclick="sharePost()">Share</button>
+                        <button class="action-icon" onclick="promptReport('${p.id || p.uid}', '${p.u}')">Report</button>
+                    </div>
+                </div>`;
+            });
+        }
+        
+        // 11. Real Live Stream Functions
+        function updateLiveIndicators(isLive = false) {
+            const indicators = document.querySelectorAll('.live-indicator');
+            const liveStatusText = document.getElementById('live-status-text');
+            
+            indicators.forEach(indicator => {
+                if (isLive) {
+                    indicator.classList.add('live-online');
+                } else {
+                    indicator.classList.remove('live-online');
+                }
+            });
+            
+            if (liveStatusText) {
+                liveStatusText.textContent = isLive ? '🔴 LIVE NOW' : '🔴 Offline';
+                liveStatusText.style.color = isLive ? '#dc3545' : '#666';
+            }
+        }
+        
+        function openRealLiveStream() {
+            showView('view-live');
+            document.getElementById('live-chat-container').style.display = 'none';
+            updateLiveViewers();
+        }
+        
+        async function startRealLiveStream() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: true, 
+                        audio: true 
+                    });
+                    
+                    liveStream = stream;
+                    liveStreamActive = true;
+                    
+                    const videoElement = document.getElementById('live-video-element');
+                    videoElement.srcObject = stream;
+                    
+                    // Enable live chat
+                    document.getElementById('live-chat-container').style.display = 'block';
+                    
+                    // Update indicators
+                    updateLiveIndicators(true);
+                    
+                    // Update bottom marquee
+                    document.querySelector('.bottom-marquee span').innerHTML = 
+                        'ፋሲል ዌብ አፕ - Fasil Web App (Service Center) | 🔥 Firebase Online | 🔴 LIVE NOW';
+                    
+                    // Start viewers counter
+                    liveViewers = 1;
+                    liveViewersInterval = setInterval(() => {
+                        liveViewers += Math.floor(Math.random() * 3);
+                        updateLiveViewers();
+                    }, 5000);
+                    
+                    // Save live stream status to Firebase
+                    if (window.firebaseTools && window.firebaseTools.saveLiveStreamStatus) {
+                        await window.firebaseTools.saveLiveStreamStatus({
+                            userId: user ? user.phone : 'anonymous',
+                            userName: user ? user.name : 'Anonymous',
+                            isActive: true,
+                            startedAt: new Date()
+                        });
+                    }
+                    
+                    showAlert("Live stream started successfully!", "success");
+                    
+                } catch (error) {
+                    console.error("Error accessing camera:", error);
+                    showAlert("Could not access camera. Please check permissions.", "error");
+                }
+            } else {
+                showAlert("Your device does not support live streaming", "error");
+            }
+        }
+        
+        async function stopRealLiveStream() {
+            if (liveStream) {
+                liveStream.getTracks().forEach(track => track.stop());
+                liveStream = null;
+            }
+            
+            liveStreamActive = false;
+            
+            // Clear viewers interval
+            if (liveViewersInterval) {
+                clearInterval(liveViewersInterval);
+                liveViewersInterval = null;
+            }
+            
+            // Reset viewers
+            liveViewers = 0;
+            updateLiveViewers();
+            
+            // Update indicators
+            updateLiveIndicators(false);
+            
+            // Update bottom marquee
+            document.querySelector('.bottom-marquee span').innerHTML = 
+                'ፋሲል ዌብ አፕ - Fasil Web App (Service Center) | 🔥 Firebase Online | 🔴 Offline';
+            
+            // Save live stream end to Firebase
+            if (window.firebaseTools && window.firebaseTools.saveLiveStreamStatus) {
+                await window.firebaseTools.saveLiveStreamStatus({
+                    userId: user ? user.phone : 'anonymous',
+                    userName: user ? user.name : 'Anonymous',
+                    isActive: false,
+                    endedAt: new Date()
+                });
+            }
+            
+            showAlert("Live stream ended", "success");
+        }
+        
+        function toggleLiveAudio() {
+            if (liveStream) {
+                const audioTracks = liveStream.getAudioTracks();
+                if (audioTracks.length > 0) {
+                    audioTracks[0].enabled = !audioTracks[0].enabled;
+                    liveAudioMuted = !audioTracks[0].enabled;
+                    
+                    const audioBtn = document.getElementById('live-audio-btn');
+                    audioBtn.innerHTML = liveAudioMuted ? '🔈 Unmute Audio' : '🔇 Mute Audio';
+                }
+            }
+        }
+        
+        function updateLiveViewers() {
+            const viewersElement = document.getElementById('live-viewers-count');
+            if (viewersElement) {
+                viewersElement.textContent = `👁️ ${liveViewers} Viewers`;
+            }
+        }
+        
+        function sendLiveChat() {
+            const input = document.getElementById('live-chat-input');
+            const message = input.value.trim();
+            
+            if (message && user) {
+                liveChatMessages.push({
+                    user: user.name,
+                    message: message,
+                    time: new Date().toLocaleTimeString()
+                });
+                
+                updateLiveChat();
+                input.value = '';
+                
+                // Scroll to bottom
+                const chatBox = document.getElementById('live-chat-box');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+        
+        function updateLiveChat() {
+            const chatBox = document.getElementById('live-chat-box');
+            chatBox.innerHTML = liveChatMessages.map(msg => 
+                `<div><b>${msg.user}</b> (${msg.time}): ${msg.message}</div>`
+            ).join('');
+        }
+
+        // --- MODIFIED BUSINESS FUNCTIONS ---
+        function finalizeDeposit() {
+            if(!pendingDeposit) return;
+            
+            const a = pendingDeposit.amount;
+            const c = pendingDeposit.currency;
+            
+            if(a >= 100) {
+                // Update user balance
+                if(c === 'USD') user.balUSD = (user.balUSD || 0) + a;
+                else if(c === 'GBP') user.balGBP = (user.balGBP || 0) + a;
+                else if(c === 'EUR') user.balEUR = (user.balEUR || 0) + a;
+                else if(c === 'FWA') user.balFWA = (user.balFWA || 0) + a;
+                else user.balETB = (user.balETB || 0) + a;
+                
+                // Update Firebase if available
+                if(window.firebaseTools && window.firebaseTools.updateUserBalance && user.id) {
+                    window.firebaseTools.updateUserBalance(user.id, c.toUpperCase(), a);
+                }
+                
+                localStorage.setItem('fg_user', JSON.stringify(user));
+                showAlert(`Deposited ${a} ${c} successfully!`, "success"); 
+                upBal(); 
+                document.getElementById('dep-step-1').style.display = 'block'; 
+                document.getElementById('dep-step-2').style.display = 'none'; 
+                navTo('business-sec');
+            } else {
+                showAlert("Min 100 ETB equivalent", "error");
+            }
+        }
+        
+        function reqWithdraw() {
+            const m = document.getElementById('w-method').value; 
+            const d = document.getElementById('w-dest').value;
+            const a = parseFloat(document.getElementById('w-amt').value);
+            const c = document.getElementById('w-cur').value;
+            
+            if(!a || a <= 0) return showAlert("Please enter amount", "error");
+            
+            // Check if user has sufficient balance
+            let hasBalance = false;
+            let currentBalance = 0;
+            
+            if(c === 'USD') {
+                currentBalance = user.balUSD || 0;
+                hasBalance = currentBalance >= a;
+            } else if(c === 'GBP') {
+                currentBalance = user.balGBP || 0;
+                hasBalance = currentBalance >= a;
+            } else if(c === 'EUR') {
+                currentBalance = user.balEUR || 0;
+                hasBalance = currentBalance >= a;
+            } else if(c === 'ETB') {
+                currentBalance = user.balETB || 0;
+                hasBalance = currentBalance >= a;
+            } else if(c === 'FWA') {
+                currentBalance = user.balFWA || 0;
+                hasBalance = currentBalance >= a;
+            }
+            
+            if(!hasBalance) return showAlert(`Insufficient ${c} balance. You have ${currentBalance.toFixed(2)} ${c}`, "error");
+            
+            if(m === 'Telebirr' && !/^09\d{8}$/.test(d)) return showAlert("Telebirr must be 09... (10 digits)", "error");
+            if(m === 'PayPal' && !d.endsWith('@gmail.com')) return showAlert("Email required", "error");
+            if(m === 'CBE' && (!d.match(/^(1000|10000)\d{9}$/) || d.length !== 13)) return showAlert("Invalid CBE", "error");
+            if(m === 'FWA' && !d) return showAlert("FWA Account required", "error");
+
+            document.getElementById('pass-modal').style.display = 'flex';
+            pendingAct = () => {
+                // Deduct from balance
+                if(c === 'USD') user.balUSD = (user.balUSD || 0) - a;
+                else if(c === 'GBP') user.balGBP = (user.balGBP || 0) - a;
+                else if(c === 'EUR') user.balEUR = (user.balEUR || 0) - a;
+                else if(c === 'ETB') user.balETB = (user.balETB || 0) - a;
+                else if(c === 'FWA') user.balFWA = (user.balFWA || 0) - a;
+                
+                // Update Firebase if available
+                if(window.firebaseTools && window.firebaseTools.updateUserBalance && user.id) {
+                    window.firebaseTools.updateUserBalance(user.id, c.toUpperCase(), -a);
+                }
+                
+                localStorage.setItem('fg_user', JSON.stringify(user));
+                showAlert(`Successfully withdrew ${a} ${c} to ${m}`, "success"); 
+                upBal();
+                navTo('business-sec');
+            };
+        }
+        
+        // --- MODIFIED ADMIN FUNCTIONS ---
+        function promptAdminAction(action) {
+            pendingAdminAction = action;
+            document.getElementById('admin-action-modal').style.display = 'flex';
+        }
+        
+        function runAdminAction() {
+            const p = document.getElementById('admin-act-pass').value;
+            if(p === adminPass) {
+                document.getElementById('admin-action-modal').style.display = 'none';
+                document.getElementById('admin-act-pass').value = '';
+                if(pendingAdminAction === 'changePass') document.getElementById('admin-chg-modal').style.display = 'block';
+                else if(pendingAdminAction === 'userStats') showUserStats();
+                else if(pendingAdminAction === 'totalUsers') showTotalUsers();
+                else if(pendingAdminAction === 'premPay') document.getElementById('adm-prem-modal').style.display = 'block';
+                else if(pendingAdminAction === 'viewRep') renderReports();
+            } else {
+                alert("Wrong Admin Code");
+            }
+        }
+
+        // ... [Keep all existing code from previous version, only adding the new functions above] ...
+        
+        // Initialize the app
+        toggleLanguage(); 
+        toggleLanguage();
+        
+        // Initialize FWA balance for existing users
+        if(user && user.balFWA === undefined) {
+            user.balFWA = 0;
+            localStorage.setItem('fg_user', JSON.stringify(user));
+        }
+        
+        // Show permanent Firebase status
+        setTimeout(() => {
+            const statusEl = document.getElementById('firebase-status');
+            if(window.firebaseTools) {
+                statusEl.style.display = 'block'; // Always visible
+            }
+        }, 3000);
+        
+        // Update balances on page load
+        if(user) {
+            upBal();
+        }
+        
+        // Set up beforeunload to update offline status
+        window.addEventListener('beforeunload', function() {
+            updateUserOnlineStatus(false);
+        });
+    </script>
+</body>
+</html>
