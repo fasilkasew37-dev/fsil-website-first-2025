@@ -1,0 +1,51 @@
+.fwa-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 350px;
+  background-color: #0080ff;
+  width: 100%;
+}
+
+.lion-wrapper {
+  position: relative;
+  z-index: 3;
+}
+
+.lion-center {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 5px solid white;
+  outline: 8px solid yellow;
+  box-shadow: 0 0 0 15px red, 0 0 0 25px darkblue;
+  object-fit: cover;
+}
+
+.eagle-left {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  position: absolute;
+  left: 10%;
+  z-index: 1;
+  object-fit: cover;
+}
+
+.dove-right {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  position: absolute;
+  right: 10%;
+  z-index: 1;
+  object-fit: cover;
+}
+
+.fwa-logo-text {
+  position: absolute;
+  bottom: 20px;
+  font-size: 40px;
+  font-weight: bold;
+}
