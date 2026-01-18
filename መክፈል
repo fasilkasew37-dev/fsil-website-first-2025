@@ -2997,6 +2997,17 @@
                     admins: [user.phone], 
                     members: [user.phone], 
                     requests: [],
+
+
+
+ 
+        ከዚህላይ ይከፈላል።ወደላይ ወደታች።
+
+
+
+
+
+
                     banned: [],
                     msgs: [] 
                 });
