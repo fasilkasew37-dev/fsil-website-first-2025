@@ -3211,6 +3211,43 @@
         // --- UTILS ---
         function promptUpload(t) { uploadTarget = t; document.getElementById(t==='post'?'file-post':(t==='pay'?'file-pay':'file-intl')).click(); }
         function closeShare() { document.getElementById('share-modal').style.display = 'none'; }
+    function promptUpload(t) { 
+            uploadTarget = t; 
+            // Task 9 fix: Correct ID targeting for file inputs
+            let inputId = 'file-post';
+            if(t === 'pay') inputId = 'file-pay';
+            else if(t === 'pay-intl') inputId = 'file-pay-intl';
+            else if(t === 'intl') inputId = 'file-intl';
+            else if(t === 'deposit') inputId = 'file-deposit';
+            else if(t === 'profile') inputId = 'file-profile';
+            else if(t === 'profile-edit') inputId = 'file-profile-edit';
+            
+            document.getElementById(inputId).click(); 
+        }
+        
+        function closeShare() { document.getElementById('share-modal').style.display = 'none'; }
+
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, (err) => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
     </script>
+
+<script>
+  window.chatbaseConfig = {
+    chatbotId: "r-x7-Xm_Y-6mYj6zNq_K1",
+    alignment: "left"
+  }
+</script>
+    <script>
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="IeHEhuOCnYiOp86WS22vL";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+</script>
 </body>
 </html>
